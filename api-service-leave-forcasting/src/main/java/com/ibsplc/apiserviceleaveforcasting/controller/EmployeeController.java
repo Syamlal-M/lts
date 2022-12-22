@@ -20,17 +20,17 @@ import com.ibsplc.apiserviceleaveforcasting.service.impl.EmployeeServiceImpl;
  */
 @RestController
 public class EmployeeController {
-	
+
 	@Autowired
-	EmployeeServiceImpl EmployeeServiceImpl; 
+	EmployeeServiceImpl employeeServiceImpl;
 
 	@GetMapping("/findLeaveForecast")
 	public HashSet<Employee> findLeaveForecast() {
-		return EmployeeServiceImpl.findLeaveForecast();
+		return employeeServiceImpl.findLeaveForecast();
 	}
 
 	@PostMapping("/saveLeaveForecast")
 	public void saveLeaveForecast(@RequestBody Employee employee) {
-		EmployeeServiceImpl.saveLeaveForecast(employee);
+		employeeServiceImpl.saveLeaveForecast(employee);
 	}
 }
