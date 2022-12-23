@@ -47,6 +47,18 @@
                     <artifactId>validation-api</artifactId>
                     <version>2.0.1.Final</version>
                 </dependency>
+                
+                <dependency>
+                    <groupId>com.opencsv</groupId>
+                    <artifactId>opencsv</artifactId>
+                    <version>4.6</version>
+                </dependency>
+                
+                <dependency>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi-ooxml</artifactId>
+                    <version>4.1.1</version>
+                </dependency>   
 
                 
         <dependency>
@@ -71,6 +83,12 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+                <dependency>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                    <version>2.11.0</version>
+                    <type>jar</type>
+                </dependency>
 	</dependencies>
 
 	<build>
