@@ -5,14 +5,14 @@ package com.ibsplc.apiserviceleaveforcasting.service.impl;
 
 import org.springframework.stereotype.Service;
 
-import com.ibsplc.apiserviceleaveforcasting.service.EmployeeService;
+import com.ibsplc.apiserviceleaveforcasting.service.LeaveForecastService;
 
 /**
  * @author Narjeesh
  *
  */
 @Service
-public class EmployeeServiceImpl implements EmployeeService {
+public class LeaveForecastServiceImpl implements LeaveForecastService {
 
 	@Override
 	public void findLeaveForecast() {
@@ -23,7 +23,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Override
 	public void saveLeaveForecast() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
