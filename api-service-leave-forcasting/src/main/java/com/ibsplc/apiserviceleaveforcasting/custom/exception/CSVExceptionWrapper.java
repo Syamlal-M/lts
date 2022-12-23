@@ -17,7 +17,7 @@ public class CSVExceptionWrapper extends RuntimeException {
     private final Integer lineNo;
 
     public CSVExceptionWrapper(Integer lineNo, String msg) {
-        super(msg+" at row number "+ lineNo);
+        super(msg + " at row number " + lineNo);
         this.lineNo = lineNo;
     }
 

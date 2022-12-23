@@ -9,7 +9,6 @@ import com.ibsplc.apiserviceleaveforcasting.custom.exception.CsvImportException;
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
 import com.ibsplc.apiserviceleaveforcasting.entity.Employee;
 import com.ibsplc.apiserviceleaveforcasting.form.EmployeeForm;
-import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeRespository;
 import com.ibsplc.apiserviceleaveforcasting.service.EmployeeService;
 import com.ibsplc.apiserviceleaveforcasting.util.ValidationUtil;
 import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
@@ -25,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.io.FilenameUtils;
+import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeRepository;
 
 /**
  *
@@ -34,7 +34,7 @@ import org.apache.commons.io.FilenameUtils;
 public class EmployeeServiceImpl implements EmployeeService{
     
     @Autowired
-    private EmployeeRespository employeeRepository;
+    private EmployeeRepository employeeRepository;
     
    
     @Override
