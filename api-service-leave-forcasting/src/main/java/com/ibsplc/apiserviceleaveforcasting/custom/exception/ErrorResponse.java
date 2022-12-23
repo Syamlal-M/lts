@@ -13,11 +13,11 @@ import org.springframework.http.HttpStatus;
 
 public class ErrorResponse {
     private String message;
-    private int code;
+    private int status;
     
     public ErrorResponse(String message, HttpStatus code){
         this.message=message;
-        this.code=code.value();
+        this.status=code.value();
     }
 
     
@@ -29,15 +29,20 @@ public class ErrorResponse {
     public void setMessage(String message) {
         this.message = message;
     }
-    
-    public int getCode(){
-        return code;
+
+    /**
+     * @return the status
+     */
+    public int getStatus() {
+        return status;
     }
-    
-    public void setCode(int code){
-        this.code=code;
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(int status) {
+        this.status = status;
     }
-    
     
     
 }

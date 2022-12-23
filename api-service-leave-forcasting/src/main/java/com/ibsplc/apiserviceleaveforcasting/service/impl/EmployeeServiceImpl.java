@@ -44,8 +44,8 @@ public class EmployeeServiceImpl implements EmployeeService{
         }
         
          String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-        if (!extension.equalsIgnoreCase("xlsx") && !extension.equalsIgnoreCase("xls")){
-            throw new CustomException("File type not supported. Supported type is either xlsx or xls");
+        if (!extension.equalsIgnoreCase("xlsx")){
+            throw new CustomException("File type not supported. Supported type is xlsx");
         }
         
         boolean isUploadCompleted = false;
