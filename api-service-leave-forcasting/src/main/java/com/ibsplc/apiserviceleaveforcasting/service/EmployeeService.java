@@ -6,6 +6,7 @@ package com.ibsplc.apiserviceleaveforcasting.service;
 
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CSVExceptionWrapper;
 import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -15,5 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface EmployeeService {
     
     public BasicResponseView importEmployees(MultipartFile file) throws CSVExceptionWrapper, Exception;
+    public Page searchEmployee(int page, int limit);
     
 }

@@ -25,6 +25,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.io.FilenameUtils;
 import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeRepository;
+import com.ibsplc.apiserviceleaveforcasting.view.EmployeeView;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 /**
  *
@@ -166,5 +170,12 @@ public class EmployeeServiceImpl implements EmployeeService{
         } catch (Exception ex) {
             throw new Exception(ex);
         }
+    }
+
+    @Override
+    public Page searchEmployee(int page, int limit) {
+        Pageable pageable = PageRequest.of(page, limit);
+        Page<EmployeeView> employeeViewPage = employeeRepository.searchEmployee(pageable);
+        return employeeViewPage;
     }
 }
