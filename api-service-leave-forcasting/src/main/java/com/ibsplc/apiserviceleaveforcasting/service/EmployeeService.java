@@ -16,6 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface EmployeeService {
     
     public BasicResponseView importEmployees(MultipartFile file) throws CSVExceptionWrapper, Exception;
-    public Page searchEmployee(int page, int limit);
+    public Page searchEmployee(int page, int limit, String employeeName, String organization, String team, String location);
     
 }

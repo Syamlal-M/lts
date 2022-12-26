@@ -33,7 +33,11 @@ public class EmployeeController {
     
     @GetMapping("search")
     public Page searchEmployee(@RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "50") int limit){ 
-        return employeeService.searchEmployee(page, limit);
+            @RequestParam(required = false, defaultValue = "50") int limit,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String org,
+            @RequestParam(required = false) String team,
+            @RequestParam(required = false) String location){ 
+        return employeeService.searchEmployee(page, limit, name, org, team, location);
     }
 }

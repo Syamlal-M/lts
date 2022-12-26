@@ -173,9 +173,72 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public Page searchEmployee(int page, int limit) {
+    public Page searchEmployee(int page, int limit, String employeeName, String organization, String team, String location) {
         Pageable pageable = PageRequest.of(page, limit);
-        Page<EmployeeView> employeeViewPage = employeeRepository.searchEmployee(pageable);
+        employeeName = createSearchKey(employeeName);
+        organization = createSearchKey(organization);
+        team = createSearchKey(team);
+        location = createSearchKey(location);
+        int searchCriteriaMode = findCriteriaSearchMode(employeeName, organization, team, location);
+        if(searchCriteriaMode == -1){
+            return Page.empty();
+        }
+        
+        Page<EmployeeView> employeeViewPage = employeeRepository.searchEmployee(searchCriteriaMode, employeeName, organization, team, location, pageable);
         return employeeViewPage;
+    }
+    
+    //this is done to prevent sql injection attack
+    private String createSearchKey(String str) {
+        if (null == str) {
+            return null;
+        }
+        return "%" + str.replaceAll("([%_])", "\\\\$1") + "%";
+    }
+    
+    
+    private int findCriteriaSearchMode(String employeeName, String organization, String team, String location){
+        String n = (employeeName != null && employeeName.trim() != null) ? employeeName : null;
+        String o = (organization != null && organization.trim() != null) ? organization : null;
+        String t = (team != null && team.trim() != null) ? team : null;
+        String l = (location != null && location.trim() != null) ? location : null;
+        
+        if(n ==null && o==null && t==null && l==null){
+            return 0;
+        }
+        if(n != null && o != null && t != null && l != null){
+            return 1;
+        }
+        if((n!=null && o!=null) &&(t==null && l==null)){
+            return 2;
+        }
+        if((n!=null && t!=null) && (o==null && l==null)){
+            return 3;
+        }
+        if((n!=null && l!=null) && (o==null && t==null)){
+            return 4;
+        }
+        if((o!=null && t!=null) && (n==null && l==null)){
+            return 5;
+        }
+        if((o!=null && l!=null) && (n==null && t==null)){
+            return 6;
+        }
+        if((t!=null && l!=null) && (n==null && o==null)){
+            return 7;
+        }
+        if(n!=null &&(o==null && t==null && l==null)){
+            return 8;
+        }
+        if(o!=null &&(n==null && t==null && l==null)){
+            return 9;
+        }
+        if(t!=null &&(n==null && o==null && l==null)){
+            return 10;
+        }
+        if(l!=null &&(n==null && o==null && t==null)){
+            return 11;
+        }
+       return -1;
     }
 }
