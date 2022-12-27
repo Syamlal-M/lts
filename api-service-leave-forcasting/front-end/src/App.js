@@ -37,7 +37,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="leave-forecast" element={<LeaveForecast />} />
-          <Route path="report" element={<Report />} />
+          <Route path="reports" element={<Report />} />
           <Route path="*" element={<EmplolyeeSummary />} />
         </Route>
       </Routes>
