@@ -51,9 +51,11 @@ public class ReportServiceImpl implements ReportService {
             if (employeeIdList != null && employeeIdList.size() == 0) {
                 throw new CustomException("Exception in gathering employee id/s from Leave-forecast data");
             }
+            employeeList = employeeRepository.findByEmpIdIn(employeeIdList);
            if (employeeList != null && employeeList.size() == 0) {
                 throw new CustomException("Employee data not present in database");
             }
+
 
                 for (LeaveForecast ls : leaveSummaryResponseList) {
 
