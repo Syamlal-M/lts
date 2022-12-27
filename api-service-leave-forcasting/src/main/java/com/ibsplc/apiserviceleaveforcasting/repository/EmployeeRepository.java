@@ -7,6 +7,8 @@ package com.ibsplc.apiserviceleaveforcasting.repository;
 import com.ibsplc.apiserviceleaveforcasting.entity.Employee;
 import com.ibsplc.apiserviceleaveforcasting.view.EmployeeView;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -58,5 +60,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, String>{
         
         @Query("SELECT DISTINCT e.team FROM Employee e")
         public List<String> findUniqueTeams();
+
+    @Query("SELECT e FROM Employee e WHERE e.empId = :id")
+    public Optional<Employee> findEmployeeById(String id);
     
 }
