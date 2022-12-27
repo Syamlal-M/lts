@@ -42,22 +42,19 @@ public class ReportServiceImpl implements ReportService {
 
         List<EmployeeSummaryView> employeeSummaryResponseList = new ArrayList<>();
         List<LeaveForecast> leaveSummaryResponseList = leaveForecastRepository.findByMonthYear(duration);
-        if (leaveSummaryResponseList.size() == 0) {
+        if (leaveSummaryResponseList != null && leaveSummaryResponseList.size() == 0) {
             throw new CustomException("Leave records for the range is not available");
         }
-        else
-        {
-//            List<String> employeeIdList = leaveSummaryResponseList.stream().map(LeaveForecast::getEmployee.g).peek(e -> System.err.println("idd :: " + e)).collect(Collectors.toList());
+
             List<String> employeeIdList =  leaveSummaryResponseList.stream().map(leaveForecast -> leaveForecast.getEmployee().getEmpId()).collect(Collectors.toList());
             List<Employee> employeeList = null;
-            if (employeeIdList.size() == 0) {
+            if (employeeIdList != null && employeeIdList.size() == 0) {
                 throw new CustomException("Exception in gathering employee id/s from Leave-forecast data");
-            } else {
-                employeeList = employeeRepository.findByEmpIdIn(employeeIdList);
             }
-            if (employeeList.size() == 0) {
+           if (employeeList != null && employeeList.size() == 0) {
                 throw new CustomException("Employee data not present in database");
-            } else {
+            }
+
                 for (LeaveForecast ls : leaveSummaryResponseList) {
 
                     LeaveSummaryView leaveSummaryResponse = new LeaveSummaryView();
@@ -85,10 +82,9 @@ public class ReportServiceImpl implements ReportService {
                         employeeSummaryResponseList.add(employeeSummaryResponse);
                     }
                 }
-            }
 
             return employeeSummaryResponseList;
-        }
+
 
     }
 

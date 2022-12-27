@@ -19,13 +19,19 @@ public class ReportController {
     ReportService reportService;
 
     @GetMapping("leave-summary/{duration}")
-    public List<EmployeeSummaryView> fetchLeaveForecastSummary(@PathVariable String duration) throws CustomException {
+    public List<EmployeeSummaryView> fetchLeaveForecastSummary(@PathVariable String duration) throws CustomException, Exception {
         try {
             List<EmployeeSummaryView> employeeSummaryResponseList = reportService.fetchLeaveSummary(duration);
             return employeeSummaryResponseList;
-        } catch (Exception e) {
+        }
+        catch (CustomException e)
+        {
             e.printStackTrace();
-            throw new CustomException("Exception occurred in API :: " + e.getMessage());
+            throw new CustomException( e.getMessage());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Exception occurred in API :: " + e.getMessage());
         }
 
     }
