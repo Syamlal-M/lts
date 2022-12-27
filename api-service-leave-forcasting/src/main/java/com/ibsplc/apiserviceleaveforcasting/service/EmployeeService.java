@@ -18,14 +18,9 @@ import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
  *
  * @author jithin123
  */
-public interface EmployeeService {
-
-	public BasicResponseView importEmployees(MultipartFile file) throws CSVExceptionWrapper, Exception;
-
-	public Page searchEmployee(int page, int limit);
-
-	public ResponseEntity<Page<Employee>> getEmployeesWithLeaves(String org, String team, int page, int limit);
-
-	public ResponseEntity<List<Employee>> updateLeaves(List<Employee> employees);
-
+public interface EmployeeService {    
+    public BasicResponseView importEmployees(MultipartFile file) throws CSVExceptionWrapper, Exception;
+    public Page searchEmployee(int page, int limit, String employeeName, String organization, String team, String location);
+    public ResponseEntity<Page<Employee>> getEmployeesWithLeaves(String org, String team, int page, int limit);
+    public ResponseEntity<List<Employee>> updateLeaves(List<Employee> employees);
 }
