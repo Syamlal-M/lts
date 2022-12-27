@@ -5,8 +5,12 @@
 package com.ibsplc.apiserviceleaveforcasting.entity;
 
 import java.io.Serializable;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -29,6 +33,14 @@ public class Employee implements Serializable{
     private String team;
     private String billability;
     private String remarks;
+    
+	@OneToMany(mappedBy = "employee", cascade = CascadeType.ALL)
+	private Set<LeaveForecast> leaveForecasts;
+
+	public void addLeaveForecast(LeaveForecast leaveForecast) {
+		leaveForecasts.add(leaveForecast);
+		leaveForecast.setEmployee(this);
+	}
     
     public Employee(){}
     
@@ -229,6 +241,18 @@ public class Employee implements Serializable{
         this.employeeName = employeeName;
     }
     
-    
+	/**
+	 * @return the leaveForecasts
+	 */
+	public Set<LeaveForecast> getLeaveForecasts() {
+		return leaveForecasts;
+	}
+
+	/**
+	 * @param leaveForecasts the leaveForecasts to set
+	 */
+	public void setLeaveForecasts(Set<LeaveForecast> leaveForecasts) {
+		this.leaveForecasts = leaveForecasts;
+	}
     
 }

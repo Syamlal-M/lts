@@ -50,4 +50,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, String>{
             + " OR(:searchCriteria = 11 AND e.city LIKE :location)")
     public Page<EmployeeView> searchEmployee(int searchCriteria, String name, String org, String team, String location, Pageable pageAble);
     
+	public Page<Employee> findByOrgAndTeam(String org, String team, Pageable paging);
+
+	public Page<Employee> findByOrg(String org, Pageable paging);
+
+	public Page<Employee> findByTeam(String team, Pageable paging);
+    
 }
