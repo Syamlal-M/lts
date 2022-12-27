@@ -27,4 +27,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, String>{
     countQuery="SELECT COUNT(*) FROM Employee")
     public Page<EmployeeView> searchEmployee(Pageable pageAble);
     
+	public Page<Employee> findByOrgAndTeam(String org, String team, Pageable paging);
+
+	public Page<Employee> findByOrg(String org, Pageable paging);
+
+	public Page<Employee> findByTeam(String team, Pageable paging);
+    
 }

@@ -4,31 +4,39 @@
  */
 package com.ibsplc.apiserviceleaveforcasting.service.impl;
 
-import com.ibsplc.apiserviceleaveforcasting.custom.exception.CSVExceptionWrapper;
-import com.ibsplc.apiserviceleaveforcasting.custom.exception.CsvImportException;
-import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
-import com.ibsplc.apiserviceleaveforcasting.entity.Employee;
-import com.ibsplc.apiserviceleaveforcasting.form.EmployeeForm;
-import com.ibsplc.apiserviceleaveforcasting.service.EmployeeService;
-import com.ibsplc.apiserviceleaveforcasting.util.ValidationUtil;
-import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.io.FilenameUtils;
-import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeRepository;
-import com.ibsplc.apiserviceleaveforcasting.view.EmployeeView;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.CSVExceptionWrapper;
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.CsvImportException;
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
+import com.ibsplc.apiserviceleaveforcasting.entity.Employee;
+import com.ibsplc.apiserviceleaveforcasting.entity.LeaveForecast;
+import com.ibsplc.apiserviceleaveforcasting.form.EmployeeForm;
+import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeRepository;
+import com.ibsplc.apiserviceleaveforcasting.service.EmployeeService;
+import com.ibsplc.apiserviceleaveforcasting.util.ValidationUtil;
+import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
+import com.ibsplc.apiserviceleaveforcasting.view.EmployeeView;
 
 /**
  *
@@ -178,4 +186,33 @@ public class EmployeeServiceImpl implements EmployeeService{
         Page<EmployeeView> employeeViewPage = employeeRepository.searchEmployee(pageable);
         return employeeViewPage;
     }
+    
+	@Override
+	public ResponseEntity<Page<Employee>> getEmployeesWithLeaves(String org, String team, int page, int limit) {
+		Page<Employee> employees = new PageImpl<>(new ArrayList<>());
+		Pageable paging = PageRequest.of(page, limit);
+		if (!org.isBlank() && !team.isBlank()) {
+			employees = employeeRepository.findByOrgAndTeam(org, team, paging);
+		} else if (!org.isBlank()) {
+			employees = employeeRepository.findByOrg(org, paging);
+		} else if (!team.isBlank()) {
+			employees = employeeRepository.findByTeam(team, paging);
+		} else
+			employees = employeeRepository.findAll(paging);
+		return new ResponseEntity<>(employees, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<List<Employee>> updateLeaves(List<Employee> employees) {
+		List<Employee> _employees = new ArrayList<>();
+		for (Employee employee : employees) {
+			Optional<Employee> employeeOptional = employeeRepository.findById(employee.getEmpId());
+			if (employeeOptional.isEmpty())
+				return ResponseEntity.notFound().build();
+			Set<LeaveForecast> leaves = employee.getLeaveForecasts();
+			leaves.forEach(leave -> employee.addLeaveForecast(leave));
+			_employees.add(employee);
+		}
+		return new ResponseEntity<>(employeeRepository.saveAll(_employees), HttpStatus.OK);
+	}
 }
