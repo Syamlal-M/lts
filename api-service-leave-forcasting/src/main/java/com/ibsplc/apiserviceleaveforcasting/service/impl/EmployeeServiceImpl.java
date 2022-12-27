@@ -278,4 +278,9 @@ public class EmployeeServiceImpl implements EmployeeService{
 		}
 		return new ResponseEntity<>(employeeRepository.saveAll(_employees), HttpStatus.OK);
 	}
+
+    @Override
+    public List<String> getUniqueTeamsOfEmployee() {
+        return employeeRepository.findUniqueTeams();
+    }
 }

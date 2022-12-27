@@ -23,4 +23,5 @@ public interface EmployeeService {
     public Page searchEmployee(int page, int limit, String employeeName, String organization, String team, String location);
     public ResponseEntity<Page<Employee>> getEmployeesWithLeaves(String org, String team, int page, int limit);
     public ResponseEntity<List<Employee>> updateLeaves(List<Employee> employees);
+    public List<String> getUniqueTeamsOfEmployee();
 }

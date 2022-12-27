@@ -58,4 +58,9 @@ public class EmployeeController {
     public ResponseEntity<List<Employee>> updateLeaves(@RequestBody List<Employee> employees) {
         return employeeService.updateLeaves(employees);
     }
+    
+    @GetMapping("teams")
+    public List<String> getUniqueTeamsOfEmployee(){
+        return employeeService.getUniqueTeamsOfEmployee();
+    }
 }

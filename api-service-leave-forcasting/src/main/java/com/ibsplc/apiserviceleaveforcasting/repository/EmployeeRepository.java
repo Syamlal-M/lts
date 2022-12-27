@@ -55,5 +55,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, String>{
 	public Page<Employee> findByOrg(String org, Pageable paging);
 
 	public Page<Employee> findByTeam(String team, Pageable paging);
+        
+        @Query("SELECT DISTINCT e.team FROM Employee e")
+        public List<String> findUniqueTeams();
     
 }
