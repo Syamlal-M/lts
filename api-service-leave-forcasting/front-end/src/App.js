@@ -8,49 +8,28 @@ import EmplolyeeSummary from './components/EmployeeSummary';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {Layout, LoginLayout} from './components/Layout';
 import SignIn from './components/SignIn';
+import { AuthProvider } from './components/auth';
+import Settings from './components/settings';
 
 function App() {
-
-  const [dummy, setDummy] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-
-  useEffect(() => {
-    setLoading(true);
-
-    fetch('api/helloWorld')
-      .then(response => 
-        {
-          response.text().then( data =>{
-            console.log(data);
-        setDummy(data);
-        setLoading(false);
-          })
-
-        })
-     
-  }, []);
-
-
   return (
+    <AuthProvider>
     <BrowserRouter>
       <Routes>
         {<Route path='/' element={<LoginLayout/>}>
           <Route index element={<SignIn />} />
           <Route path="login" element={<SignIn />} />
-
-
         </Route> }
-        <Route path="/lms" element={<Layout />}>
-          <Route index element={<Home />} />
+        <Route path="/" element={<Layout />}>
+          <Route path="home" element={<Home />} />
           <Route path="leave-forecast" element={<LeaveForecast />} />
-
-          <Route path="reports" element={<Report />} />
-          <Route path="*" element={<EmplolyeeSummary />} />
-
+          <Route path="report" element={<Report />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="*" element={<SignIn />} />
         </Route>
       </Routes>
     </BrowserRouter>
+    </AuthProvider>
   );
 }
 
