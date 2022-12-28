@@ -1,5 +1,7 @@
+import SignIn from "./SignIn"
+
 const Report = () => {
-    return <h1>Report</h1>;
+    <SignIn />
   };
   
   export default Report;

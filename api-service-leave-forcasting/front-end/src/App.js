@@ -6,7 +6,8 @@ import LeaveForecast from './components/LeaveForecast';
 import Report from './components/Report';
 import EmplolyeeSummary from './components/EmployeeSummary';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from './components/Layout';
+import {Layout, LoginLayout} from './components/Layout';
+import SignIn from './components/SignIn';
 
 function App() {
 
@@ -34,11 +35,17 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Layout />}>
+        {<Route path='/' element={<LoginLayout/>}>
+          <Route index element={<SignIn />} />
+          <Route path="login" element={<SignIn />} />
+
+
+        </Route> }
+        <Route path="/lms" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="leave-forecast" element={<LeaveForecast />} />
           <Route path="report" element={<Report />} />
-          <Route path="*" element={<EmplolyeeSummary />} />
+          <Route path="*" element={<SignIn />} />
         </Route>
       </Routes>
     </BrowserRouter>
