@@ -4,31 +4,39 @@
  */
 package com.ibsplc.apiserviceleaveforcasting.service.impl;
 
-import com.ibsplc.apiserviceleaveforcasting.custom.exception.CSVExceptionWrapper;
-import com.ibsplc.apiserviceleaveforcasting.custom.exception.CsvImportException;
-import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
-import com.ibsplc.apiserviceleaveforcasting.entity.Employee;
-import com.ibsplc.apiserviceleaveforcasting.form.EmployeeForm;
-import com.ibsplc.apiserviceleaveforcasting.service.EmployeeService;
-import com.ibsplc.apiserviceleaveforcasting.util.ValidationUtil;
-import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.io.FilenameUtils;
-import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeRepository;
-import com.ibsplc.apiserviceleaveforcasting.view.EmployeeView;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.CSVExceptionWrapper;
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.CsvImportException;
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
+import com.ibsplc.apiserviceleaveforcasting.entity.Employee;
+import com.ibsplc.apiserviceleaveforcasting.entity.LeaveForecast;
+import com.ibsplc.apiserviceleaveforcasting.form.EmployeeForm;
+import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeRepository;
+import com.ibsplc.apiserviceleaveforcasting.service.EmployeeService;
+import com.ibsplc.apiserviceleaveforcasting.util.ValidationUtil;
+import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
+import com.ibsplc.apiserviceleaveforcasting.view.EmployeeView;
 
 /**
  *
@@ -173,9 +181,106 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public Page searchEmployee(int page, int limit) {
+    public Page searchEmployee(int page, int limit, String employeeName, String organization, String team, String location) {
         Pageable pageable = PageRequest.of(page, limit);
-        Page<EmployeeView> employeeViewPage = employeeRepository.searchEmployee(pageable);
+        employeeName = createSearchKey(employeeName);
+        organization = createSearchKey(organization);
+        team = createSearchKey(team);
+        location = createSearchKey(location);
+        int searchCriteriaMode = findCriteriaSearchMode(employeeName, organization, team, location);
+        if(searchCriteriaMode == -1){
+            return Page.empty();
+        }
+        
+        Page<EmployeeView> employeeViewPage = employeeRepository.searchEmployee(searchCriteriaMode, employeeName, organization, team, location, pageable);
         return employeeViewPage;
+    }
+    
+    //this is done to prevent sql injection attack
+    private String createSearchKey(String str) {
+        if (null == str) {
+            return null;
+        }
+        return "%" + str.replaceAll("([%_])", "\\\\$1") + "%";
+    }
+    
+    
+    private int findCriteriaSearchMode(String employeeName, String organization, String team, String location){
+        String n = (employeeName != null && employeeName.trim() != null) ? employeeName : null;
+        String o = (organization != null && organization.trim() != null) ? organization : null;
+        String t = (team != null && team.trim() != null) ? team : null;
+        String l = (location != null && location.trim() != null) ? location : null;
+        
+        if(n ==null && o==null && t==null && l==null){
+            return 0;
+        }
+        if(n != null && o != null && t != null && l != null){
+            return 1;
+        }
+        if((n!=null && o!=null) &&(t==null && l==null)){
+            return 2;
+        }
+        if((n!=null && t!=null) && (o==null && l==null)){
+            return 3;
+        }
+        if((n!=null && l!=null) && (o==null && t==null)){
+            return 4;
+        }
+        if((o!=null && t!=null) && (n==null && l==null)){
+            return 5;
+        }
+        if((o!=null && l!=null) && (n==null && t==null)){
+            return 6;
+        }
+        if((t!=null && l!=null) && (n==null && o==null)){
+            return 7;
+        }
+        if(n!=null &&(o==null && t==null && l==null)){
+            return 8;
+        }
+        if(o!=null &&(n==null && t==null && l==null)){
+            return 9;
+        }
+        if(t!=null &&(n==null && o==null && l==null)){
+            return 10;
+        }
+        if(l!=null &&(n==null && o==null && t==null)){
+            return 11;
+        }
+       return -1;
+    }
+
+	@Override
+	public ResponseEntity<Page<Employee>> getEmployeesWithLeaves(String org, String team, int page, int limit) {
+		Page<Employee> employees = new PageImpl<>(new ArrayList<>());
+		Pageable paging = PageRequest.of(page, limit);
+		if (!org.isBlank() && !team.isBlank()) {
+			employees = employeeRepository.findByOrgAndTeam(org, team, paging);
+		} else if (!org.isBlank()) {
+			employees = employeeRepository.findByOrg(org, paging);
+		} else if (!team.isBlank()) {
+			employees = employeeRepository.findByTeam(team, paging);
+		} else
+			employees = employeeRepository.findAll(paging);
+		return new ResponseEntity<>(employees, HttpStatus.OK);
+	}
+
+	@Override
+	public ResponseEntity<List<Employee>> updateLeaves(List<Employee> employees) {
+		List<Employee> _employees = new ArrayList<>();
+		for (Employee employee : employees) {
+			Optional<Employee> employeeOptional = employeeRepository.findById(employee.getEmpId());
+			if (employeeOptional.isEmpty())
+				return ResponseEntity.notFound().build();
+			Set<LeaveForecast> leaves = employee.getLeaveForecasts();
+			leaves.forEach(leave -> employee.addLeaveForecast(leave));
+			_employees.add(employee);
+		}
+		return new ResponseEntity<>(employeeRepository.saveAll(_employees), HttpStatus.OK);
+	}
+
+    @Override
+    public List<String> getUniqueTeamsOfEmployee() {
+        return employeeRepository.findUniqueTeams();
     }
 }
