@@ -44,8 +44,10 @@ function App() {
         <Route path="/lms" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="leave-forecast" element={<LeaveForecast />} />
-          <Route path="report" element={<Report />} />
-          <Route path="*" element={<SignIn />} />
+
+          <Route path="reports" element={<Report />} />
+          <Route path="*" element={<EmplolyeeSummary />} />
+
         </Route>
       </Routes>
     </BrowserRouter>
