@@ -34,7 +34,7 @@ public class LeaveForecast {
 	private String leaveDateList;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "employee_id", nullable = false)
+	@JoinColumn(name = "emp_id", nullable = false)
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonIgnore
 	private Employee employee;

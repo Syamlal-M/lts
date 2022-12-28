@@ -1,7 +1,7 @@
 import { Outlet, Link } from "react-router-dom";
 import Navbar from "./navbar";
 
-const Layout = () => {
+export const Layout = () => {
   return (
     <>
       
@@ -12,4 +12,12 @@ const Layout = () => {
   )
 };
 
+
+export const LoginLayout = () => {
+    return (
+      <>
+        <Outlet />
+      </>
+    )
+  };
 export default Layout;

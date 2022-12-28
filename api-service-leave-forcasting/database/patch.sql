@@ -20,8 +20,8 @@ CREATE TABLE leaveforecast.employee (
 --------------------27/12/2022-----------------
 CREATE TABLE leaveforecast.leave_submission (
      ls_id SERIAL PRIMARY KEY,
-     employee_id  varchar(255) NOT NULL,
+     emp_id  varchar(255) NOT NULL,
      month_year varchar(10) NOT NULL,
      leave_date_list varchar(500) NOT NULL,
-     FOREIGN KEY (employee_id) REFERENCES leaveforecast.employee(emp_id)
+     FOREIGN KEY (emp_id) REFERENCES leaveforecast.employee(emp_id)
 );

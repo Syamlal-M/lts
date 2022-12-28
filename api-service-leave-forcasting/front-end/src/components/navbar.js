@@ -40,16 +40,16 @@ function Navbar() {
           Leave Forecast System
         </Typography>
           <div className={classes.navlinks}>
-            <Link to="/" className={classes.link}>
+            <Link to="/lms" className={classes.link}>
               Home
             </Link>
-            <Link to="/leave-forecast" className={classes.link}>
+            <Link to="/lms/leave-forecast" className={classes.link}>
               Planning
             </Link>
-            <Link to="/reports" className={classes.link}>
+            <Link to="/lms/report" className={classes.link}>
               Reports
             </Link>
-            <Link to="/employee-summary" className={classes.link}>
+            <Link to="/lms/employee-summary" className={classes.link}>
               Summary
             </Link>
           </div>
