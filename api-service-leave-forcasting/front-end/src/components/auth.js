@@ -1,35 +1,31 @@
-import { createContext, useContext, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { useLocalStorage } from "./useLocalStorage";
-const AuthContext = createContext();
+import { createContext, useContext, useMemo, useState } from "react";
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useLocalStorage("user", null);
-  const navigate = useNavigate();
+const AuthContext = createContext(null);
 
-  // call this function when you want to authenticate the user
-  const login = async (data) => {
-    setUser(data);
-    navigate("/profile");
-  };
+export const AuthProvider = ({children}) =>{
 
-  // call this function to sign out logged in user
-  const logout = () => {
-    setUser(null);
-    navigate("/", { replace: true });
-  };
+    const [user, setUser] = useState(null);
+    const login = (userDetails) =>{
+        console.log(JSON.stringify(userDetails))
+        console.log("hi " + userDetails.empId)
+        //Backend communication - login
+        setUser(userDetails);
+    }
 
-  const value = useMemo(
-    () => ({
-      user,
-      login,
-      logout
-    }),
-    [user]
-  );
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+    const logout = () =>{
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+        setUser(null);
+    }
+
+    return (
+    <AuthContext.Provider value={{user, login, logout}}>
+            {children}
+        </AuthContext.Provider>
+    )}
+
+    export const useAuth = () =>{
+        return useContext(AuthContext);
+    }
+
+
+
