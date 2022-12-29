@@ -103,8 +103,8 @@ const Report = () => {
 
   return(<div>
     <Box component="form" sx={{'& > :not(style)': { m: 1, width: '25ch' }, '& .MuiTextField-root': { m: 1, width: '25ch' },}} noValidate autoComplete="off">
-    <TextField style={{left: "25%", top: "50px"}} id="org" label="Org" variant="outlined" />
-    <TextField style={{left: "25%", top: "50px"}} id="team" label="Team" variant="outlined" />
+    <TextField style={{left: "25%", top: "50px"}} id="org" label="Org" variant="outlined" disabled/>
+    <TextField style={{left: "25%", top: "50px"}} id="team" label="Team" variant="outlined" disabled/>
     <TextField style={{left: "25%", top: "50px"}} id="month" select label="Select" value={month} helperText="Please select Month" onChange={onMonthChange}>
           {months.map((option) => (
             <MenuItem key={option.value} value={option.value}>
