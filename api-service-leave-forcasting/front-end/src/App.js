@@ -23,7 +23,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route path="home" element={<Home />} />
           <Route path="leave-forecast" element={<LeaveForecast />} />
-          <Route path="report" element={<Report />} />
+          <Route path="reports" element={<Report />} />
           <Route path="settings" element={<Settings />} />
           <Route path="*" element={<SignIn />} />
         </Route>
