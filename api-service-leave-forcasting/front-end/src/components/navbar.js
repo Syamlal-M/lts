@@ -79,7 +79,7 @@ function Navbar() {
                     <Link to="/leave-forecast" className={classes.link}>
                         Planning
                     </Link>
-                    <Link to="/report" className={classes.link}>
+                    <Link to="/reports" className={classes.link}>
                         Reports
                     </Link>
                     {auth.user.role === "admin" &&
