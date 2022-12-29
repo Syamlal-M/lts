@@ -11,9 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.management.relation.Role;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
+
+/**
+ * User Management service
+ */
 @Service
 public class UserManagementServiceImpl implements UserManagementService {
 
@@ -25,7 +31,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     RolesRepository rolesRepository;
 
     /**
-     *
+     * User registration
      */
     @Override
     public Boolean registerUser(String employeeID, String username, String password, String emailId) {
@@ -58,6 +64,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     /**
+     * Assign role
      * @param userId
      * @param roleName
      */
@@ -94,6 +101,7 @@ public class UserManagementServiceImpl implements UserManagementService {
     }
 
     /**
+     * Login service
      * @param userId
      * @param password
      * @return
@@ -124,5 +132,35 @@ public class UserManagementServiceImpl implements UserManagementService {
         return loginResponseView;
 
 
+    }
+
+    /**
+     * Fetches all users
+     */
+    @Override
+    public List<LoginResponseView> fetchAllUsers() {
+
+        List<User> allUserList = userRepository.findAll();
+        List<LoginResponseView> usersList = new ArrayList<>();
+        if (allUserList != null && allUserList.size() > 0) {
+            List<Roles> rolesList = rolesRepository.findAll();
+            if(rolesList != null && rolesList.size() > 0) {
+                for (User user : allUserList) {
+                    LoginResponseView userResponse = new LoginResponseView();
+                    userResponse.setUserId(user.getUserId());
+                    userResponse.setUsername(user.getUsername());
+                    HashMap<Integer, String> roleData = new HashMap<>();
+                    Optional<Roles> roleName = rolesList.stream().filter(r -> r.getRoleId() == user.getRoleId()).findFirst();
+                    roleData.put(user.getRoleId(), roleName.get().getRoleName());
+                    userResponse.setRole(roleData);
+                    usersList.add(userResponse);
+                }
+            }
+            else throw new CustomException("No roles found to fetch from database");
+        }
+        else throw new CustomException("No users found to fetch from database");
+
+
+        return usersList;
     }
 }

@@ -3,12 +3,13 @@ package com.ibsplc.apiserviceleaveforcasting.repository;
 import com.ibsplc.apiserviceleaveforcasting.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Repository
 public interface UserRepository extends JpaRepository<User, String> {
-
-
+    
     public Optional<User> findByUserIdAndPassword(String userId, String password);
 
     public Optional<User> findByUsername(String username);

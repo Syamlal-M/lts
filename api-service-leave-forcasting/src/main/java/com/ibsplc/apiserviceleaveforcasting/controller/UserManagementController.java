@@ -2,9 +2,13 @@ package com.ibsplc.apiserviceleaveforcasting.controller;
 
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
 import com.ibsplc.apiserviceleaveforcasting.service.UserManagementService;
+import com.ibsplc.apiserviceleaveforcasting.view.EmployeeSummaryView;
 import com.ibsplc.apiserviceleaveforcasting.view.LoginResponseView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/user")
@@ -25,7 +29,7 @@ public class UserManagementController {
             throw new CustomException(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("Exception Occurred :: " + e.getMessage());
+            throw new Exception("Exception Occurred in registerUser:: " + e.getMessage());
         }
     }
 
@@ -39,7 +43,7 @@ public class UserManagementController {
             throw new CustomException(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("Exception Occurred :: " + e.getMessage());
+            throw new Exception("Exception Occurred in assignRole :: " + e.getMessage());
         }
 
     }
@@ -53,9 +57,21 @@ public class UserManagementController {
             throw new CustomException(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("Exception Occurred :: " + e.getMessage());
+            throw new Exception("Exception Occurred in login :: " + e.getMessage());
         }
     }
 
+    @GetMapping("fetch-all-users-with-roles")
+    public List<LoginResponseView> fetchAllUsers() throws Exception {
+        try {
+            return userManagementService.fetchAllUsers();
+        } catch (CustomException e) {
+            e.printStackTrace();
+            throw new CustomException(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Exception Occurred in fetchAllUsers:: " + e.getMessage());
+        }
+    }
 
 }

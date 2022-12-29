@@ -3,6 +3,7 @@ package com.ibsplc.apiserviceleaveforcasting.service;
 import com.ibsplc.apiserviceleaveforcasting.entity.User;
 import com.ibsplc.apiserviceleaveforcasting.view.LoginResponseView;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserManagementService {
@@ -12,4 +13,6 @@ public interface UserManagementService {
     public Boolean assignRole(String userId, String role);
 
     public LoginResponseView login(String userId, String password);
+
+    public List<LoginResponseView> fetchAllUsers();
 }
