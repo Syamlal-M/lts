@@ -84,7 +84,7 @@ function Navbar() {
                     </Link>
                     {auth.user.role === "admin" &&
                         <Link to="/settings" className={classes.link}>
-                            Settings
+                            Roles
                         </Link>
                     }
 
