@@ -108,7 +108,7 @@ const months = [
       headerName: 'Week 1',
       description: 'Week 1',
       renderCell: (params) =>  (
-        <Tooltip title={params.row.week_1 != null ? params.row.week_1_leaveDates : 0} >
+        <Tooltip title={params.row.week_1 != null ? <span style={{ whiteSpace: 'pre-line' }}>{params.row.week_1_leaveDates}</span> : 0} >
           <span className="table-cell-trucate">{params.row.week_1 != null ? params.row.week_1 : 0}</span>
           </Tooltip>
        ),
@@ -118,7 +118,7 @@ const months = [
       headerName: 'Week 2',
       description: 'Week 2',
       renderCell: (params) =>  (
-        <Tooltip title={params.row.week_2 != null ? params.row.week_2_leaveDates : 0} >
+        <Tooltip title={params.row.week_2 != null ? <span style={{ whiteSpace: 'pre-line' }}>{params.row.week_2_leaveDates}</span> : 0} >
           <span className="table-cell-trucate">{params.row.week_2 != null ? params.row.week_2 : 0}</span>
           </Tooltip>
        ),
@@ -128,7 +128,7 @@ const months = [
       headerName: 'Week 3',
       description: 'Week 3',
       renderCell: (params) =>  (
-        <Tooltip title={params.row.week_3 != null ? params.row.week_3_leaveDates : 0} >
+        <Tooltip title={params.row.week_3 != null ? <span style={{ whiteSpace: 'pre-line' }}>{params.row.week_3_leaveDates}</span> : 0} >
           <span className="table-cell-trucate">{params.row.week_3 != null ? params.row.week_3 : 0}</span>
           </Tooltip>
        ),
@@ -138,7 +138,7 @@ const months = [
       headerName: 'Week 4',
       description: 'Week 4',
       renderCell: (params) =>  (
-        <Tooltip title={params.row.week_4 != null ? params.row.week_4_leaveDates : 0} >
+        <Tooltip title={params.row.week_4 != null ? <span style={{ whiteSpace: 'pre-line' }}>{params.row.week_4_leaveDates}</span> : 0} >
           <span className="table-cell-trucate">{params.row.week_4 != null ? params.row.week_4 : 0}</span>
           </Tooltip>
        ),
@@ -148,11 +148,27 @@ const months = [
       headerName: 'Week 5',
       description: 'Week 5',
       renderCell: (params) =>  (
-        <Tooltip title={params.row.week_5 != null ? params.row.week_5_leaveDates : 0} >
+        
+        <Tooltip title={params.row.week_5 != null ? <span style={{ whiteSpace: 'pre-line' }}>{params.row.week_5_leaveDates}</span> : 0} >
           <span className="table-cell-trucate">{params.row.week_5 != null ? params.row.week_5 : 0}</span>
           </Tooltip>
        ),
     },
   ];
 
-  export {months, leaveForecastReportColumns};
+  const roles = [
+    {
+      value: '1',
+      label: 'admin',
+    },
+    {
+      value: '2',
+      label: 'self',
+    },
+    {
+      value: '3',
+      label: 'team',
+    }
+  ]
+
+  export {months, leaveForecastReportColumns, roles};

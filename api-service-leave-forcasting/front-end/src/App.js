@@ -9,7 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {Layout, LoginLayout} from './components/Layout';
 import SignIn from './components/SignIn';
 import { AuthProvider } from './components/auth';
-import Settings from './components/settings';
+import Settings from './components/Settings';
 
 function App() {
   return (

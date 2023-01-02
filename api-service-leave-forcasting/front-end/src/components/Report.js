@@ -67,19 +67,19 @@ const Report = () => {
         for(var key in leaveSummaryResponse){
           if(key == 1){
             leaveForcastObject['week_1'] = leaveSummaryResponse[key].length;
-            leaveForcastObject['week_1_leaveDates'] = leaveSummaryResponse[key].toString();
+            leaveForcastObject['week_1_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
           }else if(key == 2){
             leaveForcastObject['week_2'] = leaveSummaryResponse[key].length;
-            leaveForcastObject['week_2_leaveDates'] = leaveSummaryResponse[key].toString();
+            leaveForcastObject['week_2_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
           }else if(key == 3){
             leaveForcastObject['week_3'] = leaveSummaryResponse[key].length;
-            leaveForcastObject['week_3_leaveDates'] = leaveSummaryResponse[key].toString();
+            leaveForcastObject['week_3_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
           }else if(key == 4){
             leaveForcastObject['week_4'] = leaveSummaryResponse[key].length;
-            leaveForcastObject['week_4_leaveDates'] = leaveSummaryResponse[key].toString();
+            leaveForcastObject['week_4_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
           }else if(key == 5){
             leaveForcastObject['week_5'] = leaveSummaryResponse[key].length;
-            leaveForcastObject['week_5_leaveDates'] =leaveSummaryResponse[key].toString();
+            leaveForcastObject['week_5_leaveDates'] =leaveSummaryResponse[key].toString().replace(",", "\n");
           }else{
             leaveForcastObject['week_1'] = 0;
             leaveForcastObject['week_2'] = 0;
