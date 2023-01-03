@@ -37,11 +37,18 @@ public class ReportServiceImpl implements ReportService {
      * @return
      */
     @Override
-    public List<EmployeeSummaryView> fetchLeaveSummary(String duration) throws CustomException {
-
-
+    public List<EmployeeSummaryView> fetchLeaveSummary(String duration, String organization, String team) throws CustomException {
+        
+        organization = createSearchKey(organization);
+        team = createSearchKey(team);
+        
         List<EmployeeSummaryView> employeeSummaryResponseList = new ArrayList<>();
-        List<LeaveForecast> leaveSummaryResponseList = leaveForecastRepository.findByMonthYear(duration);
+        
+        int searchCriteriaMode = findCriteriaSearchMode(organization, team, duration);
+        if(searchCriteriaMode == -1){
+            return employeeSummaryResponseList;
+        }
+        List<LeaveForecast> leaveSummaryResponseList = leaveForecastRepository.searchLeaveForcast(duration, searchCriteriaMode, organization, team);
         if (leaveSummaryResponseList != null && leaveSummaryResponseList.size() == 0) {
             throw new CustomException("Leave records for the range is not available");
         }
@@ -87,7 +94,41 @@ public class ReportServiceImpl implements ReportService {
 
             return employeeSummaryResponseList;
 
-
+    }
+    
+     //this is done to prevent sql injection attack
+    private String createSearchKey(String str) {
+        if (null == str) {
+            return null;
+        }
+        return "%" + str.replaceAll("([%_])", "\\\\$1") + "%";
+    }
+    
+    private int findCriteriaSearchMode(String organization, String team, String duration){
+        String o = (organization != null && organization.trim() != null) ? organization : null;
+        String t = (team != null && team.trim() != null) ? team : null;
+        String d = (duration != null && duration.trim() != null) ? duration : null;
+        
+        if(o==null && t==null && d==null){
+            return 0;
+        }else if(o!=null && t!=null && d==null){
+            return 1;
+        }else if(o!=null && d!=null && t==null){
+            return 2;
+        }else if(t!=null && d!=null && o==null){
+            return 3;
+        }else if(o!=null && t!=null && d!=null){
+            return 4;
+        }else if(o !=null && t==null && d==null){
+            return 5;
+        }else if(t!=null && o==null && d==null){
+            return 6;
+        }else if(d!=null && o==null && t==null){
+            return 7;
+        }
+        else{
+            return -1;
+        }
     }
 
     /**

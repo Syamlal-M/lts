@@ -10,7 +10,7 @@ import java.util.List;
 public interface ReportService {
 
 
-    public List<EmployeeSummaryView> fetchLeaveSummary(String duration) throws CustomException;
+    public List<EmployeeSummaryView> fetchLeaveSummary(String duration, String organization, String team) throws CustomException;
 
     public HashMap<Integer, List<String>> segregateLeavesBasedOnWeek(String dateList);
 }

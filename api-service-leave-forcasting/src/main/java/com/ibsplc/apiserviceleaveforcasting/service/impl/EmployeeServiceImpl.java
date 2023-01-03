@@ -181,7 +181,7 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public Page searchEmployee(int page, int limit, String employeeName, String organization, String team, String location) {
+    public Page searchEmployee(int page, int limit, String employeeName, String organization, String team, String location, int roleId) {
         Pageable pageable = PageRequest.of(page, limit);
         employeeName = createSearchKey(employeeName);
         organization = createSearchKey(organization);
@@ -193,6 +193,11 @@ public class EmployeeServiceImpl implements EmployeeService{
         }
         
         Page<EmployeeView> employeeViewPage = employeeRepository.searchEmployee(searchCriteriaMode, employeeName, organization, team, location, pageable);
+        employeeViewPage.stream().forEach(ev -> {
+            if(roleId != 1){
+                ev.setBillRate(null);
+            }
+        });
         return employeeViewPage;
     }
     

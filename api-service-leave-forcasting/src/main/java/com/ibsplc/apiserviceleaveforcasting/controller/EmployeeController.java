@@ -21,6 +21,7 @@ import com.ibsplc.apiserviceleaveforcasting.custom.exception.CSVExceptionWrapper
 import com.ibsplc.apiserviceleaveforcasting.entity.Employee;
 import com.ibsplc.apiserviceleaveforcasting.service.EmployeeService;
 import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 /**
  *
@@ -43,8 +44,9 @@ public class EmployeeController {
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String org,
             @RequestParam(required = false) String team,
-            @RequestParam(required = false) String location){ 
-        return employeeService.searchEmployee(page, limit, name, org, team, location);
+            @RequestParam(required = false) String location,
+            @RequestHeader(value = "role", required = true) int roleId){
+        return employeeService.searchEmployee(page, limit, name, org, team, location, roleId);
     }
 
 	   @GetMapping("leaves")
