@@ -1,6 +1,8 @@
 import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-
+import Cookies from 'universal-cookie';
+const cookies = new Cookies();
+cookies.set('role', '1');  //temporarily hard coding....once the authentication flow get completed, this code will be removed
 
 const columns = [
     { field: 'empId', headerName: 'ID' },
@@ -11,7 +13,7 @@ const columns = [
     { field: 'org', headerName: 'Org' },
     { field: 'team', headerName: 'team' },
     { field: 'hm', headerName: 'HM' },
-    { field: 'billRate', headerName: 'Bill Rate' },
+    { field: 'billRate', headerName: 'Bill Rate', hide: cookies.get('role')==1 ? false : true},
     { field: 'country', headerName: 'Country' },
     { field: 'city', headerName: 'City' },
     { field: 'sow', headerName: 'SOW' },
@@ -26,6 +28,9 @@ const EmplolyeeSummary = () => {
     React.useEffect(() => {
         var requestOptions = {
             method: 'GET',
+            headers: {
+                'role': cookies.get('role')
+            },
         };
 
         fetch("api/employee/search?limit=1500", requestOptions)
