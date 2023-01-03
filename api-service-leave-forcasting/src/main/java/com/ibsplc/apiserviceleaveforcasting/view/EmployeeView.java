@@ -4,12 +4,14 @@
  */
 package com.ibsplc.apiserviceleaveforcasting.view;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ibsplc.apiserviceleaveforcasting.entity.Employee;
 
 /**
  *
  * @author jithin123
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EmployeeView {
     
     private String empId;
