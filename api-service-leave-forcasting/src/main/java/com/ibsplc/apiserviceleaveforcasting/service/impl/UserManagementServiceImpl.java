@@ -6,6 +6,7 @@ import com.ibsplc.apiserviceleaveforcasting.entity.User;
 import com.ibsplc.apiserviceleaveforcasting.repository.RolesRepository;
 import com.ibsplc.apiserviceleaveforcasting.repository.UserRepository;
 import com.ibsplc.apiserviceleaveforcasting.service.UserManagementService;
+import com.ibsplc.apiserviceleaveforcasting.util.GenerateEncryptionPassword;
 import com.ibsplc.apiserviceleaveforcasting.view.LoginResponseView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,9 @@ public class UserManagementServiceImpl implements UserManagementService {
             throw new CustomException("Provided e-mail id is associated with another user account, please provide alternate e-mail id");
         }
         user.setUserId(employeeID);
-        user.setPassword(password);
+        GenerateEncryptionPassword generateEncryptionPassword = new GenerateEncryptionPassword();
+        String encryptedPassword = generateEncryptionPassword.generateEncryptedPassword(password);
+        user.setPassword(encryptedPassword);
         user.setUsername(username);
         user.setEmailId(emailId);
         //role.setRoleId(2);
@@ -114,7 +117,9 @@ public class UserManagementServiceImpl implements UserManagementService {
         if (!checkUserExist.isPresent()) {
             throw new CustomException("User id does not exist in database. Please register first and proceed to login");
         }
-        Optional<User> user = userRepository.findByUserIdAndPassword(userId, password);
+        GenerateEncryptionPassword generateEncryptionPassword = new GenerateEncryptionPassword();
+        String encryptedPassword =  generateEncryptionPassword.generateEncryptedPassword(password);
+        Optional<User> user = userRepository.findByUserIdAndPassword(userId, encryptedPassword);
         if (user.isPresent()) {
             loginResponseView.setUserId(userId);
             loginResponseView.setUsername(user.get().getUsername());
