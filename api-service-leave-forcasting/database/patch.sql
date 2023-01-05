@@ -25,3 +25,21 @@ CREATE TABLE leaveforecast.leave_submission (
      leave_date_list varchar(500) NOT NULL,
      FOREIGN KEY (emp_id) REFERENCES leaveforecast.employee(emp_id)
 );
+
+
+CREATE TABLE `roles` (
+  `role_id` int NOT NULL,
+  `role_name` varchar(100) NOT NULL,
+  PRIMARY KEY (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `user` (
+  `user_id` varchar(45) NOT NULL,
+  `username` varchar(45) NOT NULL,
+  `password` varchar(45) NOT NULL,
+  `role_id` int NOT NULL,
+  `email_Id` varchar(60) NOT NULL,
+  PRIMARY KEY (`user_id`),
+  KEY `role_id_idx` (`role_id`),
+  CONSTRAINT `role_id` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
