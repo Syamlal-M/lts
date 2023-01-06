@@ -2,7 +2,7 @@ import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import Cookies from 'universal-cookie';
 const cookies = new Cookies();
-cookies.set('role', '1');  //temporarily hard coding....once the authentication flow get completed, this code will be removed
+// cookies.set('role', '1');  //temporarily hard coding....once the authentication flow get completed, this code will be removed
 
 const columns = [
     { field: 'empId', headerName: 'ID' },

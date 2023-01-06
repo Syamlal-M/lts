@@ -13,6 +13,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import IconButton from '@mui/material/IconButton';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import Cookies from 'universal-cookie';
+const cookies = new Cookies();
 
 
 const useStyles = makeStyles((theme) => ({
@@ -82,7 +84,8 @@ function Navbar() {
                     <Link to="/reports" className={classes.link}>
                         Reports
                     </Link>
-                    {auth.user.role === "admin" &&
+                    {console.log("auth.user.roleId .. "+auth.user.role)}
+                    {auth.user.role == 1 &&
                         <Link to="/settings" className={classes.link}>
                             Roles
                         </Link>

@@ -42,13 +42,77 @@ export default function SignIn() {
         const user = {
             "empId": data.get("empId"),
             "password": data.get("password"),
-            "role": "admin",
-            "name": data.get("empId")
+            // "role": "admin",
+            // "name": data.get("empId")
         };
 
         auth.login(user);
 
         navigate("/home")
+
+        // const data = new FormData(event.currentTarget);
+
+        
+        event.preventDefault();
+        // const user = {
+        //     "empId": data.get("empId"),
+        //     "password": data.get("password"),
+        //     "role": "admin",
+        //     "name": data.get("empId")
+        // };
+
+        var formData = new FormData();
+    
+     
+        formData.append('userid', data.get("empId"));
+        formData.append('password', data.get("password"));
+
+        
+        // var requestOptions = {
+        //     method: 'GET'
+
+        // };
+
+        // fetch("api/user/login?userid="+data.get("empId")+"&password="+data.get("password"), requestOptions)
+        //     .then(async result => {
+        //      const names=   await result.json();
+            
+        //      console.log(names.role);
+            
+        //         if(!result.ok)
+        //         {
+                    
+                    
+        //             console.log("Login Failure");
+        //             alert("Login failure");
+        //         }
+        //         else
+        //         {
+        //             console.log("username "+names.username); 
+        //             console.log("userid" +names.userId );
+        //             var roleName = null;
+        //             Object.values(names.role).map((type) => {
+        //                 console.log("type "+type)
+        //                  roleName = type;
+                       
+        //             })
+        //             const user = {
+        //                 "empId": names.userId,
+        //                 "password": "",
+        //                 "role": roleName,
+        //                 "name": names.username
+        //             };
+        //             console.log("Login success")
+        //             setUser(user);
+        //             navigate("/home");  
+        //             //alert("Login success");
+        //             // localStorage.setItem("authenticated", true);
+                    
+                    
+                    
+        //         }
+        //     })
+        //     .catch(error => console.log(error));
 
 
     };
@@ -110,7 +174,7 @@ export default function SignIn() {
                                 </Link>
                             </Grid>
                             <Grid item>
-                                <Link href="#" variant="body2">
+                                <Link href="/register" variant="body2">
                                     {"Don't have an account? Sign Up"}
                                 </Link>
                             </Grid>
