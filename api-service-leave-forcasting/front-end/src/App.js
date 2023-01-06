@@ -10,6 +10,7 @@ import {Layout, LoginLayout} from './components/Layout';
 import SignIn from './components/SignIn';
 import { AuthProvider } from './components/auth';
 import Settings from './components/Settings';
+import SignUp from './components/SignUp';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         {<Route path='/' element={<LoginLayout/>}>
           <Route index element={<SignIn />} />
           <Route path="login" element={<SignIn />} />
+          <Route path="register" element={<SignUp />} />
         </Route> }
         <Route path="/" element={<Layout />}>
           <Route path="home" element={<Home />} />
