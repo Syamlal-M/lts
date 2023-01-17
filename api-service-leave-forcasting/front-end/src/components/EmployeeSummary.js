@@ -13,7 +13,7 @@ const columns = [
     { field: 'org', headerName: 'Org' },
     { field: 'team', headerName: 'team' },
     { field: 'hm', headerName: 'HM' },
-    { field: 'billRate', headerName: 'Bill Rate', hide: cookies.get('role')==1 ? false : true},
+    { field: 'billRate', headerName: 'Bill Rate', hide: cookies.get('role') == 1 ? false : true },
     { field: 'country', headerName: 'Country' },
     { field: 'city', headerName: 'City' },
     { field: 'sow', headerName: 'SOW' },

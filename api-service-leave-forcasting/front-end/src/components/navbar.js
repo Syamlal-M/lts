@@ -84,8 +84,8 @@ function Navbar() {
                     <Link to="/reports" className={classes.link}>
                         Reports
                     </Link>
-                    {console.log("auth.user.roleId .. "+auth.user.role)}
-                    {auth.user.role == 1 &&
+                    {console.log("auth.user.roleId .. " + auth.user)}
+                    {auth.user && auth.user.role == 1 &&
                         <Link to="/settings" className={classes.link}>
                             Roles
                         </Link>
@@ -101,7 +101,7 @@ function Navbar() {
                             onClick={handleMenu}
                             color="inherit"
                         >
-                            <AccountCircle />{auth.user.name}
+                            <AccountCircle />{auth.user ? auth.user.name : null}
                         </IconButton>
                         <Menu
                             id="menu-appbar"

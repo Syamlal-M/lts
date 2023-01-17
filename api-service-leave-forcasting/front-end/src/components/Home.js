@@ -115,7 +115,7 @@ export default function Home() {
                     </div>
                 </AccordionDetails>
             </Accordion>
-            <Accordion expanded='true'>
+            <Accordion expanded={true}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel2a-content"

@@ -5,13 +5,13 @@ const cookies = new Cookies();
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({children}) =>{
+export const AuthProvider = ({ children }) => {
     // const navigate = useNavigate();
-    const [userData, setUserData] =useState(null);
+
     const [user, setUser] = useState(null);
-    
-    
-    const login = (userDetails) =>{
+    const [loggedIn, setLoggedIn] = useState(false);
+
+    const login = async (userDetails) => {
         console.log(JSON.stringify(userDetails))
         console.log("hi " + userDetails.empId)
         //Backend communication - login
@@ -20,28 +20,23 @@ export const AuthProvider = ({children}) =>{
 
         };
         var roleName = null;
-        fetch("api/user/login?userid="+userDetails.empId+"&password="+userDetails.password, requestOptions)
-            .then(async result => {
-             const names=   await result.json();
-            
-             console.log(names.role);
-            
-                if(!result.ok)
-                {
-                    
-                    
+        await fetch("api/user/login?userid=" + userDetails.empId + "&password=" + userDetails.password, requestOptions)
+            .then(async (result) => {
+                const names = await result.json();
+
+                console.log(names.role);
+
+                if (!result.ok) {
                     console.log("Login Failure");
                     alert("Login failure");
                 }
-                else
-                {
-                    console.log("username "+names.username); 
-                    console.log("userid" +names.userId );
-                    
+                else {
+
+                    setLoggedIn(true);
                     Object.keys(names.role).map((type) => {
-                        console.log("type id .. "+type)
-                         roleName = type;
-                       
+                        console.log("type id .. " + type)
+                        roleName = type;
+
                     })
                     const userdeta = {
                         "empId": names.userId,
@@ -50,43 +45,30 @@ export const AuthProvider = ({children}) =>{
                         "name": names.username
                     };
                     cookies.set('role', userdeta.role);
-                    
-                    setUserData(userdeta);
-                    // console.log("setUserData :: "+userData.role);
-                    console.log("Login success")
-                //    console.log("user .. "+user.empId + " role .. "+user.role);
-                    // setUser(user);
-                    // navigate("/home");  
-                    //alert("Login success");
-                    // localStorage.setItem("authenticated", true);
-                    
-                    
-                    
+                    setUser(userdeta);
+
                 }
             })
             .catch(error => console.log(error));
-            // console.log("user .. "+user.empId + " role .. "+user.role);
-            // setUser(userdeta);
-            // console.log("userData  "+userData.empId);
-            // console.log("userdata :: "+setUser.role);
-        setUser(userData);
+
     }
 
-    const logout = () =>{
+    const logout = () => {
 
         setUser(null);
     }
 
+
     return (
-    <AuthContext.Provider value={{user, login, logout}}>
+        <AuthContext.Provider value={{ user, login, logout }}>
             {children}
         </AuthContext.Provider>
-    )}
+    )
+}
 
-    export const useAuth = () =>{
-        console.log("useAuth"); 
-        return useContext(AuthContext);
-    }
+export const useAuth = () => {
+    return useContext(AuthContext);
+}
 
 
 

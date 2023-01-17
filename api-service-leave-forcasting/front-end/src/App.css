@@ -63,3 +63,9 @@
   color: white !important;
   
 }
+.rmdp-wrapper .rmdp-shadow {
+  z-index: 9999 !important;
+}
+.MuiDataGrid-main{
+  z-index: 10 !important;
+}

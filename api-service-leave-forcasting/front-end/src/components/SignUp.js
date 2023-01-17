@@ -12,7 +12,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import {useRef} from 'react';
+import { useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import isEmail from 'validator/lib/isEmail';
@@ -37,70 +37,70 @@ const theme1 = createTheme();
 export default function SignUp() {
 
 
-const empIdRef = useRef(null);
-const empNmRef = useRef(null);
-const emailIdRef = useRef(null);
-const passwordRef = useRef(null);
-const navigate = useNavigate();
+    const empIdRef = useRef(null);
+    const empNmRef = useRef(null);
+    const emailIdRef = useRef(null);
+    const passwordRef = useRef(null);
+    const navigate = useNavigate();
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        if(isEmail(data.get("emailid")) && data.get("password").length >= 7) {
-  
-        var formData = new FormData();
-    
-     
-          formData.append('userid', data.get("empId"));
-          formData.append('username', data.get("empNm"));
-          formData.append('password', data.get("password"));
-          formData.append('emailId', data.get("emailid"));
-          
-       
+        if (isEmail(data.get("emailid")) && data.get("password").length >= 7) {
 
-        var requestOptions = {
-            method: 'POST',
-            body: formData
-        };
+            var formData = new FormData();
 
 
-        
+            formData.append('userid', data.get("empId"));
+            formData.append('username', data.get("empNm"));
+            formData.append('password', data.get("password"));
+            formData.append('emailId', data.get("emailid"));
 
-        fetch("api/user/register-user", requestOptions)
-            .then( async result => {
-                
-               console.log(result.ok);
-               let response = await result.json()
-          if (!result.ok) {
-            console.log("Login failure");
-            toast.error(response.message, {hideProgressBar: true, theme: "colored", autoClose: 2000, position: "bottom-center"});
-            
-           
-          } else {
-            toast.success('User registered, please proceed to login page', {hideProgressBar: true, theme: "colored", autoClose: 500, position: "bottom-center"});
-            event.target.reset();
-            //navigate("/home");
-        
-           
-          }
-                
-                
-            })
-           
-            .catch(error => console.log('error', error));
+
+
+            var requestOptions = {
+                method: 'POST',
+                body: formData
+            };
+
+
+
+
+            fetch("api/user/register-user", requestOptions)
+                .then(async result => {
+
+                    console.log(result.ok);
+                    let response = await result.json()
+                    if (!result.ok) {
+                        console.log("Login failure");
+                        toast.error(response.message, { hideProgressBar: true, theme: "colored", autoClose: 2000, position: "bottom-center" });
+
+
+                    } else {
+                        toast.success('User registered, please proceed to login page', { hideProgressBar: true, theme: "colored", autoClose: 500, position: "bottom-center" });
+                        event.target.reset();
+                        //navigate("/home");
+
+
+                    }
+
+
+                })
+
+                .catch(error => console.log('error', error));
 
         } else {
-            if(!isEmail(data.get("emailid")))
-            
-            toast.error('Please provide a valid email', {hideProgressBar: true, theme: "colored", autoClose: 2000, position: "bottom-center"});
+            if (!isEmail(data.get("emailid")))
 
-            if(data.get("password").length < 7)
-            
-            toast.error('Password must have atleast 7 characters', {hideProgressBar: true, theme: "colored", autoClose: 2000, position: "bottom-center"});
-    
-         }
+                toast.error('Please provide a valid email', { hideProgressBar: true, theme: "colored", autoClose: 2000, position: "bottom-center" });
+
+            if (data.get("password").length < 7)
+
+                toast.error('Password must have atleast 7 characters', { hideProgressBar: true, theme: "colored", autoClose: 2000, position: "bottom-center" });
+
+        }
 
 
-        
+
 
     };
 
@@ -142,7 +142,7 @@ const navigate = useNavigate();
                             name="empNm"
                             autoFocus
                             ref={empNmRef}
-                        />                       
+                        />
                         <TextField
                             margin="normal"
                             required
@@ -150,8 +150,8 @@ const navigate = useNavigate();
                             name="emailid"
                             label="E-mail Id"
                             id="emailid"
-                            ref={emailIdRef}                           
-                        />                        
+                            ref={emailIdRef}
+                        />
                         <TextField
                             margin="normal"
                             required
@@ -161,7 +161,7 @@ const navigate = useNavigate();
                             type="password"
                             id="password"
                             autoComplete="current-password"
-                            ref={passwordRef}                           
+                            ref={passwordRef}
                         />
                         <Button
                             type="submit"
@@ -172,14 +172,14 @@ const navigate = useNavigate();
                             Register
                         </Button>
                         <Grid container>
-                            
+
                             <Grid item>
                                 <Link href="/login" variant="body2">
                                     {"Login Page"}
                                 </Link>
                             </Grid>
                             <div>
-                             <ToastContainer />
+                                <ToastContainer />
                             </div>
                         </Grid>
                     </Box>
