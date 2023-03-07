@@ -1,10 +1,10 @@
 # Resource Revenue management System 
 
-This project is to track resource availabity and there by forecasting revenue based on the data entered. 
-This project has UI(React) and rest services (Java)
+This project is to track resource availability and there by forecasting revenue based on the data entered. 
+This project has UI(React) and Api in (Java)
 
 ## Sandbox setup
-### Rest servicee
+### Api Setup
 - Install Java 11 and confgure Maven
 - Generate jar using `mvn clean install`
 - Execute this command`mvn spring-boot:run` to run service in localhost:8080
