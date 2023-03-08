@@ -88,20 +88,13 @@ public class EmployeeServiceImpl implements EmployeeService{
         font.setBold(true);
         font.setFontHeight(16);
         style.setFont(font);
-        createCell(row, 0, "SNo", style, sheet);
-        createCell(row, 1, "EmpId", style, sheet);
-        createCell(row, 2, "EmployeeName", style, sheet);
-        createCell(row, 3, "ExpediaFgName", style, sheet);
-        createCell(row, 4, "VendorName", style, sheet);
-        createCell(row, 5, "JobTitle", style, sheet);
-        createCell(row, 6, "HM", style, sheet);
-        createCell(row, 7, "BillRate", style, sheet);
-        createCell(row, 8, "City", style, sheet);
-        createCell(row, 9, "SOW", style, sheet);
-        createCell(row, 10, "Org", style, sheet);
-        createCell(row, 11, "Team", style, sheet);
-        createCell(row, 12, "Billability", style, sheet);
-        createCell(row, 13, "Remarks", style, sheet);
+        List<String> headers = List.of("SNo", "EmpId", "EmployeeName", "ExpediaFgName", "VendorName", "JobTitle",
+                "HM", "BillRate", "Country", "City", "SOW", "Org", "Team", "Billability", "Remarks");
+        int index = 0;
+        for(String header: headers) {
+            createCell(row, index, header, style, sheet);
+            index++;
+        }
     }
 
     private void createCell(Row row, int columnCount, Object value, CellStyle style, XSSFSheet sheet) {
