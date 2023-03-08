@@ -14,11 +14,14 @@ import com.ibsplc.apiserviceleaveforcasting.custom.exception.CSVExceptionWrapper
 import com.ibsplc.apiserviceleaveforcasting.entity.Employee;
 import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  *
  * @author jithin123
  */
 public interface EmployeeService {    
+    public void exportEmployees(int page, int limit, String employeeName, String organization, String team, String location, int roleId, HttpServletResponse response) throws Exception;
     public BasicResponseView importEmployees(MultipartFile file) throws CSVExceptionWrapper, Exception;
     public Page searchEmployee(int page, int limit, String employeeName, String organization, String team, String location, int roleId);
     public ResponseEntity<Page<Employee>> getEmployeesWithLeaves(String org, String team, int page, int limit);

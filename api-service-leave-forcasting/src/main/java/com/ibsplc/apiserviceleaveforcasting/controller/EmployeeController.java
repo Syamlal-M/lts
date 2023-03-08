@@ -23,6 +23,8 @@ import com.ibsplc.apiserviceleaveforcasting.service.EmployeeService;
 import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
 import org.springframework.web.bind.annotation.RequestHeader;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  *
  * @author jithin123
@@ -36,6 +38,19 @@ public class EmployeeController {
     @PutMapping("import")
     public BasicResponseView importEmployees(@RequestParam MultipartFile file) throws CSVExceptionWrapper, Exception{
         return employeeService.importEmployees(file);
+    }
+
+    @GetMapping("export")
+    public void exportEmployees(@RequestParam(required = false, defaultValue = "0") int page,
+                                             @RequestParam(required = false, defaultValue = "50") int limit,
+                                             @RequestParam(required = false) String name,
+                                             @RequestParam(required = false) String org,
+                                             @RequestParam(required = false) String team,
+                                             @RequestParam(required = false) String location,
+                                             @RequestParam(value = "role", required = true) int roleId,
+                                             HttpServletResponse response) throws Exception {
+        response.setContentType("application/octet-stream");
+        employeeService.exportEmployees(page, limit, name, org, team, location, roleId, response);
     }
     
     @GetMapping("search")

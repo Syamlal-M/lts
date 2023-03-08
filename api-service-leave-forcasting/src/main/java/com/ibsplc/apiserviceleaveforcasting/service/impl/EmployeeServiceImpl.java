@@ -13,6 +13,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -38,6 +42,9 @@ import com.ibsplc.apiserviceleaveforcasting.util.ValidationUtil;
 import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
 import com.ibsplc.apiserviceleaveforcasting.view.EmployeeView;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  *
  * @author jithin123
@@ -47,8 +54,92 @@ public class EmployeeServiceImpl implements EmployeeService{
     
     @Autowired
     private EmployeeRepository employeeRepository;
-    
-   
+
+
+    @Override
+    public void exportEmployees(int page, int limit, String employeeName, String organization, String team, String location, int roleId, HttpServletResponse response) throws Exception {
+        Page<EmployeeView> employeeViewPage = searchEmployee(0, Integer.MAX_VALUE, employeeName, organization, team, location, roleId);
+        List<EmployeeView> employeeViews = employeeViewPage.get().collect(Collectors.toList());
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=report.xlsx";
+        response.setHeader(headerKey, headerValue);
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        try {
+            workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet("report");
+            writeHeaderLine(workbook, sheet);
+            writeDataLines(workbook, sheet, employeeViews);
+            ServletOutputStream outputStream = response.getOutputStream();
+            workbook.write(outputStream);
+        } catch (CSVExceptionWrapper csvException) {
+            throw csvException;
+        } catch (Exception ex) {
+            throw ex;
+        } finally {
+            workbook.close();
+            response.getOutputStream().close();
+        }
+    }
+
+    private void writeHeaderLine(XSSFWorkbook workbook, XSSFSheet sheet) {
+        Row row = sheet.createRow(0);
+        CellStyle style = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(true);
+        font.setFontHeight(16);
+        style.setFont(font);
+        List<String> headers = List.of("SNo", "EmpId", "EmployeeName", "ExpediaFgName", "VendorName", "JobTitle",
+                "HM", "BillRate", "Country", "City", "SOW", "Org", "Team", "Billability", "Remarks");
+        int index = 0;
+        for(String header: headers) {
+            createCell(row, index, header, style, sheet);
+            index++;
+        }
+    }
+
+    private void createCell(Row row, int columnCount, Object value, CellStyle style, XSSFSheet sheet) {
+        sheet.autoSizeColumn(columnCount);
+        Cell cell = row.createCell(columnCount);
+        if (value instanceof Integer) {
+            cell.setCellValue((Integer) value);
+        } else if (value instanceof Boolean) {
+            cell.setCellValue((Boolean) value);
+        }else {
+            cell.setCellValue((String) value);
+        }
+        cell.setCellStyle(style);
+    }
+
+    private void writeDataLines(XSSFWorkbook workbook, XSSFSheet sheet, List<EmployeeView> employeeViews) {
+        int rowCount = 1;
+
+        CellStyle style = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setFontHeight(14);
+        style.setFont(font);
+
+        for (EmployeeView employeeView : employeeViews) {
+            Row row = sheet.createRow(rowCount++);
+            int columnCount = 0;
+            createCell(row, columnCount++, rowCount - 1, style, sheet);
+            createCell(row, columnCount++, employeeView.getEmpId(), style, sheet);
+            createCell(row, columnCount++, employeeView.getEmployeeName(), style, sheet);
+            createCell(row, columnCount++, employeeView.getExpediaFgName(), style, sheet);
+            createCell(row, columnCount++, employeeView.getVendorName(), style, sheet);
+            createCell(row, columnCount++, employeeView.getJobTitle(), style, sheet);
+            createCell(row, columnCount++, employeeView.getHm(), style, sheet);
+            createCell(row, columnCount++, employeeView.getBillRate(), style, sheet);
+            createCell(row, columnCount++, employeeView.getCountry(), style, sheet);
+            createCell(row, columnCount++, employeeView.getCity(), style, sheet);
+            createCell(row, columnCount++, employeeView.getSow(), style, sheet);
+            createCell(row, columnCount++, employeeView.getOrg(), style, sheet);
+            createCell(row, columnCount++, employeeView.getTeam(), style, sheet);
+            createCell(row, columnCount++, employeeView.getBillability(), style, sheet);
+            createCell(row, columnCount++, employeeView.getRemarks(), style, sheet);
+
+        }
+    }
+
     @Override
     public BasicResponseView importEmployees(MultipartFile file) throws CSVExceptionWrapper, Exception{
         if (file.getSize() > (10 * 1024 * 1024)) {
