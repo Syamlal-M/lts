@@ -57,10 +57,9 @@ public class UserManagementServiceImpl implements UserManagementService {
         user.setPassword(encryptedPassword);
         user.setUsername(username);
         user.setEmailId(emailId);
-        //role.setRoleId(2);
         user.setRoleId(2);
         User savedUser = userRepository.save(user);
-        Boolean status = savedUser.getUserId() != null ? true : false;
+        Boolean status = savedUser.getUserId() != null;
         return status;
 
 
@@ -77,12 +76,12 @@ public class UserManagementServiceImpl implements UserManagementService {
         User user = new User();
 //        Roles role = new Roles();
 
-        Optional<User> userDataFromDB = userRepository.findById(userId.trim().toLowerCase());
-        if (!userDataFromDB.isPresent()) {
+        Optional<User> userDataFromDB = userRepository.findById(userId.trim());
+        if (userDataFromDB.isEmpty()) {
             throw new CustomException("User details not found for given user id");
         }
-        Optional<Roles> roleDataFromDB = rolesRepository.findByRoleName(roleName.trim().toLowerCase());
-        if (!roleDataFromDB.isPresent()) {
+        Optional<Roles> roleDataFromDB = rolesRepository.findByRoleName(roleName.trim());
+        if (roleDataFromDB.isEmpty()) {
             throw new CustomException("Please provide valid role name");
         }
         if (userDataFromDB.get().getRoleId() == roleDataFromDB.get().getRoleId()) {
