@@ -1,30 +1,43 @@
-import {
-  ListItemButton,
-  ListItemText,
-} from "@mui/material";
-import {
-  AppbarContainer,
-  AppbarHeader,
-  MyList,
-} from "../../styles/appbar";
-import Actions from "./actions";
-import { useUIContext } from "../../context/ui";
+import { ListItemButton, ListItemText, ListItem } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { AppbarContainer, AppbarHeader, MyList } from '../../styles/appbar';
+import Actions from './actions';
+
+const menuItem = [
+	{
+		path: '/leave-forecast',
+		name: 'Planning',
+	},
+	{
+		path: '/home',
+		name: 'Home',
+	},
+	{
+		path: '/reports',
+		name: 'Reports',
+	},
+	{
+		path: '/settings',
+		name: 'Roles',
+	},
+];
 
 export default function AppbarDesktop({ matches }) {
-  const { setShowSearchBox } = useUIContext();
-
-  return (
-    <AppbarContainer>
-      <AppbarHeader variant="h4">Leave Forcast System</AppbarHeader>
-      <MyList type="row">
-        <ListItemText primary="Planning" />
-        <ListItemText primary="Home" />
-        <ListItemText primary="Reports" />
-        <ListItemText primary="Roles" />
-        <ListItemButton onClick={() => setShowSearchBox(true)}>
-        </ListItemButton>
-          </MyList>
-       <Actions matches={matches} />
-    </AppbarContainer>
-  );
+	return (
+		<AppbarContainer>
+			<AppbarHeader variant="h4">Leave Forcast System</AppbarHeader>
+			<MyList type="row">
+				{menuItem.map((item, index) => (
+					<Link to={item.path} key={index}>
+						<ListItem key={item.name} sx={{ display: 'flex' }}>
+							<ListItemButton>
+								<ListItemText primary={item.name} />
+							</ListItemButton>
+						</ListItem>
+					</Link>
+				))}
+			</MyList>
+			<Actions matches={matches} />
+		</AppbarContainer>
+	);
 }

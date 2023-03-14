@@ -1,10 +1,10 @@
-import { Button, Container, Stack } from '@mui/material';
 import { useEffect } from 'react';
-import { ThemeProvider } from '@mui/system';
-import theme from './styles/theme';
-import Appbar from './components/appBar';
-import AppDrawer from './components/drawer';
-import { UIProvider } from './context/ui';
+import Home from './components/home/home';
+import LeaveForecast from './components/leaveForcast/leaveForcast';
+import Report from './components/report/report';
+import Roles from './components/roles/roles';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './components/layout';
 
 function App() {
 	useEffect(() => {
@@ -12,22 +12,17 @@ function App() {
 	}, []);
 
 	return (
-		<ThemeProvider theme={theme}>
-			<Container
-				maxWidth="xl"
-				sx={{
-					background: '#fff',
-				}}
-			>
-				<Stack>
-					<UIProvider>
-						<Appbar />
-						<AppDrawer />
-						<Button variant="contained"> Test </Button>
-					</UIProvider>
-				</Stack>
-			</Container>
-		</ThemeProvider>
+		<>
+			<BrowserRouter>
+				<Routes>
+					<Route path="/" element={<Layout />} />
+					<Route path="home" element={<Home />} />
+					<Route path="leave-forecast" element={<LeaveForecast />} />
+					<Route path="reports" element={<Report />} />
+					<Route path="settings" element={<Roles />} />
+				</Routes>
+			</BrowserRouter>
+		</>
 	);
 }
 
