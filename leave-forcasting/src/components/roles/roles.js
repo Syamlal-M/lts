@@ -1,3 +1,5 @@
+import Layout from "../layout"
+
 export default function Roles() {
-    return <h1>Roles</h1>
+    return <Layout>Roles</Layout>
 }

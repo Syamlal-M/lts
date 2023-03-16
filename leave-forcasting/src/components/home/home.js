@@ -1,3 +1,5 @@
+import Layout from "../layout"
+
 export default function Home() {
-    return <h1>home</h1>
+    return <Layout>home</Layout>
 }
