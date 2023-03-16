@@ -1,3 +1,5 @@
+import Layout from "../layout";
+
 export default function Report() {
-    return <h1>Report</h1>
+    return <Layout>Report</Layout>
 }
