@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import Home from './components/home/home';
+import './App.css';
 import LeaveForecast from './components/leaveForcast/leaveForcast';
 import Report from './components/report/report';
 import Roles from './components/roles/roles';

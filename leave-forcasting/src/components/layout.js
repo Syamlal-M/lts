@@ -6,7 +6,7 @@ import Appbar from './appBar';
 import AppDrawer from './drawer';
 import { UIProvider } from '../context/ui';
 
-function Layout({children}) {
+function Layout({ children }) {
 	useEffect(() => {
 		document.title = 'Leave Tracker System';
 	}, []);
@@ -17,7 +17,7 @@ function Layout({children}) {
 				<Container
 					maxWidth="xl"
 					sx={{
-						background: '#fff',
+						background: '#fafafa',
 					}}
 				>
 					<Stack>
