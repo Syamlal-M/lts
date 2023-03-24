@@ -4,7 +4,7 @@ import COLOR from "styles/Color";
 const navLinkBaseStyle: SxProps = {
     textDecoration: 'none',
     width: "100%",
-    color: COLOR.grey,
+    color: COLOR.grey[600],
 
     '&:hover': {
         color: COLOR.primary.main,
