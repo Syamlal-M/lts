@@ -35,6 +35,7 @@ import Paper from "./Paper";
 import TextField from "./TextField";
 import Toolbar from "./Toolbar";
 import Typography from "./Typography";
+import DataGrid from "./DataGrid"
 
 export {
     Accordion,
@@ -52,6 +53,7 @@ export {
     CircularProgress,
     Container,
     CssBaseline,
+    DataGrid,
     Divider,
     Drawer,
     Grid,
