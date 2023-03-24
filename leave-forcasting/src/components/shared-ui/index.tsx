@@ -7,6 +7,8 @@ import AlertTitle from "./AlertTitle";
 import AppBar from "./AppBar";
 import Box from "./Box";
 import Button from "./Button";
+import ButtonBase from "./ButtonBase";
+import ButtonGroup from "./ButtonGroup";
 import Card from "./Card";
 import CircularProgress from "./CircularProgress";
 import Container from "./Container";
@@ -44,6 +46,8 @@ export {
     AppBar,
     Box,
     Button,
+    ButtonBase,
+    ButtonGroup,
     Card,
     CircularProgress,
     Container,
