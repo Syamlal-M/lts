@@ -4,8 +4,7 @@ const COLOR = {
         black: "#000"
     },
     primary: {
-        // main: "#00b4b4",
-        main: "#0C9486",
+        main: "#00b4b4",
         light: "#DDF5F0",
         dark: "#00b4b4cc",
         contrastText: "#fff"
@@ -13,7 +12,18 @@ const COLOR = {
     secondary: {
         main: "#004164"
     },
-    grey: "#777"
+    grey: {
+        "50": "#fafafa",
+        "100": "#f5f5f5",
+        "200": "#eeeeee",
+        "300": "#e0e0e0",
+        "400": "#bdbdbd",
+        "500": "#9e9e9e",
+        "600": "#757575",
+        "700": "#616161",
+        "800": "#424242",
+        "900": "#212121"
+    }
 };
 
 export default COLOR;

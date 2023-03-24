@@ -1,5 +1,4 @@
 import { SxProps } from "@mui/material";
-import COLOR from "styles/Color";
 
 const drawerWidth = 250;
 
