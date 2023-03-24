@@ -13,7 +13,7 @@ const LandingPage = () => {
             >
                 <Typography variant="h4">Welcome to Leave Tracker System</Typography>
                 <Typography variant="h4">This is the landing page</Typography>
-                <Link href="/dashboard">Go to Dashboard</Link>
+                <Link href="/leave-forecast">Go to Leave Planning Page</Link>
             </Box>
         </PageContainer>
     );

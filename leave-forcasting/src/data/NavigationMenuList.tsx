@@ -3,14 +3,14 @@ import { NavigationList } from "types/NavigationList";
 const NavigationMenuList: NavigationList = [
 	{
 		"id": 1,
-		"urlPath": "/dashboard",
+		"urlPath": "/leave-forecast",
 		"label": "Home",
 		"icon": "home"
 	},
 	{
 		"id": 2,
-		"urlPath": "/leave-forecast",
-		"label": "Planning",
+		"urlPath": "/dashboard",
+		"label": "Employee Info",
 		"icon": "date_range"
 	},
 	{
