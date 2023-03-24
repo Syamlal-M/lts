@@ -26,6 +26,9 @@ import ListItemIcon from "./ListItemIcon";
 import ListItemSecondaryAction from "./ListItemSecondaryAction";
 import ListItemText from "./ListItemText";
 import ListSubheader from "./ListSubheader";
+import Menu from "./Menu";
+import MenuItem from "./MenuItem";
+import MenuList from "./MenuList";
 import Paper from "./Paper";
 import TextField from "./TextField";
 import Toolbar from "./Toolbar";
@@ -60,6 +63,9 @@ export {
     ListItemSecondaryAction,
     ListItemText,
     ListSubheader,
+    Menu,
+    MenuItem,
+    MenuList,
     Paper,
     TextField,
     Toolbar,
