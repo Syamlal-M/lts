@@ -12,7 +12,7 @@ interface PageContainerProps {
 }
 
 PageContainer.defaultProps = {
-    title: "Leave Tracker System",
+    title: "Leave Tracker System"
 }
 
 function PageContainer(props: PageContainerProps) {
