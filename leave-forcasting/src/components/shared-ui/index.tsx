@@ -8,6 +8,7 @@ import AppBar from "./AppBar";
 import Box from "./Box";
 import Button from "./Button";
 import Card from "./Card";
+import CircularProgress from "./CircularProgress";
 import Container from "./Container";
 import CssBaseline from "./CssBaseline";
 import Divider from "./Divider";
@@ -15,6 +16,7 @@ import Drawer from "./Drawer";
 import Grid from "./Grid";
 import Icon from "./Icon";
 import IconButton from "./IconButton";
+import LinearProgress from "./LinearProgress";
 import Link from "./Link";
 import List from "./List";
 import ListItem from "./ListItem";
@@ -40,6 +42,7 @@ export {
     Box,
     Button,
     Card,
+    CircularProgress,
     Container,
     CssBaseline,
     Divider,
@@ -47,6 +50,7 @@ export {
     Grid,
     Icon,
     IconButton,
+    LinearProgress,
     Link,
     List,
     ListItem,
