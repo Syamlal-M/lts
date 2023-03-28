@@ -8,6 +8,6 @@ import org.springframework.web.servlet.view.RedirectView;
 public class HomeController {
     @RequestMapping("/")
     public RedirectView home() {
-        return new RedirectView("/swagger-ui");
+        return new RedirectView("/swagger-ui/index.html");
     }
 }
