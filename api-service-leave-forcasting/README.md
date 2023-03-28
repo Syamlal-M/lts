@@ -10,6 +10,7 @@ This project has UI(React) and Api in (Java)
 - Execute this command`mvn spring-boot:run` to run service in localhost:8080
 - Connect database with `http://localhost:8080/h2-console/` and provide database url `jdbc:h2:mem:testdb`, username `sa` and password as `password`
 - For development utilize default user with userId `A-100` and password `password` that is created on startup.
+- Access swagger from `http://localhost:8080/`
 
 ### UI
 - Navigate to `front-end` folder

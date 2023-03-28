@@ -1,4 +1,4 @@
-package com.ibsplc.apiserviceleaveforcasting.controller;
+package com.ibsplc.apiserviceleaveforcasting.controller.api;
 
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
 import com.ibsplc.apiserviceleaveforcasting.service.UserManagementService;
