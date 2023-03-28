@@ -17,6 +17,8 @@ import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.ibsplc.apiserviceleaveforcasting.repository.CustomerSpecifications.*;
+
 /**
  * Service for fetching data related to leave summary report
  */
@@ -48,7 +50,9 @@ public class ReportServiceImpl implements ReportService {
         if(searchCriteriaMode == -1){
             return employeeSummaryResponseList;
         }
-        List<LeaveForecast> leaveSummaryResponseList = leaveForecastRepository.searchLeaveForcast(duration, searchCriteriaMode, organization, team);
+        List<LeaveForecast> leaveSummaryResponseList = (List<LeaveForecast>) leaveForecastRepository.findAll(hasOrganisation(organization)
+                .or(hasMonthYear(duration)
+                        .or(hasTeam(team))));
         if (leaveSummaryResponseList != null && leaveSummaryResponseList.size() == 0) {
             throw new CustomException("Leave records for the range is not available");
         }
