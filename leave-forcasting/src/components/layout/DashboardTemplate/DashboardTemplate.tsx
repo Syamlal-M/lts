@@ -5,15 +5,16 @@ import { Box } from "components/shared-ui";
 import NavigationBar from "components/layout/NavigationBar";
 import LeftHandNavigation from "components/layout/LeftHandNavigation";
 import { useNavigationContext } from "context/NavigationContext";
+import { useThemeContext } from "context/ThemeContext";
 import {
-    mainContainerStyles, navigationDrawerStylesForMD,
+    mainContainerDarkModeStyles, mainContainerStyles, navigationDrawerStylesForMD,
     navigationDrawerStylesForXS, sideNavigationStyles
 } from "./DashboardTemplate.styles";
 
 function DashboardTemplate() {
-
     const theme = useTheme();
     const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
+    const { isDarkMode } = useThemeContext();
 
     const { isNavDrawerOpened, toggleNavDrawerOpened } = useNavigationContext();
     const navigationList = NavigationMenuList;
@@ -41,7 +42,11 @@ function DashboardTemplate() {
             </Box>
             <Box
                 component="main"
-                sx={mainContainerStyles}
+                sx={
+                    isDarkMode ?
+                        mainContainerDarkModeStyles :
+                        mainContainerStyles
+                }
             >
                 <Outlet />
             </Box>

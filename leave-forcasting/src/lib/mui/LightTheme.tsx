@@ -1,7 +1,7 @@
 import COLOR from 'styles/Color';
 import { createTheme } from '@mui/material/styles';
 
-const Theme = createTheme({
+const LightTheme = createTheme({
     typography: {
         htmlFontSize: 10,
         fontSize: 14
@@ -22,4 +22,4 @@ const Theme = createTheme({
     }
 });
 
-export default Theme;
+export default LightTheme;

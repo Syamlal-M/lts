@@ -1,11 +1,15 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { SxProps } from "@mui/material";
 import { NavigationList } from "types/NavigationList";
+import { useThemeContext } from "context/ThemeContext";
 import {
-    Box, Divider, Drawer, Icon, IconButton, Link, List, ListItem,
+    Box, Divider, Drawer, Icon, IconButton, List, ListItem,
     ListItemButton, ListItemIcon, ListItemText, Typography
 } from "components/shared-ui";
-import { navLinkActiveStyle, navLinkBaseStyle } from "./LeftHandNavigation.styles";
+import {
+    navContainerStyles, navLinkActiveStyle,
+    navLinkBaseStyle, navListStyles
+} from "./LeftHandNavigation.styles";
 
 type LeftHandNavigationVariants = "temporary" | "permanent" | "persistent";
 
@@ -19,6 +23,7 @@ interface LeftSideNavigationProps {
 
 const LeftHandNavigation = (props: LeftSideNavigationProps) => {
     const { open, onClose, navigationList, variant, drawerSx } = props;
+    const { isDarkMode, toggleTheme } = useThemeContext();
 
     const currentUrlpath = useLocation().pathname;
     const isNavLinkActive = (path: string) => {
@@ -38,8 +43,9 @@ const LeftHandNavigation = (props: LeftSideNavigationProps) => {
             variant={variant}
             sx={drawerSx}
         >
-            <Box component="nav">
+            <Box component="nav" sx={navContainerStyles}>
                 <List
+                    sx={navListStyles}
                     subheader={
                         <>
                             <ListItem sx={{ py: { sm: 1.5 } }}>
@@ -67,22 +73,39 @@ const LeftHandNavigation = (props: LeftSideNavigationProps) => {
                     {
                         navigationList.map(item =>
                             <ListItem key={item.id}>
-                                <Link
+                                <ListItemButton
                                     onClick={() => onNavLinkClick(item.urlPath)}
                                     sx={isNavLinkActive(item.urlPath) ?
                                         navLinkActiveStyle : navLinkBaseStyle
                                     }
                                 >
-                                    <ListItemButton>
-                                        <ListItemIcon>
-                                            <Icon>{item.icon}</Icon>
-                                        </ListItemIcon>
-                                        <ListItemText>{item.label}</ListItemText>
-                                    </ListItemButton>
-                                </Link>
+                                    <ListItemIcon>
+                                        <Icon>{item.icon}</Icon>
+                                    </ListItemIcon>
+                                    <ListItemText>{item.label}</ListItemText>
+                                </ListItemButton>
                             </ListItem>
                         )
                     }
+                </List>
+                <Divider />
+                <List>
+                    <ListItem>
+                        <ListItemButton
+                            sx={
+                                isDarkMode ?
+                                    { ...navLinkActiveStyle } :
+                                    { ...navLinkBaseStyle }
+                            }
+                            onClick={toggleTheme}
+                        >
+                            <ListItemIcon>
+                                <Icon>{isDarkMode ? 'brightness_high' : 'brightness_4'}</Icon>
+                                <Icon></Icon>
+                            </ListItemIcon>
+                            <ListItemText>Dark Mode</ListItemText>
+                        </ListItemButton>
+                    </ListItem>
                 </List>
             </Box>
         </Drawer >
