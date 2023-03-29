@@ -1,5 +1,5 @@
 import Api from "./_Api";
-import { getApiUrl } from "./_ApiEndpoints";
+import { getApiUrl } from "utils/AccessPointUtils";
 
 const AutheticationService = {
     login: (userDetails: Record<string, any> = {}) => {

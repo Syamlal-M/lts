@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { PageContainer } from "components/layout";
-import { Box, Button, TextField, Typography } from "components/shared-ui";
 import AutheticationService from "service/AutheticationService";
+import { Box, Button, TextField, Typography } from "components/shared-ui";
+import { resetToken, setToken } from "utils/CookieUtils";
+import { getRouteUrl } from "utils/AccessPointUtils";
 
 type UserDetails = {
     empId: string,
@@ -9,6 +12,7 @@ type UserDetails = {
 }
 
 const SignInPage = () => {
+    const navigate = useNavigate();
     const [userDetails, setUserDetails] = useState<UserDetails>({ empId: "", password: "" })
 
     const handleChange = (event: any) => {
@@ -24,10 +28,11 @@ const SignInPage = () => {
 
         AutheticationService.login(user)
             .then(response => {
-                console.log(response.data);
+                setToken(response)
+                navigate(getRouteUrl("planning"));
             })
             .catch(error => {
-                console.log(error);
+                resetToken();
             })
     };
 
