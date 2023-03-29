@@ -28,4 +28,19 @@ const navLinkActiveStyle: SxProps = {
     }
 }
 
-export { navLinkBaseStyle, navLinkActiveStyle }
+const navContainerStyles: SxProps = {
+    display: "flex",
+    flexDirection: "column",
+    height: "100%"
+}
+
+const navListStyles: SxProps = {
+    flexGrow: 1
+}
+
+export {
+    navLinkBaseStyle,
+    navLinkActiveStyle,
+    navContainerStyles,
+    navListStyles
+}

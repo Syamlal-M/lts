@@ -1,14 +1,13 @@
-import { ThemeProvider } from "@mui/material";
 import { NavigationProvider } from "context/NavigationContext";
+import { ThemeProvider } from "context/ThemeContext";
 import { CssBaseline } from "components/shared-ui";
 import PageRoutes from "pages/_Routes";
-import Theme from "lib/mui/Theme";
 import 'App.css';
 
 function App() {
   return (
     <NavigationProvider>
-      <ThemeProvider theme={Theme}>
+      <ThemeProvider>
         <CssBaseline />
         <PageRoutes />
       </ThemeProvider>
