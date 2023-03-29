@@ -1,5 +1,5 @@
 import { PageContainer } from "components/layout";
-import { Button, Card, Grid, MenuItem, TextField, CardContent } from "components/shared-ui";
+import { Button, Card, CardContent, Grid, MenuItem, TextField } from "components/shared-ui";
 import MonthList from "data/MonthList";
 
 const PlanningPage = () => {
@@ -34,7 +34,7 @@ const PlanningPage = () => {
                                 label="Month"
                                 onChange={() => { }}
                             >
-                                {MonthList.map((month) => (
+                                {MonthList.map((month: any) => (
                                     <MenuItem key={month.value} value={month.value}>
                                         {month.label}
                                     </MenuItem>

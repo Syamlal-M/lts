@@ -40,6 +40,7 @@ import MenuList from "./MenuList";
 import Paper from "./Paper";
 import TextField from "./TextField";
 import Toolbar from "./Toolbar";
+import Tooltip from "./Tooltip";
 import Typography from "./Typography";
 
 export {
@@ -86,4 +87,5 @@ export {
     TextField,
     Toolbar,
     Typography,
+    Tooltip
 };
