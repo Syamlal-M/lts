@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PageContainer } from "components/layout";
-import AutheticationService from "service/AutheticationService";
 import { Box, Button, TextField, Typography } from "components/shared-ui";
+import AuthenticationService from "service/AuthenticationService";
 import { resetToken, setToken } from "utils/CookieUtils";
 import { getRouteUrl } from "utils/AccessPointUtils";
 
@@ -26,7 +26,7 @@ const SignInPage = () => {
     const handleSignIn = () => {
         let user = { userId: userDetails?.empId, password: userDetails?.password };
 
-        AutheticationService.login(user)
+        AuthenticationService.login(user)
             .then(response => {
                 setToken(response)
                 navigate(getRouteUrl("planning"));
