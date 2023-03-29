@@ -47,8 +47,8 @@ public class StartupInit {
         Optional<Employee> employee = employeeRepository.findEmployeeById("A-100");
         LeaveForecast forecast = new LeaveForecast();
         forecast.setEmployee(employee.get());
-        forecast.setLeaveDateList("2023-02-02,2023-02-02");
-        forecast.setMonthYear("FEB_2023");
+        forecast.setLeaveDateList("2023-04-02,2023-04-02");
+        forecast.setMonthYear("APR_2023");
         leaveForecastRepository.save(forecast);
     }
 }

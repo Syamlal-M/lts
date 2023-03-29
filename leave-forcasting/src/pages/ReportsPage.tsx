@@ -1,13 +1,15 @@
 import { PageContainer } from "components/layout";
-import { Box, Button, DataGrid, Grid, MenuItem, TextField } from "components/shared-ui";
+import { CardContent } from "@mui/material";
+import { Box, Button, DataGrid, Grid, MenuItem, TextField, Card } from "components/shared-ui";
 import LeaveForecastReportColumnList from "data/LeaveForecastReportColumnList";
 import MonthList from "data/MonthList";
 import * as React from 'react';
+import ReportService from "service/ReportService";
 import { LeaveForecastInfo } from "types/LeaveForecastInfo";
 
 const ReportsPage = () => {
 
-  const [leaveForecast, setLeaveForecast] = React.useState([]);
+  const [leaveForecast, setLeaveForecast] = React.useState<any>();
   const [processedLeaveForcastData, setProcessedLeaveForcastData] = React.useState<Array<LeaveForecastInfo>>([]);
   const [month, setMonth] = React.useState(MonthList[new Date().getMonth() + 1].value);
   const [year] = React.useState(new Date().getFullYear());
@@ -18,7 +20,7 @@ const ReportsPage = () => {
 // eslint-disable-next-line react-hooks/exhaustive-deps
 const processDataForTableView = (): any => {
   let tempLeaveForcastData: Array<LeaveForecastInfo> = [];
-  if (leaveForecast != null && leaveForecast.length != 0) {
+  if (leaveForecast != null && leaveForecast.length !== 0) {
     for (const lf of leaveForecast) {
       let leaveForcastObject: LeaveForecastInfo = {
         employeeId: lf['employeeId'],
@@ -74,18 +76,13 @@ const processDataForTableView = (): any => {
 }
 
 const fetchLeaveForcastReport = () => {
-  var requestOptions = {
-    method: 'GET',
-  };
-  fetch("api/leave-summary?duration=" + monthYear + "&org=" + org + "&team=" + team)
-    .then(async result => {
-      if (!result.ok) {
-        setLeaveForecast([]);
-      } else {
-        setLeaveForecast(await result.json());
-      }
-    })
-    .catch(error => console.log(error))
+    ReportService.fetchForecast({ 'duration': monthYear, 'org': org, 'team': team})
+        .then(response => {
+          setLeaveForecast(response);
+          console.log(response);
+          processDataForTableView();
+        })
+        .catch(error => console.log(error))
 }
 
 const onMonthChange = (event: any) => {
@@ -109,52 +106,89 @@ const viewReport = () => {
 
 
 
-React.useEffect(() => {
-  fetchLeaveForcastReport();
-}, [])
+// React.useEffect(() => {
+//   fetchLeaveForcastReport();
+// }, [])
 
-React.useEffect(() => {
-  if (typeof leaveForecast.length !== 'undefined') {
-    processDataForTableView();
-
-  }
-}, [leaveForecast, processDataForTableView])
+// React.useEffect(() => {
+//   if (typeof leaveForecast?.length !== 'undefined') {
+//     processDataForTableView();
+//
+//   }
+// }, [leaveForecast, processDataForTableView])
 
 
   return (
 
     <PageContainer title="LTS | Reports">
-      <Grid container spacing={1} >
-        <Grid item>
-          <TextField id="org" label="Org" variant="outlined" onChange={handleOrgChange} />
-        </Grid>
-        <Grid item>
-        <TextField id="team" label="Team" variant="outlined" onChange={handleTeamChange} />
-        </Grid>
-        <Grid item>
-          <TextField id="month" select label="Select" value={month} helperText="Please select Month" onChange={onMonthChange}>
-            {MonthList.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-        <Grid item>
-          <Button id="view" variant="contained" onClick={viewReport}>View</Button>
-        </Grid>
-        <Grid item>
-          <Button id="download" variant="contained" disabled>Download</Button>
-        </Grid>
-      </Grid>
+        <Card>
+            <CardContent>
+                <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={12} sm={4} md={4} lg={2}>
+                        <TextField
+                            fullWidth
+                            id="organization"
+                            label="Organization"
+                            variant="outlined"
+                            onChange={handleOrgChange}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={4} md={4} lg={2}>
+                        <TextField
+                            fullWidth
+                            id="team"
+                            label="Team"
+                            variant="outlined"
+                            onChange={handleTeamChange}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={4} md={4} lg={2}>
+                        <TextField
+                            fullWidth
+                            id="month"
+                            select
+                            label="Month"
+                            onChange={onMonthChange}
+                        >
+                            {MonthList.map((month) => (
+                                <MenuItem key={month.value} value={month.value}>
+                                    {month.label}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </Grid>
+                    <Grid item xs={12} sm={4} md={4} lg={2}>
+                        <Button
+                            fullWidth
+                            id="view"
+                            variant="contained"
+                            onClick={viewReport}
+                        >
+                            View
+                        </Button>
+                    </Grid>
+                    <Grid item xs={12} sm={4} md={4} lg={2}>
+                        <Button
+                            fullWidth
+                            id="download"
+                            variant="contained"
+                            onClick={viewReport}
+                            disabled
+                        >
+                            Download
+                        </Button>
+                    </Grid>
+                </Grid>
+            </CardContent>
+        </Card>
 
-      <Box >
-        <DataGrid autoHeight autoPageSize
-          rows={processedLeaveForcastData}
-          columns={LeaveForecastReportColumnList}
-          getRowId={(row) => row.employeeId}
-        />
-      </Box>
+        <Box sx={{ maxWidth: "calc(100vw - 36px)" }}>
+            <DataGrid autoHeight autoPageSize
+              rows={processedLeaveForcastData}
+              columns={LeaveForecastReportColumnList}
+              getRowId={(row) => row.employeeId}
+            />
+        </Box>
     </PageContainer>)
 };
 
