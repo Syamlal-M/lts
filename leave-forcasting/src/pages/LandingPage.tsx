@@ -1,20 +1,19 @@
 import { PageContainer } from "components/layout";
-import { Box, Link, Typography } from "components/shared-ui";
+import { Box, Link, Typography, Card, CardContent, CardActions } from "components/shared-ui";
 
 const LandingPage = () => {
     return (
-        <PageContainer>
-            <Box sx={{
-                display: "grid",
-                placeContent: "center",
-                textAlign: "center",
-                minHeight: "100vh"
-            }}
-            >
-                <Typography variant="h4">Welcome to Leave Tracker System</Typography>
-                <Typography variant="h4">This is the landing page</Typography>
-                <Link href="/leave-forecast">Go to Leave Planning Page</Link>
-            </Box>
+        <PageContainer title="Revenue Management System">
+                <Typography variant="h4">Revenue Management System</Typography>
+                <hr/>
+                <Card sx={{ maxWidth: 250 }} variant='outlined'>
+                    <CardContent>
+                        <Typography variant="h4">Leave Tracker System</Typography>
+                    </CardContent>
+                    <CardActions>
+                        <Link href="/leave-forecast">Go to Leave Tracker System</Link>
+                    </CardActions>
+                </Card>
         </PageContainer>
     );
 };
