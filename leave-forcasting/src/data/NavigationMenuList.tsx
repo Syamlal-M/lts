@@ -9,7 +9,7 @@ const NavigationMenuList: NavigationList = [
 	},
 	{
 		"id": 2,
-		"urlPath": "/dashboard",
+		"urlPath": "/employee-info",
 		"label": "Employee Info",
 		"icon": "date_range"
 	},

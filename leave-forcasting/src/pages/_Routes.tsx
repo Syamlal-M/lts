@@ -6,18 +6,19 @@ import PlanningPage from './PlanningPage';
 import ReportsPage from './ReportsPage';
 import SettingsPage from './SettingsPage';
 import SignInPage from './SignInPage';
+import { getRouteUrl } from 'utils/AccessPointUtils';
 
 const PageRoutes = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/signin" element={<SignInPage />} />
+                <Route path={getRouteUrl("root")} element={<LandingPage />} />
+                <Route path={getRouteUrl("signin")} element={<SignInPage />} />
                 <Route element={<DashboardTemplate />}>
-                    <Route path="/dashboard" element={<DashboardPage />} />
-                    <Route path="/leave-forecast" element={<PlanningPage />} />
-                    <Route path="/reports" element={<ReportsPage />} />
-                    <Route path="/settings" element={<SettingsPage />} />
+                    <Route path={getRouteUrl("planning")} element={<PlanningPage />} />
+                    <Route path={getRouteUrl("employeeInfo")} element={<DashboardPage />} />
+                    <Route path={getRouteUrl("reports")} element={<ReportsPage />} />
+                    <Route path={getRouteUrl("settings")} element={<SettingsPage />} />
                 </Route>
             </Routes>
         </BrowserRouter>
