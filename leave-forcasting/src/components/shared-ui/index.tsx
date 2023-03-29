@@ -10,9 +10,15 @@ import Button from "./Button";
 import ButtonBase from "./ButtonBase";
 import ButtonGroup from "./ButtonGroup";
 import Card from "./Card";
+import CardActionArea from "./CardActionArea";
+import CardActions from "./CardActions";
+import CardContent from "./CardContent";
+import CardHeader from "./CardHeader";
+import CardMedia from "./CardMedia";
 import CircularProgress from "./CircularProgress";
 import Container from "./Container";
 import CssBaseline from "./CssBaseline";
+import DataGrid from "./DataGrid";
 import Divider from "./Divider";
 import Drawer from "./Drawer";
 import Grid from "./Grid";
@@ -35,7 +41,6 @@ import Paper from "./Paper";
 import TextField from "./TextField";
 import Toolbar from "./Toolbar";
 import Typography from "./Typography";
-import DataGrid from "./DataGrid"
 
 export {
     Accordion,
@@ -50,6 +55,11 @@ export {
     ButtonBase,
     ButtonGroup,
     Card,
+    CardActionArea,
+    CardActions,
+    CardContent,
+    CardHeader,
+    CardMedia,
     CircularProgress,
     Container,
     CssBaseline,
