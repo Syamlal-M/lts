@@ -15,3 +15,6 @@ This project has UI(React) and rest services (Java)
 - Navigate to `front-end` folder
 - Make sure you have installed latest Node versionn
 - `npm install` to intall dependencies and `npm start` to start React application and hit [http://localhost:3000](http://localhost:3000) in browser.
+
+
+[Back to home](./../README.md)
