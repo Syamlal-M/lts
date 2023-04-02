@@ -17,13 +17,13 @@ const NavigationMenuList: NavigationList = [
 		"id": 3,
 		"urlPath": "/reports",
 		"label": "Reports",
-		"icon": "assessment"
+		"icon": "assignment_icon"
 	},
 	{
 		"id": 4,
 		"urlPath": "/settings",
 		"label": "Roles",
-		"icon": "settings"
+		"icon": "account_circle"
 	}
 ];
 

@@ -4,9 +4,9 @@ const COLOR = {
         black: "#000"
     },
     primary: {
-        main: "#00b4b4",
+        main: "#0C9486",
         light: "#DDF5F0",
-        dark: "#00b4b4cc",
+        dark: "#0C9486cc",
         contrastText: "#fff"
     },
     secondary: {
