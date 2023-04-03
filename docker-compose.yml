@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  backend:
+    container_name: api-service-leave-forcasting
+    build:
+      context: ./api-service-leave-forcasting
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
+  frontend:
+    container_name: leave-forcasting
+    build:
+      context: './leave-forcasting'
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      REACT_APP_API_URL: "http://localhost:8080"
+    volumes:
+      - ./leave-forcasting:/app
+      - /app/node_modules
+    depends_on:
+      - backend
