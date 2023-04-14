@@ -1,10 +1,11 @@
 import Api from "./_Api";
 import { getApiUrl } from "utils/AccessPointUtils";
+import { IRequest, IResponse } from "types/api/employee/Login.types";
 
 const AuthenticationService = {
-    login: (userDetails: Record<string, any> = {}) => {
-        let url = getApiUrl("login", userDetails);
-        return Api.get(url, userDetails);
+    login: (request: IRequest): Promise<IResponse> => {
+        const url = getApiUrl("login");
+        return Api.post(url, request);
     },
 
     register: () => { },
