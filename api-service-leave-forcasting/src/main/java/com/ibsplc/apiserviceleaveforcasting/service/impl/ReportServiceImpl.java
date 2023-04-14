@@ -1,23 +1,27 @@
 package com.ibsplc.apiserviceleaveforcasting.service.impl;
 
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
-import com.ibsplc.apiserviceleaveforcasting.entity.Employee;
-import com.ibsplc.apiserviceleaveforcasting.entity.LeaveForecast;
-import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeRepository;
+import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
+import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeLeaveForcastDto;
+import com.ibsplc.apiserviceleaveforcasting.enums.PlanningType;
+import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeInfoRepository;
 import com.ibsplc.apiserviceleaveforcasting.repository.LeaveForecastRepository;
+import com.ibsplc.apiserviceleaveforcasting.response.*;
 import com.ibsplc.apiserviceleaveforcasting.service.ReportService;
-import com.ibsplc.apiserviceleaveforcasting.view.EmployeeSummaryView;
-import com.ibsplc.apiserviceleaveforcasting.view.LeaveSummaryView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.ibsplc.apiserviceleaveforcasting.repository.CustomerSpecifications.*;
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * Service for fetching data related to leave summary report
@@ -29,152 +33,116 @@ public class ReportServiceImpl implements ReportService {
     LeaveForecastRepository leaveForecastRepository;
 
     @Autowired
-    EmployeeRepository employeeRepository;
-
+    EmployeeInfoRepository employeeRepository;
 
     /**
      * Fetches the leave data and relevant employee data for a particular month and year and sends it back as response
      *
-     * @param duration
      * @return
      */
     @Override
-    public List<EmployeeSummaryView> fetchLeaveSummary(String duration, String organization, String team) throws CustomException {
-        
-        organization = createSearchKey(organization);
-        team = createSearchKey(team);
-        
-        List<EmployeeSummaryView> employeeSummaryResponseList = new ArrayList<>();
-        
-        int searchCriteriaMode = findCriteriaSearchMode(organization, team, duration);
-        if(searchCriteriaMode == -1){
-            return employeeSummaryResponseList;
-        }
-        List<LeaveForecast> leaveSummaryResponseList = (List<LeaveForecast>) leaveForecastRepository.findAll(hasOrganisation(organization)
-                .or(hasMonthYear(duration)
-                        .or(hasTeam(team))));
-        if (leaveSummaryResponseList != null && leaveSummaryResponseList.size() == 0) {
-            throw new CustomException("Leave records for the range is not available");
-        }
+    public List<EmployeeLeaveReportResponse> fetchLeaveSummary(String month, String year, String organization, String team) throws CustomException {
 
-            List<String> employeeIdList =  leaveSummaryResponseList.stream().map(leaveForecast -> leaveForecast.getEmployee().getEmpId()).collect(Collectors.toList());
-            List<Employee> employeeList = null;
-            if (employeeIdList != null && employeeIdList.size() == 0) {
-                throw new CustomException("Exception in gathering employee id/s from Leave-forecast data");
-            }
-            employeeList = employeeRepository.findByEmpIdIn(employeeIdList);
-           if (employeeList != null && employeeList.size() == 0) {
-                throw new CustomException("Employee data not present in database");
-            }
+        Map<EmployeeInfoDto, List<EmployeeLeaveForcastDto>> groupedReport = getEmployeeLeaveForcastDtos(month, year, organization, team);
 
+        return groupedReport.entrySet().stream().map(emp -> {
+            Map<Integer, List<EmployeeLeaveForcastDto>> groupedWeek = emp.getValue()
+                    .stream().collect(groupingBy(l -> l.getFromDate().get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear())));
 
-                for (LeaveForecast ls : leaveSummaryResponseList) {
+            List<WeekLeaveSummaryResponse> weekSummaryList = groupedWeek.entrySet().stream().map((weekNumber) -> {
+                LocalDate week = LocalDate.now().with(ChronoField.ALIGNED_WEEK_OF_YEAR, weekNumber.getKey());
+                LocalDate start = week.with(DayOfWeek.MONDAY);
+                LocalDate end = week.with(DayOfWeek.FRIDAY);
+                List<LeaveDetailResponse> leaveDetails = weekNumber.getValue()
+                        .stream().map(ReportServiceImpl::getLeaveDetailResponse).collect(Collectors.toList());
+                int totalNoOfDaysInWeek = leaveDetails.stream().mapToInt(LeaveDetailResponse::getNoOfDays).sum();
+                List<String> datesList  = leaveDetails.stream().flatMap(ld -> ld.getDateList().stream()).collect(Collectors.toList());
+                return WeekLeaveSummaryResponse.builder().weekNumber(weekNumber.getKey())
+                        .leaveDates(leaveDetails)
+                        .startAndEndDate(start + " to " + end)
+                        .noOfDays(totalNoOfDaysInWeek)
+                        .dateList(datesList)
+                        .build();
+            }).collect(Collectors.toList());
 
-                    LeaveSummaryView leaveSummaryResponse = new LeaveSummaryView();
-                    leaveSummaryResponse.setDateList(ls.getLeaveDateList());
-
-                    HashMap<Integer, List<String>> weekBasedDateSegMap = segregateLeavesBasedOnWeek(ls.getLeaveDateList());
-                    List<HashMap<Integer, List<String>>> weekBasedDateSegMapList = new ArrayList<>();
-                    weekBasedDateSegMapList.add(weekBasedDateSegMap);
-                    leaveSummaryResponse.setDateBasedOnWeek(weekBasedDateSegMapList);
-                    leaveSummaryResponse.setEmpId(ls.getEmployee().getEmpId());
-                    leaveSummaryResponse.setLeaveSubmissionId(ls.getLsId());
-                    List<LeaveSummaryView> leaveSummaryResponseList1 = new ArrayList<>();
-                    leaveSummaryResponseList1.add(leaveSummaryResponse);
-
-                    Optional<Employee> employee = employeeList.stream().filter(e -> e.getEmpId().equalsIgnoreCase(ls.getEmployee().getEmpId())).findFirst();
-                    if (employee.isPresent()) {
-
-                        EmployeeSummaryView employeeSummaryResponse = new EmployeeSummaryView();
-                        employeeSummaryResponse.setEmployeeId(employee.get().getEmpId());
-                        employeeSummaryResponse.setEmployeeName(employee.get().getEmployeeName());
-                        employeeSummaryResponse.setOrganizationName(employee.get().getOrg());
-                        employeeSummaryResponse.setTeamName(employee.get().getTeam());
-
-                        employeeSummaryResponse.setLeaveSummaryResponseList(leaveSummaryResponseList1);
-                        employeeSummaryResponseList.add(employeeSummaryResponse);
-                    }
-                }
-
-            return employeeSummaryResponseList;
-
-    }
-    
-     //this is done to prevent sql injection attack
-    private String createSearchKey(String str) {
-        if (null == str) {
-            return null;
-        }
-        return "%" + str.replaceAll("([%_])", "\\\\$1") + "%";
-    }
-    
-    private int findCriteriaSearchMode(String organization, String team, String duration){
-        String o = (organization != null && organization.trim() != null) ? organization : null;
-        String t = (team != null && team.trim() != null) ? team : null;
-        String d = (duration != null && duration.trim() != null) ? duration : null;
-        
-        if(o==null && t==null && d==null){
-            return 0;
-        }else if(o!=null && t!=null && d==null){
-            return 1;
-        }else if(o!=null && d!=null && t==null){
-            return 2;
-        }else if(t!=null && d!=null && o==null){
-            return 3;
-        }else if(o!=null && t!=null && d!=null){
-            return 4;
-        }else if(o !=null && t==null && d==null){
-            return 5;
-        }else if(t!=null && o==null && d==null){
-            return 6;
-        }else if(d!=null && o==null && t==null){
-            return 7;
-        }
-        else{
-            return -1;
-        }
+            int totalLeaves = weekSummaryList.stream().mapToInt(days -> Math.toIntExact(days.getNoOfDays())).sum();
+            return EmployeeLeaveReportResponse.builder().employeeId(emp.getKey().getEmployeeId())
+                    .employeeName(emp.getKey().getEmployeeName())
+                    .weeks(weekSummaryList.stream().sorted(Comparator.comparing(WeekLeaveSummaryResponse::getWeekNumber)).collect(Collectors.toList())).noOfDays(totalLeaves).build();
+        }).collect(Collectors.toList());
     }
 
-    /**
-     * Segregates the leave dates to it respective week.
-     *
-     * @param leaveDateList
-     * @return
-     */
+    private static LeaveDetailResponse getLeaveDetailResponse(EmployeeLeaveForcastDto leaveByWeek) {
+        List<String> dateString = Stream.iterate(leaveByWeek.getFromDate(), date -> date.plusDays(1))
+                .limit(ChronoUnit.DAYS.between(leaveByWeek.getFromDate(), leaveByWeek.getToDate()) + 1)
+                .map(LocalDate::toString).collect(Collectors.toList());
+        ;
+        return LeaveDetailResponse.builder()
+                .month(leaveByWeek.getMonth())
+                .noOfDays(leaveByWeek.getNoOfDays())
+                .fromDate(leaveByWeek.getFromDate())
+                .toDate(leaveByWeek.getToDate())
+                .dateList(dateString)
+                .year(leaveByWeek.getYear())
+                .planningType(leaveByWeek.getPlanningType()).build();
+    }
+
+    private Map<EmployeeInfoDto, List<EmployeeLeaveForcastDto>> getEmployeeLeaveForcastDtos(String month, String year, String organization, String team) {
+        List<EmployeeLeaveForcastDto> leaveSummaryResponseList = leaveForecastRepository.findAll(hasLeaveForecastByOrganisation(organization)
+                .or((hasLeaveForecastByMonth(month).and(hasLeaveForecastByYear(year)))
+                        .or(hasLeaveForecastByTeam(team))));
+        return leaveSummaryResponseList.stream().collect(groupingBy(leave -> leave.getEmployee()));
+
+    }
+
     @Override
-    public HashMap<Integer, List<String>> segregateLeavesBasedOnWeek(String leaveDateList) {
+    public List<EmployeeRevenueReportResponse> fetchRevenueSummary(String month, String year, String organization, String team) throws CustomException {
+        Map<EmployeeInfoDto, List<EmployeeLeaveForcastDto>> groupedReport = getEmployeeLeaveForcastDtos(month, year, organization, team);
 
-        try {
-            List<String> datesList = null;
-            HashMap<Integer, List<String>> weekBasedDateMap = new HashMap<>();
-            String dateStrings[] = leaveDateList.split(",");
-            for (String dateString : dateStrings) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                LocalDate dateTime = LocalDate.parse(dateString.trim(), formatter);
-                WeekFields weekFields = WeekFields.of(Locale.getDefault());
-                int weekOfMonth = dateTime.get(weekFields.weekOfMonth());
+        return groupedReport.entrySet().stream().map(employee -> {
+            Map<Integer, List<EmployeeLeaveForcastDto>> groupedWeek = employee.getValue()
+                    .stream().collect(groupingBy(l -> l.getFromDate().get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear())));
 
-                // checking if the week of month has already been added to the map;
-                // if so, then add the new date.
+            List<WeekRevenueSummaryResponse> weekSummaryList = groupedWeek.entrySet().stream().map((weekNumber) -> {
+                LocalDate week = LocalDate.now().with(ChronoField.ALIGNED_WEEK_OF_YEAR, weekNumber.getKey());
+                LocalDate start = week.with(DayOfWeek.MONDAY);
+                LocalDate end = week.with(DayOfWeek.FRIDAY);
+                List<LeaveDetailResponse> leaveDetails = weekNumber.getValue().stream().map(ReportServiceImpl::getLeaveDetailResponse).collect(Collectors.toList());
+                List<LeaveDetailResponse> expectedLeaves = leaveDetails.stream().filter(l ->  l.getPlanningType().equalsIgnoreCase(PlanningType.EXPECTED.name())).collect(Collectors.toList());
+                List<LeaveDetailResponse> actualLeaves = leaveDetails.stream().filter(l ->  l.getPlanningType().equalsIgnoreCase(PlanningType.ACTUAL.name())).collect(Collectors.toList());
+                int totalExpectedDays = expectedLeaves.stream().mapToInt(LeaveDetailResponse::getNoOfDays).sum();
+                int totalActualDays = actualLeaves.stream().mapToInt(LeaveDetailResponse::getNoOfDays).sum();
+                // TODO: Handle Company holidays, so the total number would come down
+                int totalWorkingDaysInAWeek = 5;
+                Double expectedRevenue = (totalWorkingDaysInAWeek - totalExpectedDays) * employee.getKey().getBillRate();
+                Double actualRevenue = (totalWorkingDaysInAWeek - totalActualDays) * employee.getKey().getBillRate();
+                List<String> datesList  = leaveDetails.stream().flatMap(ld -> ld.getDateList().stream()).collect(Collectors.toList());
+                return WeekRevenueSummaryResponse.builder()
+                        .weekNumber(weekNumber.getKey())
+                        .startAndEndDate(start + " to " + end)
+                        .actualDates(actualLeaves)
+                        .expectedDates(expectedLeaves)
+                        .expectedNoOfDays(totalExpectedDays)
+                        .actualNoOfDays(totalActualDays)
+                        .expectedRevenue(expectedRevenue)
+                        .actualRevenue(actualRevenue)
+                        .revenueDifference(actualRevenue - expectedRevenue)
+                        .dateList(datesList)
+                        .build();
+            }).collect(Collectors.toList());
 
-                if (weekBasedDateMap.containsKey(weekOfMonth)) {
-                    datesList = weekBasedDateMap.get(weekOfMonth);
-                    datesList.add(dateString);
-
-                }
-                //adding new week number with the date that falls on the week number
-                else {
-                    datesList = new ArrayList<>();
-                    datesList.add(dateString);
-                    weekBasedDateMap.put(weekOfMonth, datesList);
-                }
-
-            }
-
-            return weekBasedDateMap;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new CustomException("Exception in segregateLeavesBasedOnWeek :: " + e.getMessage());
-        }
+            int expectedTotalLeaves = weekSummaryList.stream().mapToInt(days -> Math.toIntExact(days.getExpectedNoOfDays())).sum();
+            int actualTotalLeaves = weekSummaryList.stream().mapToInt(days -> Math.toIntExact(days.getExpectedNoOfDays())).sum();
+            Double expectedTotalRevenue = weekSummaryList.stream().mapToDouble(WeekRevenueSummaryResponse::getExpectedRevenue).sum();
+            Double actualTotalRevenue = weekSummaryList.stream().mapToDouble(WeekRevenueSummaryResponse::getExpectedRevenue).sum();
+            Double revenueDifference = weekSummaryList.stream().mapToDouble(WeekRevenueSummaryResponse::getRevenueDifference).sum();
+            return EmployeeRevenueReportResponse.builder().employeeId(employee.getKey().getEmployeeId())
+                    .actualNoOfDays(actualTotalLeaves)
+                    .expectedRevenue(expectedTotalRevenue)
+                    .actualRevenue(actualTotalRevenue)
+                    .revenueDifference(revenueDifference)
+                    .weeks(weekSummaryList.stream().sorted(Comparator.comparing(WeekRevenueSummaryResponse::getWeekNumber)).collect(Collectors.toList()))
+                    .expectedNoOfDays(expectedTotalLeaves).build();
+        }).collect(Collectors.toList());
     }
 }

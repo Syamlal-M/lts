@@ -4,14 +4,21 @@
  */
 package com.ibsplc.apiserviceleaveforcasting.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.time.DayOfWeek;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.WeekFields;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.ibsplc.apiserviceleaveforcasting.entity.*;
+import com.ibsplc.apiserviceleaveforcasting.enums.PlanningType;
+import com.ibsplc.apiserviceleaveforcasting.enums.Roles;
+import com.ibsplc.apiserviceleaveforcasting.repository.*;
+import com.ibsplc.apiserviceleaveforcasting.request.EmployeeRegistrationRequest;
+import com.ibsplc.apiserviceleaveforcasting.request.LeaveForcastRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -27,23 +34,26 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CSVExceptionWrapper;
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CsvImportException;
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
-import com.ibsplc.apiserviceleaveforcasting.entity.Employee;
-import com.ibsplc.apiserviceleaveforcasting.entity.LeaveForecast;
-import com.ibsplc.apiserviceleaveforcasting.form.EmployeeForm;
-import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeRepository;
 import com.ibsplc.apiserviceleaveforcasting.service.EmployeeService;
 import com.ibsplc.apiserviceleaveforcasting.util.ValidationUtil;
 import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
-import com.ibsplc.apiserviceleaveforcasting.view.EmployeeView;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+
+import static com.ibsplc.apiserviceleaveforcasting.repository.CustomerSpecifications.*;
+import static java.time.temporal.ChronoUnit.DAYS;
 
 /**
  *
@@ -51,15 +61,27 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Service
 public class EmployeeServiceImpl implements EmployeeService{
-    
+
     @Autowired
-    private EmployeeRepository employeeRepository;
+    private EmployeeInfoRepository employeeRepository;
+
+    @Autowired
+    private TeamRepository teamRepository;
+
+    @Autowired
+    private RolesRepository rolesRepository;
+
+    @Autowired
+    private OrganisationRepository organisationRepository;
+
+    @Autowired
+    private LeaveForecastRepository leaveForecastRepository;
 
 
     @Override
-    public void exportEmployees(int page, int limit, String employeeName, String organization, String team, String location, int roleId, HttpServletResponse response) throws Exception {
-        Page<EmployeeView> employeeViewPage = searchEmployee(0, Integer.MAX_VALUE, employeeName, organization, team, location, roleId);
-        List<EmployeeView> employeeViews = employeeViewPage.get().collect(Collectors.toList());
+    public void exportEmployees(int page, int limit, String employeeName, String organization, String team, String location, HttpServletResponse response) throws Exception {
+        Page<EmployeeInfoDto> employeeViewPage = searchEmployee(0, Integer.MAX_VALUE, employeeName, organization, team, location);
+        List<EmployeeInfoDto> employeeViews = employeeViewPage.get().collect(Collectors.toList());
         String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=report.xlsx";
         response.setHeader(headerKey, headerValue);
@@ -110,7 +132,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         cell.setCellStyle(style);
     }
 
-    private void writeDataLines(XSSFWorkbook workbook, XSSFSheet sheet, List<EmployeeView> employeeViews) {
+    private void writeDataLines(XSSFWorkbook workbook, XSSFSheet sheet, List<EmployeeInfoDto> employeeViews) {
         int rowCount = 1;
 
         CellStyle style = workbook.createCellStyle();
@@ -118,25 +140,24 @@ public class EmployeeServiceImpl implements EmployeeService{
         font.setFontHeight(14);
         style.setFont(font);
 
-        for (EmployeeView employeeView : employeeViews) {
+        for (EmployeeInfoDto employeeView : employeeViews) {
             Row row = sheet.createRow(rowCount++);
             int columnCount = 0;
             createCell(row, columnCount++, rowCount - 1, style, sheet);
-            createCell(row, columnCount++, employeeView.getEmpId(), style, sheet);
+            createCell(row, columnCount++, employeeView.getEmployeeId(), style, sheet);
             createCell(row, columnCount++, employeeView.getEmployeeName(), style, sheet);
-            createCell(row, columnCount++, employeeView.getExpediaFgName(), style, sheet);
+            createCell(row, columnCount++, employeeView.getNameInClientRecords(), style, sheet);
             createCell(row, columnCount++, employeeView.getVendorName(), style, sheet);
-            createCell(row, columnCount++, employeeView.getJobTitle(), style, sheet);
+            createCell(row, columnCount++, employeeView.getJobTitle().getJobTitle(), style, sheet);
             createCell(row, columnCount++, employeeView.getHm(), style, sheet);
-            createCell(row, columnCount++, employeeView.getBillRate(), style, sheet);
-            createCell(row, columnCount++, employeeView.getCountry(), style, sheet);
-            createCell(row, columnCount++, employeeView.getCity(), style, sheet);
-            createCell(row, columnCount++, employeeView.getSow(), style, sheet);
-            createCell(row, columnCount++, employeeView.getOrg(), style, sheet);
-            createCell(row, columnCount++, employeeView.getTeam(), style, sheet);
+            createCell(row, columnCount++, employeeView.getBillRate().toString(), style, sheet);
+            createCell(row, columnCount++, employeeView.getCountry().getCountry(), style, sheet);
+            createCell(row, columnCount++, employeeView.getCity().getLocation(), style, sheet);
+            createCell(row, columnCount++, employeeView.getSow().getSow(), style, sheet);
+            createCell(row, columnCount++, employeeView.getOrg().getOrganisation(), style, sheet);
+            createCell(row, columnCount++, employeeView.getTeam().getTeamName(), style, sheet);
             createCell(row, columnCount++, employeeView.getBillability(), style, sheet);
             createCell(row, columnCount++, employeeView.getRemarks(), style, sheet);
-
         }
     }
 
@@ -157,20 +178,20 @@ public class EmployeeServiceImpl implements EmployeeService{
             workbook = new XSSFWorkbook(file.getInputStream());
             XSSFSheet worksheet = workbook.getSheetAt(0);
             List<String> employeeIdList = new ArrayList<>();
-            List<EmployeeForm> employeeFormList = new ArrayList<>();
-            Map<String, EmployeeForm> employeeFormMap = new HashMap<>();
+            List<EmployeeRegistrationRequest> employeeFormList = new ArrayList<>();
+            Map<String, EmployeeRegistrationRequest> employeeFormMap = new HashMap<>();
             for (int index = 0; index < worksheet.getPhysicalNumberOfRows(); index++) {
                 if(index > 0){
                     XSSFRow row = worksheet.getRow(index);
-                    EmployeeForm employeeForm = new EmployeeForm(row);
+                    EmployeeRegistrationRequest employeeForm = new EmployeeRegistrationRequest(row);
                     employeeFormList.add(employeeForm);
-                    employeeFormMap.put(employeeForm.getEmpId(), employeeForm);
+                    employeeFormMap.put(employeeForm.getEmployeeId(), employeeForm);
                     employeeIdList.add(row.getCell(0).toString());
                 }
             }
             if (!employeeFormList.isEmpty()) {
                 formValidation(employeeFormList);
-                Map<String, Employee> existingEmployeeMap = new HashMap<>();
+                Map<String, EmployeeInfoDto> existingEmployeeMap = new HashMap<>();
                 findExistingEmployees(employeeIdList, existingEmployeeMap);
                 saveOrUpdateEmployees(employeeIdList, employeeFormMap, existingEmployeeMap);
             }
@@ -186,7 +207,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         return new BasicResponseView(isUploadCompleted);
     }
     
-    private void formValidation(List<EmployeeForm> employeeFormList) {
+    private void formValidation(List<EmployeeRegistrationRequest> employeeFormList) {
         try {
             ValidationUtil.validate(employeeFormList);
         } catch (CsvImportException e) {
@@ -198,16 +219,16 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     }
     
-    private void findExistingEmployees(List<String> employeeIdList,Map<String, Employee> existingEmployeeMap) throws Exception{
+    private void findExistingEmployees(List<String> employeeIdList,Map<String, EmployeeInfoDto> existingEmployeeMap) throws Exception{
         try{
             int size = employeeIdList.size();
             int counter = 1;
             List<String> tempEmployeeIdList = new ArrayList<>();
-            List<Employee> employeeList = new ArrayList<>();
+            List<EmployeeInfoDto> employeeList = new ArrayList<>();
             for (String employeeId : employeeIdList) {
                 tempEmployeeIdList.add(employeeId);
                 if (counter % 1000 == 0 || counter == size) {
-                    List<Employee> temployeeList = employeeRepository.findByEmpIdIn(tempEmployeeIdList);
+                    List<EmployeeInfoDto> temployeeList = employeeRepository.findByEmployeeIdIn(tempEmployeeIdList);
                     if(temployeeList != null && !temployeeList.isEmpty()){
                         employeeList.addAll(temployeeList);
                         tempEmployeeIdList.clear();
@@ -216,37 +237,51 @@ public class EmployeeServiceImpl implements EmployeeService{
                 counter++;
             }
             if(!employeeList.isEmpty()){
-                existingEmployeeMap = employeeList.stream().collect(Collectors.toMap(x -> x.getEmpId(), x -> x));
+                existingEmployeeMap = employeeList.stream().collect(Collectors.toMap(x -> x.getEmployeeId(), x -> x));
             }
         }catch(Exception ex){
             throw new Exception();
         }
             
     }
+
+    @Override
+    public void createEmployee(EmployeeRegistrationRequest request) throws Exception {
+           Optional<EmployeeInfoDto> employeeInfo = employeeRepository.findEmployeeById(request.getEmployeeId());
+           Map<String, EmployeeRegistrationRequest> employeeRequestMap = new HashMap<>();
+        employeeRequestMap.put(request.getEmployeeId(), request);
+           if(employeeInfo.isPresent()) {
+               Map<String, EmployeeInfoDto> existingEmployeeRequestMap = new HashMap<>();
+               existingEmployeeRequestMap.put(employeeInfo.get().getEmployeeId(), employeeInfo.get());
+               saveOrUpdateEmployees(Collections.singletonList(request.getEmployeeId()), employeeRequestMap, existingEmployeeRequestMap);
+           } else {
+               saveOrUpdateEmployees(Collections.singletonList(request.getEmployeeId()), employeeRequestMap, Collections.EMPTY_MAP);
+           }
+    }
     
-    private void saveOrUpdateEmployees(List<String> employeeIdList, Map<String, EmployeeForm> employeeFormMap, Map<String, Employee> existingEmployeeMap) throws Exception {
+    private void saveOrUpdateEmployees(List<String> employeeIdList, Map<String, EmployeeRegistrationRequest> employeeFormMap, Map<String, EmployeeInfoDto> existingEmployeeMap) throws Exception {
         try {
-            List<Employee> saveUpdateEmployeeList = new ArrayList<>();
+            List<EmployeeInfoDto> saveUpdateEmployeeList = new ArrayList<>();
             for (String employeeId : employeeIdList) {
-                EmployeeForm empForm = employeeFormMap.get(employeeId);
-                Employee emp = null;
+                EmployeeRegistrationRequest empForm = employeeFormMap.get(employeeId);
+                EmployeeInfoDto emp = null;
                 if (existingEmployeeMap.get(employeeId) != null) {
                     emp = existingEmployeeMap.get(employeeId);
                 } else {
-                    emp = new Employee();
-                    emp.setEmpId(empForm.getEmpId());
+                    emp = new EmployeeInfoDto();
+                    emp.setEmployeeId(empForm.getEmployeeId());
                 }
                 emp.setEmployeeName(empForm.getEmployeeName());
-                emp.setExpediaFgName(empForm.getExpediaFgName());
+                emp.setNameInClientRecords(empForm.getExpediaFgName());
                 emp.setVendorName(empForm.getVendorName());
-                emp.setJobTitle(empForm.getJobTitle());
+                emp.setJobTitle(JobTitleDto.builder().jobTitle(empForm.getJobTitle()).build());
                 emp.setHm(empForm.getHm());
                 emp.setBillRate(empForm.getBillRate());
-                emp.setCountry(empForm.getCountry());
-                emp.setCity(empForm.getCity());
-                emp.setSow(empForm.getSow());
-                emp.setOrg(empForm.getOrg());
-                emp.setTeam(empForm.getTeam());
+                emp.setCountry(CountryDto.builder().country(empForm.getCountry()).build());
+                emp.setCity(EmployeeLocationDto.builder().location(empForm.getCity()).build());
+                emp.setSow(SowDto.builder().sow(empForm.getSow()).build());
+                emp.setOrg(OrganisationDto.builder().organisation(empForm.getOrg()).build());
+                emp.setTeam(TeamDto.builder().teamName(empForm.getTeam()).build());
                 emp.setBillability(empForm.getBillability());
                 emp.setRemarks(empForm.getRemarks());
                 saveUpdateEmployeeList.add(emp);
@@ -255,8 +290,8 @@ public class EmployeeServiceImpl implements EmployeeService{
             if (!saveUpdateEmployeeList.isEmpty()) {
                 int size = saveUpdateEmployeeList.size();
                 int counter = 1;
-                List<Employee> temp = new ArrayList<>();
-                for (Employee employee : saveUpdateEmployeeList) {
+                List<EmployeeInfoDto> temp = new ArrayList<>();
+                for (EmployeeInfoDto employee : saveUpdateEmployeeList) {
                     temp.add(employee);
                     if (counter % 1000 == 0 || counter == size) {
                         employeeRepository.saveAll(temp);
@@ -272,111 +307,41 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public Page searchEmployee(int page, int limit, String employeeName, String organization, String team, String location, int roleId) {
+    public Page searchEmployee(int page, int limit, String employeeName, String organization, String team, String city) {
         Pageable pageable = PageRequest.of(page, limit);
-        employeeName = createSearchKey(employeeName);
-        organization = createSearchKey(organization);
-        team = createSearchKey(team);
-        location = createSearchKey(location);
-        int searchCriteriaMode = findCriteriaSearchMode(employeeName, organization, team, location);
-        if(searchCriteriaMode == -1){
-            return Page.empty();
-        }
-        
-        Page<EmployeeView> employeeViewPage = employeeRepository.searchEmployee(searchCriteriaMode, employeeName, organization, team, location, pageable);
-        employeeViewPage.stream().forEach(ev -> {
-            if(roleId != 1){
-                ev.setBillRate(null);
+        Optional<Roles> role = getPriorityRole();
+        EmployeeInfoDto emp = (EmployeeInfoDto) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()).getAttribute("employeeDetails", RequestAttributes.SCOPE_REQUEST);
+        if(role.isPresent()) {
+            switch (role.get()) {
+                case USER:  return employeeRepository.findAll(hasEmployeesByEmployeeName(emp.getEmployeeName()), pageable);
+                case TEAM_USER: return employeeRepository.findAll(hasEmployeesByEmployeeName(employeeName)
+                        .and(hasEmployeesByTeam(emp.getTeam().getTeamName())), pageable);
+                case ADMIN:
+                case SUPER_ADMIN: return employeeRepository.findAll(hasEmployeesByEmployeeName(employeeName).or(hasEmployeesByTeam(team)).or(hasEmployeesByOrganisation(organization)), pageable);
             }
-        });
-        return employeeViewPage;
-    }
-    
-    //this is done to prevent sql injection attack
-    private String createSearchKey(String str) {
-        if (null == str) {
-            return null;
         }
-        return "%" + str.replaceAll("([%_])", "\\\\$1") + "%";
-    }
-    
-    
-    private int findCriteriaSearchMode(String employeeName, String organization, String team, String location){
-        String n = (employeeName != null && employeeName.trim() != null) ? employeeName : null;
-        String o = (organization != null && organization.trim() != null) ? organization : null;
-        String t = (team != null && team.trim() != null) ? team : null;
-        String l = (location != null && location.trim() != null) ? location : null;
-        
-        if(n ==null && o==null && t==null && l==null){
-            return 0;
-        }
-        if(n != null && o != null && t != null && l != null){
-            return 1;
-        }
-        if((n!=null && o!=null) &&(t==null && l==null)){
-            return 2;
-        }
-        if((n!=null && t!=null) && (o==null && l==null)){
-            return 3;
-        }
-        if((n!=null && l!=null) && (o==null && t==null)){
-            return 4;
-        }
-        if((o!=null && t!=null) && (n==null && l==null)){
-            return 5;
-        }
-        if((o!=null && l!=null) && (n==null && t==null)){
-            return 6;
-        }
-        if((t!=null && l!=null) && (n==null && o==null)){
-            return 7;
-        }
-        if(n!=null &&(o==null && t==null && l==null)){
-            return 8;
-        }
-        if(o!=null &&(n==null && t==null && l==null)){
-            return 9;
-        }
-        if(t!=null &&(n==null && o==null && l==null)){
-            return 10;
-        }
-        if(l!=null &&(n==null && o==null && t==null)){
-            return 11;
-        }
-       return -1;
+        // map the dto to response Model
+        return null;
     }
 
-	@Override
-	public ResponseEntity<Page<Employee>> getEmployeesWithLeaves(String org, String team, int page, int limit) {
-		Page<Employee> employees = new PageImpl<>(new ArrayList<>());
-		Pageable paging = PageRequest.of(page, limit);
-		if (!org.isBlank() && !team.isBlank()) {
-			employees = employeeRepository.findByOrgAndTeam(org, team, paging);
-		} else if (!org.isBlank()) {
-			employees = employeeRepository.findByOrg(org, paging);
-		} else if (!team.isBlank()) {
-			employees = employeeRepository.findByTeam(team, paging);
-		} else
-			employees = employeeRepository.findAll(paging);
-		return new ResponseEntity<>(employees, HttpStatus.OK);
-	}
-
-	@Override
-	public ResponseEntity<List<Employee>> updateLeaves(List<Employee> employees) {
-		List<Employee> _employees = new ArrayList<>();
-		for (Employee employee : employees) {
-			Optional<Employee> employeeOptional = employeeRepository.findById(employee.getEmpId());
-			if (employeeOptional.isEmpty())
-				return ResponseEntity.notFound().build();
-			Set<LeaveForecast> leaves = employee.getLeaveForecasts();
-			leaves.forEach(leave -> employee.addLeaveForecast(leave));
-			_employees.add(employee);
-		}
-		return new ResponseEntity<>(employeeRepository.saveAll(_employees), HttpStatus.OK);
-	}
+    private Optional<Roles> getPriorityRole() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<String> authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+        return Roles.getPriority(authorities);
+    }
 
     @Override
-    public List<String> getUniqueTeamsOfEmployee() {
-        return employeeRepository.findUniqueTeams();
+    public List<String> getTeams() {
+        return teamRepository.findAll().stream().map(TeamDto::getTeamName).distinct().collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getRoles() {
+        return rolesRepository.findAll().stream().map(EmployeeRole::getRoleName).distinct().collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getOrganisation() {
+        return organisationRepository.findAll().stream().map(OrganisationDto::getOrganisation).distinct().collect(Collectors.toList());
     }
 }

@@ -1,16 +1,16 @@
 package com.ibsplc.apiserviceleaveforcasting.service;
 
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
-import com.ibsplc.apiserviceleaveforcasting.view.EmployeeSummaryView;
+import com.ibsplc.apiserviceleaveforcasting.response.EmployeeLeaveReportResponse;
+import com.ibsplc.apiserviceleaveforcasting.response.EmployeeRevenueReportResponse;
 
-import java.util.HashMap;
 import java.util.List;
 
 
 public interface ReportService {
 
 
-    public List<EmployeeSummaryView> fetchLeaveSummary(String duration, String organization, String team) throws CustomException;
+    public List<EmployeeLeaveReportResponse> fetchLeaveSummary(String month, String year, String organization, String team) throws CustomException;
+    public List<EmployeeRevenueReportResponse> fetchRevenueSummary(String month, String year, String organization, String team) throws CustomException;
 
-    public HashMap<Integer, List<String>> segregateLeavesBasedOnWeek(String dateList);
 }

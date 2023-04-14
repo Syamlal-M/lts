@@ -5,6 +5,8 @@
 package com.ibsplc.apiserviceleaveforcasting.form;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
+
 import org.apache.poi.xssf.usermodel.XSSFRow;
 
 /**
@@ -25,8 +27,8 @@ public class EmployeeForm {
     private String jobTitle;
     @NotEmpty(message = "HM must not be null or empty")
     private String hm;
-    @NotEmpty(message = "Bill Rate must not be null or empty")
-    private String billRate;
+    @Positive(message = "Should be positive")
+    private Double billRate;
     @NotEmpty(message = "Country must not be null or empty")
     private String country;
     @NotEmpty(message = "City must not be null or empty")
@@ -48,7 +50,7 @@ public class EmployeeForm {
         this.vendorName = row.getCell(3) != null ? row.getCell(3).toString().trim() : null;
         this.jobTitle = row.getCell(4) != null ? row.getCell(4).toString().trim() : null;
         this.hm = row.getCell(5) != null ? row.getCell(5).toString().trim() : null;
-        this.billRate = row.getCell(6) != null ? row.getCell(6).toString().trim() : null;
+        this.billRate = row.getCell(6) != null ? Double.valueOf(row.getCell(6).toString().trim()) : null;
         this.country = row.getCell(7) != null ? row.getCell(7).toString().trim() : null;
         this.city = row.getCell(8) != null ? row.getCell(8).toString().trim() : null;
         this.sow = row.getCell(9) != null ? row.getCell(9).toString().trim() : null;
@@ -132,14 +134,14 @@ public class EmployeeForm {
     /**
      * @return the billRate
      */
-    public String getBillRate() {
+    public Double getBillRate() {
         return billRate;
     }
 
     /**
      * @param billRate the billRate to set
      */
-    public void setBillRate(String billRate) {
+    public void setBillRate(Double billRate) {
         this.billRate = billRate;
     }
 

@@ -1,29 +1,73 @@
 package com.ibsplc.apiserviceleaveforcasting.repository;
 
-import com.ibsplc.apiserviceleaveforcasting.entity.Employee;
-import com.ibsplc.apiserviceleaveforcasting.entity.LeaveForecast;
-import org.springframework.cglib.core.Predicate;
+import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
+import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeLeaveForcastDto;
+import com.ibsplc.apiserviceleaveforcasting.entity.OrganisationDto;
+import com.ibsplc.apiserviceleaveforcasting.entity.TeamDto;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Join;
 
 public class CustomerSpecifications {
 
-    public static Specification<LeaveForecast> hasOrganisation(String organisation) {
+    public static Specification<EmployeeLeaveForcastDto> hasLeaveForecastByOrganisation(String organisation) {
         return (root, query, criteriaBuilder) -> {
-            Join<LeaveForecast, Employee> authorsBook = root.join("employee");
-            return criteriaBuilder.like(authorsBook.get("org"), organisation);
+            Join<EmployeeLeaveForcastDto, EmployeeInfoDto> employee = root.join("employee");
+            Join<EmployeeInfoDto, OrganisationDto> organisationTable = employee.join("org");
+            return criteriaBuilder.like(organisationTable.get("organisation"), "%" + organisation + "%");
         };
     }
 
-    public static Specification<LeaveForecast> hasTeam(String team) {
+    public static Specification<EmployeeLeaveForcastDto> hasLeaveForecastByEmployeeName(String employeeName) {
         return (root, query, criteriaBuilder) -> {
-            Join<LeaveForecast, Employee> authorsBook = root.join("employee");
-            return criteriaBuilder.like(authorsBook.get("team"), team);
+            Join<EmployeeLeaveForcastDto, EmployeeInfoDto> employee = root.join("employee");
+            return criteriaBuilder.like(employee.get("employeeName"), "%" + employeeName + "%");
         };
     }
 
-    public static Specification<LeaveForecast> hasMonthYear(String monthYear) {
-        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("monthYear"), monthYear);
+    public static Specification<EmployeeLeaveForcastDto> hasLeaveForecastByCity(String city) {
+        return (root, query, criteriaBuilder) -> {
+            Join<EmployeeLeaveForcastDto, EmployeeInfoDto> employee = root.join("employee");
+            return criteriaBuilder.like(employee.get("city"), "%" + city + "%");
+        };
+    }
+
+    public static Specification<EmployeeLeaveForcastDto> hasLeaveForecastByTeam(String team) {
+        return (root, query, criteriaBuilder) -> {
+            Join<EmployeeLeaveForcastDto, EmployeeInfoDto> employee = root.join("employee");
+            Join<EmployeeInfoDto, TeamDto> teamTable = employee.join("team");
+            return criteriaBuilder.like(teamTable.get("teamName"), "%" + team + "%");
+        };
+    }
+
+    public static Specification<EmployeeLeaveForcastDto> hasLeaveForecastByMonth(String month) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("month"), month);
+    }
+
+    public static Specification<EmployeeLeaveForcastDto> hasLeaveForecastByYear(String year) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("year"), year);
+    }
+
+
+    public static Specification<EmployeeInfoDto> hasEmployeesByEmployeeName(String employeeName) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("employeeName"), "%"+employeeName+"%");
+    }
+
+    public static Specification<EmployeeInfoDto> hasEmployeesByOrganisation(String organisation) {
+        return (root, query, criteriaBuilder) -> {
+            Join<OrganisationDto, EmployeeInfoDto> employee = root.join("org");
+            return criteriaBuilder.like(employee.get("organisation"), "%"+organisation+"%");
+        };
+    }
+
+    public static Specification<EmployeeInfoDto> hasEmployeesByTeam(String team) {
+        return (root, query, criteriaBuilder) -> {
+            Join<TeamDto, EmployeeInfoDto> employee = root.join("team");
+            return criteriaBuilder.like(employee.get("teamName"), "%"+team+"%");
+        };
+    }
+
+    public static Specification<EmployeeInfoDto> hasEmployeesByEmpId(String empId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("employeeId"), "%"+empId+"%");
     }
 }

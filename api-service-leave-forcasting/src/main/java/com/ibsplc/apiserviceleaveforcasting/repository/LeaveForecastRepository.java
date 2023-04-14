@@ -3,12 +3,9 @@
  */
 package com.ibsplc.apiserviceleaveforcasting.repository;
 
-import java.util.List;
-
-import com.ibsplc.apiserviceleaveforcasting.entity.LeaveForecast;
+import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeLeaveForcastDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -16,7 +13,7 @@ import org.springframework.stereotype.Repository;
  *
  */
 @Repository
-public interface LeaveForecastRepository extends JpaRepository<LeaveForecast, Long>, JpaSpecificationExecutor {
+public interface LeaveForecastRepository extends JpaRepository<EmployeeLeaveForcastDto, Long>, JpaSpecificationExecutor {
     
 
 }

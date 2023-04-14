@@ -5,7 +5,7 @@
 package com.ibsplc.apiserviceleaveforcasting.view;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ibsplc.apiserviceleaveforcasting.entity.Employee;
+import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
 
 /**
  *
@@ -31,22 +31,6 @@ public class EmployeeView {
     
     public EmployeeView(){}
     
-    public EmployeeView(Employee employee){
-        this.empId = employee.getEmpId();
-        this.employeeName = employee.getEmployeeName();
-        this.expediaFgName = employee.getExpediaFgName();
-        this.vendorName = employee.getVendorName();
-        this.jobTitle = employee.getJobTitle();
-        this.hm = employee.getHm();
-        this.billRate = employee.getBillRate();
-        this.country = employee.getCountry();
-        this.city = employee.getCity();
-        this.sow = employee.getSow();
-        this.org = employee.getOrg();
-        this.team =  employee.getTeam();
-        this.billability = employee.getBillability();
-        this.remarks = employee.getRemarks();
-    }
     
     
     /**

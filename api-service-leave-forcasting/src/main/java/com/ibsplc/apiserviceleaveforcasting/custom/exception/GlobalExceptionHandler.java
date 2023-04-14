@@ -33,4 +33,11 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
         return error;  
     }
+
+    @ExceptionHandler(UnAuthorisedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse unAuthorisedException(CustomException e, HttpServletRequest req){
+        ErrorResponse error = new ErrorResponse(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        return error;
+    }
 }
