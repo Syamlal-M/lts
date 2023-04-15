@@ -5,19 +5,22 @@ interface IParams {
     [key: string]: string | number | boolean
 }
 
+type RouteKey = keyof typeof RoutesUrl;
+type ApiUrlKey = keyof typeof ApiEndpoint;
+
 const replaceParams = (url: string, params: IParams = {}, regex: RegExp): string => {
     const path = url ? url.replace(regex, (_, key) => String(params[key])) : "";
     return path;
 };
 
-const getRouteUrl = (key: string, params: IParams = {}): string => {
+const getRouteUrl = (key: RouteKey, params: IParams = {}): string => {
     const regex = /:(.*?)/g;
     const endpoint = RoutesUrl[key];
     const path = replaceParams(endpoint, params, regex);
     return path;
 };
 
-const getApiUrl = (key: string, params: IParams = {}): string => {
+const getApiUrl = (key: ApiUrlKey, params: IParams = {}): string => {
     const regex = /{:(.*?)}/g;
     const endpoint = ApiEndpoint[key];
     const path = encodeURI(replaceParams(endpoint, params, regex));

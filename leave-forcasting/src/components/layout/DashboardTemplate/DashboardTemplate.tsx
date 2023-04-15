@@ -11,7 +11,11 @@ import {
     navigationDrawerStylesForXS, sideNavigationStyles
 } from "./DashboardTemplate.styles";
 
-function DashboardTemplate() {
+interface TemplatePageProps {
+    children?: React.ReactNode
+}
+
+function DashboardTemplate({ children }: TemplatePageProps) {
     const theme = useTheme();
     const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
     const { isDarkMode } = useThemeContext();
@@ -48,7 +52,7 @@ function DashboardTemplate() {
                         mainContainerStyles
                 }
             >
-                <Outlet />
+                {children ? children : <Outlet />}
             </Box>
         </Box >
     );

@@ -1,4 +1,4 @@
-const RoutesUrl: Record<string, string> = {
+const RoutesUrl = {
     root: "/",
     signin: "/signin",
     planning: "/leave-forecast",

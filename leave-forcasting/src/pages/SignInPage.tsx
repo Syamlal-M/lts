@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToggle } from "usehooks-ts";
 import { IRequest } from "types/api/employee/Login.types";
@@ -7,6 +7,7 @@ import { getRouteUrl } from "utils/AccessPointUtils";
 import AuthenticationService from "service/AuthenticationService";
 import { PageContainer } from "components/layout";
 import { Box, Button, Icon, IconButton, TextField, Typography } from "components/shared-ui";
+import { isAutheticated } from "utils/ApiUtils";
 
 interface UserDetails {
     username: string,
@@ -22,6 +23,12 @@ const SignInPage = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useToggle(false);
     const [userDetails, setUserDetails] = useState<UserDetails>(DEFAULT_USER_DETAILS)
+
+    useEffect(() => {
+        if (isAutheticated()) {
+            navigate(getRouteUrl("planning"));
+        }
+    }, []);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const { name, value } = event.target;
