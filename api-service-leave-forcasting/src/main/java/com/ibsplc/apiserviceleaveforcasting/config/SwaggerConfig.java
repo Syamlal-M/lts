@@ -28,7 +28,6 @@ public class SwaggerConfig {
                 .build()
                 .securitySchemes(Arrays.asList(new ApiKey("Authorisation", "Authorisation", "header")));
     }
-
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurerAdapter() {
