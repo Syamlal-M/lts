@@ -1,33 +1,6 @@
 import { SxProps } from "@mui/material";
 import COLOR from "styles/Color";
 
-const navLinkBaseStyle: SxProps = {
-    textDecoration: 'none',
-    width: "100%",
-    color: COLOR.grey[600],
-
-    '&:hover': {
-        color: COLOR.primary.main,
-        background: COLOR.primary.light,
-        borderRadius: 2,
-
-        ".MuiListItemIcon-root": {
-            color: COLOR.primary.main,
-        }
-    }
-};
-
-const navLinkActiveStyle: SxProps = {
-    ...navLinkBaseStyle,
-    backgroundColor: COLOR.primary.main,
-    color: COLOR.common.white,
-    borderRadius: 2,
-
-    ".MuiListItemIcon-root": {
-        color: COLOR.common.white,
-    }
-}
-
 const navContainerStyles: SxProps = {
     display: "flex",
     flexDirection: "column",
@@ -35,12 +8,40 @@ const navContainerStyles: SxProps = {
 }
 
 const navListStyles: SxProps = {
-    flexGrow: 1
+    ".MuiListItem-root": {
+        ".MuiButtonBase-root": {
+            borderRadius: 2,
+            color: COLOR.grey[600],
+
+            '&:hover': {
+                background: COLOR.primary.light,
+
+                ".MuiListItemIcon-root": {
+                    color: COLOR.primary.main,
+                },
+
+                ".MuiListItemText-root": {
+                    color: COLOR.primary.main,
+                }
+            },
+        }
+    }
+}
+
+const navItemActiveStyles: SxProps = {
+    backgroundColor: `${COLOR.primary.main} !important`,
+
+    ".MuiListItemIcon-root": {
+        color: `${COLOR.common.white} !important`,
+    },
+
+    ".MuiListItemText-root": {
+        color: `${COLOR.common.white} !important`,
+    }
 }
 
 export {
-    navLinkBaseStyle,
-    navLinkActiveStyle,
     navContainerStyles,
-    navListStyles
+    navListStyles,
+    navItemActiveStyles,
 }

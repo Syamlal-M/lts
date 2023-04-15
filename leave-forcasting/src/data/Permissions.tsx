@@ -1,9 +1,9 @@
 const PERMISSIONS = {
     FULL_ACCESS: "FullAccess",
     LEAVE_FORCAST: "LeaveForecast",
-    EMPLOYEE_MANAGEMENT: "EmployeeManagement",
+    LEAVE_REPORT: "LeaveForecastReport",
     EMPLOYEE_SUMMARY: "EmployeeSummary",
-    LEAVE_REPORT: "LeaveForecastReport"
+    EMPLOYEE_MANAGEMENT: "EmployeeManagement",
 };
 
 export default PERMISSIONS;
