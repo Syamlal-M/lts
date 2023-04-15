@@ -14,26 +14,26 @@ const PageRoutes = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path={getRouteUrl("root")} element={<LandingPage />} />
-                <Route path={getRouteUrl("signin")} element={<SignInPage />} />
+                <Route path={getRouteUrl("ROOT")} element={<LandingPage />} />
+                <Route path={getRouteUrl("SIGN_IN")} element={<SignInPage />} />
                 <Route element={<PrivateRouteGuard children={<DashboardTemplate />} />}>
                     <Route
-                        path={getRouteUrl("planning")}
+                        path={getRouteUrl("PLANNING")}
                         element={<ProtectedRouteGuard
                             hasPermission="LEAVE_FORCAST"
                             children={<PlanningPage />} />} />
                     <Route
-                        path={getRouteUrl("employeeInfo")}
+                        path={getRouteUrl("EMPLOYEE_INFO")}
                         element={<ProtectedRouteGuard
                             hasPermission="EMPLOYEE_SUMMARY"
                             children={<DashboardPage />} />} />
                     <Route
-                        path={getRouteUrl("reports")}
+                        path={getRouteUrl("REPORTS")}
                         element={<ProtectedRouteGuard
                             hasPermission="LEAVE_REPORT"
                             children={<ReportsPage />} />} />
                     <Route
-                        path={getRouteUrl("settings")}
+                        path={getRouteUrl("SETTINGS")}
                         element={<ProtectedRouteGuard
                             hasPermission="EMPLOYEE_MANAGEMENT"
                             children={<SettingsPage />} />} />

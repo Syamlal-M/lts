@@ -36,7 +36,7 @@ const ProtectedRouteGuard = ({
     return (
         <ProtectedRoute
             hasPermission={validatePermission(hasPermission)}
-            redirectPath={redirectPath === undefined ? getRouteUrl("signin") : redirectPath}
+            redirectPath={redirectPath === undefined ? getRouteUrl("SIGN_IN") : redirectPath}
         >
             <>{children}</>
         </ProtectedRoute>

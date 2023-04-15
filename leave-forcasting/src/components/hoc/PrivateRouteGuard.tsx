@@ -27,7 +27,7 @@ const PrivateRouteGuard = ({
     return (
         <PrivateRoute
             hasAccess={hasAccess === undefined ? isAutheticated() : hasAccess}
-            redirectPath={redirectPath === undefined ? getRouteUrl("signin") : redirectPath}
+            redirectPath={redirectPath === undefined ? getRouteUrl("SIGN_IN") : redirectPath}
         >
             <>{children}</>
         </PrivateRoute>

@@ -4,7 +4,7 @@ import { IRequest, IResponse } from "types/api/employee/Login.types";
 
 const AuthenticationService = {
     login: (request: IRequest): Promise<IResponse> => {
-        const url = getApiUrl("login");
+        const url = getApiUrl("LOGIN");
         return Api.post(url, request);
     },
 

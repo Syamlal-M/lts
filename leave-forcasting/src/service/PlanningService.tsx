@@ -3,7 +3,7 @@ import Api from "./_Api";
 
 const PlanningService = {
     searchEmployees: (params: Record<string, any>) => {
-        let url = getApiUrl("searchEmployees", params);
+        let url = getApiUrl("GET_EMPLOYEE_LIST", params);
         return Api.get(url);
     }
 };
