@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { useMediaQuery, useTheme } from "@mui/material";
 import NavigationMenuList from "data/NavigationMenuList";
 import { Box } from "components/shared-ui";
@@ -10,14 +10,27 @@ import {
     mainContainerDarkModeStyles, mainContainerStyles, navigationDrawerStylesForMD,
     navigationDrawerStylesForXS, sideNavigationStyles
 } from "./DashboardTemplate.styles";
+import { isAutheticated } from "utils/ApiUtils";
+import { resetToken } from "utils/CookieUtils";
+import { getRouteUrl } from "utils/AccessPointUtils";
 
-function DashboardTemplate() {
+interface TemplatePageProps {
+    children?: React.ReactNode
+}
+
+function DashboardTemplate({ children }: TemplatePageProps) {
     const theme = useTheme();
     const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
     const { isDarkMode } = useThemeContext();
+    const navigate = useNavigate();
 
     const { isNavDrawerOpened, toggleNavDrawerOpened } = useNavigationContext();
     const navigationList = NavigationMenuList;
+
+    const handleLogout = () => {
+        resetToken();
+        navigate(getRouteUrl("ROOT"));
+    };
 
     return (
         <Box sx={{ display: 'flex' }}>
@@ -38,6 +51,8 @@ function DashboardTemplate() {
                             navigationDrawerStylesForXS :
                             navigationDrawerStylesForMD
                     }
+                    isAuthenticated={isAutheticated()}
+                    handleLogout={handleLogout}
                 />
             </Box>
             <Box
@@ -48,7 +63,7 @@ function DashboardTemplate() {
                         mainContainerStyles
                 }
             >
-                <Outlet />
+                {children ? children : <Outlet />}
             </Box>
         </Box >
     );

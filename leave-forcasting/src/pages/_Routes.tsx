@@ -7,18 +7,36 @@ import ReportsPage from './ReportsPage';
 import SettingsPage from './SettingsPage';
 import SignInPage from './SignInPage';
 import { getRouteUrl } from 'utils/AccessPointUtils';
+import PrivateRouteGuard from 'components/hoc/PrivateRouteGuard';
+import ProtectedRouteGuard from 'components/hoc/ProtectedRouteGuard';
 
 const PageRoutes = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path={getRouteUrl("root")} element={<LandingPage />} />
-                <Route path={getRouteUrl("signin")} element={<SignInPage />} />
-                <Route element={<DashboardTemplate />}>
-                    <Route path={getRouteUrl("planning")} element={<PlanningPage />} />
-                    <Route path={getRouteUrl("employeeInfo")} element={<DashboardPage />} />
-                    <Route path={getRouteUrl("reports")} element={<ReportsPage />} />
-                    <Route path={getRouteUrl("settings")} element={<SettingsPage />} />
+                <Route path={getRouteUrl("ROOT")} element={<LandingPage />} />
+                <Route path={getRouteUrl("SIGN_IN")} element={<SignInPage />} />
+                <Route element={<PrivateRouteGuard children={<DashboardTemplate />} />}>
+                    <Route
+                        path={getRouteUrl("PLANNING")}
+                        element={<ProtectedRouteGuard
+                            hasPermission="LEAVE_FORCAST"
+                            children={<PlanningPage />} />} />
+                    <Route
+                        path={getRouteUrl("EMPLOYEE_INFO")}
+                        element={<ProtectedRouteGuard
+                            hasPermission="EMPLOYEE_SUMMARY"
+                            children={<DashboardPage />} />} />
+                    <Route
+                        path={getRouteUrl("REPORTS")}
+                        element={<ProtectedRouteGuard
+                            hasPermission="LEAVE_REPORT"
+                            children={<ReportsPage />} />} />
+                    <Route
+                        path={getRouteUrl("SETTINGS")}
+                        element={<ProtectedRouteGuard
+                            hasPermission="EMPLOYEE_MANAGEMENT"
+                            children={<SettingsPage />} />} />
                 </Route>
             </Routes>
         </BrowserRouter>

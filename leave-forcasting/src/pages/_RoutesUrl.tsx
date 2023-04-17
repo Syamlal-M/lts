@@ -1,10 +1,10 @@
-const RoutesUrl: Record<string, string> = {
-    root: "/",
-    signin: "/signin",
-    planning: "/leave-forecast",
-    employeeInfo: "/employee-info",
-    reports: "/reports",
-    settings: "settings/",
+const ROUTE_URLS = {
+    ROOT: "/",
+    SIGN_IN: "/signin",
+    PLANNING: "/leave-forecast",
+    EMPLOYEE_INFO: "/employee-info",
+    REPORTS: "/reports",
+    SETTINGS: "settings/",
 };
 
-export default RoutesUrl; 
+export default ROUTE_URLS; 

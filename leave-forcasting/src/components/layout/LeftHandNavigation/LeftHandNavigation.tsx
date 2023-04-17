@@ -7,8 +7,7 @@ import {
     ListItemButton, ListItemIcon, ListItemText, Typography
 } from "components/shared-ui";
 import {
-    navContainerStyles, navLinkActiveStyle,
-    navLinkBaseStyle, navListStyles
+    navContainerStyles, navListStyles, navItemActiveStyles
 } from "./LeftHandNavigation.styles";
 
 type LeftHandNavigationVariants = "temporary" | "permanent" | "persistent";
@@ -19,10 +18,12 @@ interface LeftSideNavigationProps {
     navigationList: NavigationList,
     drawerSx: SxProps
     variant: LeftHandNavigationVariants,
+    isAuthenticated: boolean,
+    handleLogout: () => void,
 }
 
 const LeftHandNavigation = (props: LeftSideNavigationProps) => {
-    const { open, onClose, navigationList, variant, drawerSx } = props;
+    const { open, onClose, navigationList, variant, drawerSx, isAuthenticated, handleLogout } = props;
     const { isDarkMode, toggleTheme } = useThemeContext();
 
     const currentUrlpath = useLocation().pathname;
@@ -45,7 +46,7 @@ const LeftHandNavigation = (props: LeftSideNavigationProps) => {
         >
             <Box component="nav" sx={navContainerStyles}>
                 <List
-                    sx={navListStyles}
+                    sx={{ ...navListStyles, flexGrow: 1 }}
                     subheader={
                         <>
                             <ListItem sx={{ py: { sm: 1.5 } }}>
@@ -75,9 +76,7 @@ const LeftHandNavigation = (props: LeftSideNavigationProps) => {
                             <ListItem key={item.id}>
                                 <ListItemButton
                                     onClick={() => onNavLinkClick(item.urlPath)}
-                                    sx={isNavLinkActive(item.urlPath) ?
-                                        navLinkActiveStyle : navLinkBaseStyle
-                                    }
+                                    sx={isNavLinkActive(item.urlPath) ? navItemActiveStyles : {}}
                                 >
                                     <ListItemIcon>
                                         <Icon>{item.icon}</Icon>
@@ -89,23 +88,30 @@ const LeftHandNavigation = (props: LeftSideNavigationProps) => {
                     }
                 </List>
                 <Divider />
-                <List>
+                <List sx={navListStyles}>
                     <ListItem>
                         <ListItemButton
-                            sx={
-                                isDarkMode ?
-                                    { ...navLinkActiveStyle } :
-                                    { ...navLinkBaseStyle }
-                            }
+                            sx={isDarkMode ? navItemActiveStyles : {}}
                             onClick={toggleTheme}
                         >
                             <ListItemIcon>
-                                <Icon>{isDarkMode ? 'brightness_high' : 'brightness_4'}</Icon>
+                                <Icon>brightness_4</Icon>
                                 <Icon></Icon>
                             </ListItemIcon>
                             <ListItemText>Dark Mode</ListItemText>
                         </ListItemButton>
                     </ListItem>
+                    {
+                        isAuthenticated &&
+                        <ListItem>
+                            <ListItemButton onClick={handleLogout}>
+                                <ListItemIcon>
+                                    <Icon>logout</Icon>
+                                </ListItemIcon>
+                                <ListItemText>Logout</ListItemText>
+                            </ListItemButton>
+                        </ListItem>
+                    }
                 </List>
             </Box>
         </Drawer >

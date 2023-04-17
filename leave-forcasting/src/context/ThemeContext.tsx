@@ -17,7 +17,7 @@ const ThemeContext = createContext<ThemeContextProps>({} as ThemeContextProps);
 const ThemeProvider = ({ children }: ThemeProviderProps) => {
     const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
-    const [isDarkMode, setDarkMode] = useLocalStorage('darkTheme', prefersDarkMode);
+    const [isDarkMode, setDarkMode] = useLocalStorage('dark-mode', prefersDarkMode);
     const [theme, setTheme] = useState(isDarkMode ? DarkTheme : LightTheme);
 
     const toggleTheme = () => {

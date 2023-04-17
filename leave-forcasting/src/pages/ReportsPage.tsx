@@ -18,50 +18,50 @@ const ReportsPage = () => {
   const [team, setTeam] = React.useState("");
   const [monthYear, setMonthYear] = React.useState(month + "_" + year);
 
-const processDataForTableView = (): any => {
-  let tempLeaveForcastData: Array<any> = [];
-  if (leaveForecast != null && leaveForecast.length !== 0) {
-    for (const lf of leaveForecast) {
-      let leaveForcastObject: LeaveForecastInfo = {
-        id: lf['employeeId'],
-        employeeId: lf['employeeId'],
-        employeeName: lf['employeeName'],
-        organizationName: lf['organizationName'],
-        teamName: lf['teamName'],
-        week_1: 0,
-        week_2: 0,
-        week_3: 0,
-        week_4: 0,
-        week_5: 0,
-      };
-      let leaveSummaryResponse = lf['leaveSummaryResponseList']['0']['dateBasedOnWeek']['0']
-      for (var key in leaveSummaryResponse) {
-        if (key.toString() === "1") {
-          leaveForcastObject.week_1 = leaveSummaryResponse[key]?.length;
-          leaveForcastObject['week_1_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
-        } else if (key.toString() === "2") {
-          leaveForcastObject['week_2'] = leaveSummaryResponse[key].length;
-          leaveForcastObject['week_2_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
-        } else if (key.toString() === "3") {
-          leaveForcastObject['week_3'] = leaveSummaryResponse[key].length;
-          leaveForcastObject['week_3_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
-        } else if (key.toString() === "4") {
-          leaveForcastObject['week_4'] = leaveSummaryResponse[key].length;
-          leaveForcastObject['week_4_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
-        } else if (key.toString() === "5") {
-          leaveForcastObject['week_5'] = leaveSummaryResponse[key].length;
-          leaveForcastObject['week_5_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
-        } 
+  const processDataForTableView = (): any => {
+    let tempLeaveForcastData: Array<any> = [];
+    if (leaveForecast != null && leaveForecast.length !== 0) {
+      for (const lf of leaveForecast) {
+        let leaveForcastObject: LeaveForecastInfo = {
+          id: lf['employeeId'],
+          employeeId: lf['employeeId'],
+          employeeName: lf['employeeName'],
+          organizationName: lf['organizationName'],
+          teamName: lf['teamName'],
+          week_1: 0,
+          week_2: 0,
+          week_3: 0,
+          week_4: 0,
+          week_5: 0,
+        };
+        let leaveSummaryResponse = lf['leaveSummaryResponseList']['0']['dateBasedOnWeek']['0']
+        for (var key in leaveSummaryResponse) {
+          if (key.toString() === "1") {
+            leaveForcastObject.week_1 = leaveSummaryResponse[key]?.length;
+            leaveForcastObject['week_1_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
+          } else if (key.toString() === "2") {
+            leaveForcastObject['week_2'] = leaveSummaryResponse[key].length;
+            leaveForcastObject['week_2_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
+          } else if (key.toString() === "3") {
+            leaveForcastObject['week_3'] = leaveSummaryResponse[key].length;
+            leaveForcastObject['week_3_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
+          } else if (key.toString() === "4") {
+            leaveForcastObject['week_4'] = leaveSummaryResponse[key].length;
+            leaveForcastObject['week_4_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
+          } else if (key.toString() === "5") {
+            leaveForcastObject['week_5'] = leaveSummaryResponse[key].length;
+            leaveForcastObject['week_5_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
+          }
+        }
+        tempLeaveForcastData.push(leaveForcastObject);
       }
-      tempLeaveForcastData.push(leaveForcastObject);
-    }
-    setProcessedLeaveForcastData(tempLeaveForcastData);
+      setProcessedLeaveForcastData(tempLeaveForcastData);
 
+    }
   }
-}
 
   const fetchLeaveForcastReport = () => {
-    ReportService.fetchForecast({ 'duration': monthYear, 'org': org, 'team': team})
+    ReportService.fetchForecast({ 'duration': monthYear, 'org': org, 'team': team })
       .then(response => {
         setLeaveForecast(response);
         console.log(response);
@@ -88,92 +88,93 @@ const processDataForTableView = (): any => {
     fetchLeaveForcastReport();
   }
 
-React.useEffect(() => {
-  if (typeof leaveForecast?.length !== 'undefined') {
-    processDataForTableView();
+  React.useEffect(() => {
+    if (typeof leaveForecast?.length !== 'undefined') {
+      processDataForTableView();
 
-  }
-}, [leaveForecast])
+    }
+  }, [leaveForecast])
 
 
   return (
 
     <PageContainer title="LTS | Reports">
-        <Card>
-            <CardContent>
-                <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={12} sm={4} md={4} lg={2}>
-                        <TextField
-                            fullWidth
-                            id="organization"
-                            label="Organization"
-                            variant="outlined"
-                            onChange={handleOrgChange}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={4} md={4} lg={2}>
-                        <TextField
-                            fullWidth
-                            id="team"
-                            label="Team"
-                            variant="outlined"
-                            onChange={handleTeamChange}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={4} md={4} lg={2}>
-                        <TextField
-                            fullWidth
-                            id="month"
-                            select
-                            label="Month"
-                            onChange={onMonthChange}
-                        >
-                            {MonthList.map((month) => (
-                                <MenuItem key={month.value} value={month.value}>
-                                    {month.label}
-                                </MenuItem>
-                            ))}
-                        </TextField>
-                    </Grid>
-                    <Grid item xs={12} sm={4} md={4} lg={2}>
-                        <Button
-                            fullWidth
-                            id="view"
-                            variant="contained"
-                            onClick={viewReport}
-                        >
-                            View
-                        </Button>
-                    </Grid>
-                    <Grid item xs={12} sm={4} md={4} lg={2}>
-                        <Button
-                            fullWidth
-                            id="download"
-                            variant="contained"
-                            onClick={viewReport}
-                            disabled
-                        >
-                            Download
-                        </Button>
-                    </Grid>
-                </Grid>
-            </CardContent>
-        </Card>
-
-        <Box sx={{ height: 400, maxWidth: "calc(100vw - 36px)" }}>
-            <DataGrid
-              rows={processedLeaveForcastData}
-              columns={LeaveForecastReportColumnList}
-              getRowId={(row) => row.employeeId}
-              initialState={{
-                pagination: {
-                  paginationModel: {
-                    pageSize: 5,
-                  },
-                },
-              }}
-            />
-        </Box> 
+      <Card>
+        <CardContent>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} sm={4} md={4} lg={2}>
+              <TextField
+                fullWidth
+                id="organization"
+                label="Organization"
+                variant="outlined"
+                onChange={handleOrgChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} md={4} lg={2}>
+              <TextField
+                fullWidth
+                id="team"
+                label="Team"
+                variant="outlined"
+                onChange={handleTeamChange}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4} md={4} lg={2}>
+              <TextField
+                fullWidth
+                id="month"
+                select
+                label="Month"
+                onChange={onMonthChange}
+              >
+                {MonthList.map((month) => (
+                  <MenuItem key={month.value} value={month.value}>
+                    {month.label}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={4} md={4} lg={2}>
+              <Button
+                fullWidth
+                id="view"
+                variant="contained"
+                onClick={viewReport}
+              >
+                View
+              </Button>
+            </Grid>
+            <Grid item xs={12} sm={4} md={4} lg={2}>
+              <Button
+                fullWidth
+                id="download"
+                variant="contained"
+                onClick={viewReport}
+                disabled
+              >
+                Download
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <Box sx={{ height: 400, maxWidth: "calc(100vw - 36px)" }}>
+                <DataGrid
+                  rows={processedLeaveForcastData}
+                  columns={LeaveForecastReportColumnList}
+                  getRowId={(row) => row.employeeId}
+                  initialState={{
+                    pagination: {
+                      paginationModel: {
+                        pageSize: 5,
+                      },
+                    },
+                  }}
+                />
+              </Box>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
     </PageContainer>)
 };
 
