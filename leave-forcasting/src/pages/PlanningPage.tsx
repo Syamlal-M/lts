@@ -7,10 +7,9 @@ import PlanningService from "service/PlanningService";
 import { LeavePlanningDataField } from "types/LeavePlanningTable";
 import LeavePlanningColumnList from "data/LeavePlanningColumnList";
 import {
-    Box, Button, Card, CardContent,
+    Box, Button, Card, CardContent, CardHeader,
     DataGrid, Grid, MenuItem, TextField
 } from "components/shared-ui";
-import { CardHeader } from "@mui/material";
 
 interface Filter {
     org: string;
