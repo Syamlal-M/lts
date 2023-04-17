@@ -6,7 +6,6 @@ interface PageContainerProps {
     children?: React.ReactNode,
     title?: string,
     disableGutters?: boolean,
-    fixed?: boolean,
     maxWidth?: false | Breakpoint,
     sx?: SxProps,
 }
