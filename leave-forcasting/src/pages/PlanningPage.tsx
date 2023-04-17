@@ -10,6 +10,7 @@ import {
     Box, Button, Card, CardContent,
     DataGrid, Grid, MenuItem, TextField
 } from "components/shared-ui";
+import { CardHeader } from "@mui/material";
 
 interface Filter {
     org: string;
@@ -131,6 +132,7 @@ const PlanningPage = () => {
     return (
         <PageContainer title="LTS | Leave Forecast">
             <Card>
+                <CardHeader title="Leave Planning" titleTypographyProps={{ variant: "subtitle1", fontWeight: 600 }} />
                 <CardContent>
                     <Grid container spacing={2} alignItems="center">
                         <Grid item xs={12} sm={4} md={3} lg={2}>
