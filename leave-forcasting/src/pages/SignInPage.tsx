@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToggle } from "usehooks-ts";
-import { IRequest } from "types/api/employee/Login.types";
+import { SigninRequest } from "types/api/employee/Authentication.types";
 import { resetToken, setToken } from "utils/CookieUtils";
 import { getRouteUrl } from "utils/AccessPointUtils";
 import { PageContainer } from "components/layout";
@@ -48,7 +48,7 @@ const SignInPage = () => {
         setUserDetails(user => ({ ...user, [name]: value }));
     };
 
-    const handleSignIn = (user: IRequest): void => {
+    const handleSignIn = (user: SigninRequest): void => {
         AuthenticationService.login(user)
             .then((response) => {
                 setToken(response);

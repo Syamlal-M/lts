@@ -1,4 +1,6 @@
 import { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
+import { getRouteUrl } from 'utils/AccessPointUtils';
+import { resetToken } from 'utils/CookieUtils';
 
 function ResponseStatusMiddleware(axiosClient: AxiosInstance): void {
   axiosClient.interceptors.response.use(
@@ -11,6 +13,8 @@ function ResponseStatusMiddleware(axiosClient: AxiosInstance): void {
         // Handle bad responses here
       } else if (error.response && error.response.status === 401) {
         // Handle unauthorized responses here
+        resetToken();
+        window.location.href = getRouteUrl('SIGN_IN');
       } else if (error.response && error.response.status === 404) {
         // Handle not found responses here
       } else if (error.response && error.response.status === 500) {

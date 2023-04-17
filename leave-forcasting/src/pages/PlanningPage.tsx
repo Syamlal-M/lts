@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "usehooks-ts";
-import MonthList from "data/MonthList";
+// import MonthList from "data/MonthList";
 import { PageContainer } from "components/layout";
 import { KeyValueObject } from "types/KeyValueList";
 import PlanningService from "service/PlanningService";
+import { LeavePlanningDataField } from "types/LeavePlanningTable";
 import LeavePlanningColumnList from "data/LeavePlanningColumnList";
 import {
     Box, Button, Card, CardContent,
@@ -33,28 +34,74 @@ const DEFAULT_FILTER_VALUE: Filter = {
 const PlanningPage = () => {
     const [filter, setFilter] = useState<Filter>(DEFAULT_FILTER_VALUE);
     const debounceFilter = useDebounce(filter);
-    const [planningData, setPlanningData] = useState<any>([]);
+
+    const [orgList, setOrgList] = useState<KeyValueObject[]>([]);
+    const [teamList, setTeamList] = useState<KeyValueObject[]>([]);
+    const [locationList, setLocationList] = useState<KeyValueObject[]>([]);
+
+    // const selectableMonthList: KeyValueObject[] = [{ label: "Select", value: "" }, ...MonthList]
+    // const [monthList] = useState<KeyValueObject[]>(selectableMonthList);
+
+    const [planningData, setPlanningData] = useState<LeavePlanningDataField[]>([]);
 
     const getEmployees = useCallback((queryParams: Filter = debounceFilter) => {
         PlanningService.searchEmployees(queryParams)
             .then((response: any) => {
-                const processedData = processPlanningData(response);
+                const processedData = processPlanningData(response.content);
                 setPlanningData(processedData);
             })
             .catch(error => {
                 console.log(error);
-            })
+            });
     }, [debounceFilter]);
+
+    const getOrganizations = useCallback(() => {
+        PlanningService.getOrganizationList()
+            .then(response => {
+                const orgList = processDataList(response)
+                setOrgList(orgList);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }, []);
+
+    const getTeams = useCallback(() => {
+        PlanningService.getTeamList()
+            .then(response => {
+                const teamList = processDataList(response)
+                setTeamList(teamList);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }, []);
+
+    const getLocations = useCallback(() => {
+        PlanningService.getLocationList()
+            .then(response => {
+                const locationList = processDataList(response)
+                setLocationList(locationList);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }, []);
+
+    useEffect(() => {
+        getOrganizations();
+        getTeams();
+        getLocations();
+    }, [getOrganizations, getTeams, getLocations]);
 
     useEffect(() => {
         getEmployees();
     }, [getEmployees]);
 
-    const processPlanningData = (response: any) => {
-        return response.content.map((row: any, index: any) => {
+    const processPlanningData = (content: any[]): LeavePlanningDataField[] => {
+        return content.map((row: any, index: number): LeavePlanningDataField => {
             return {
-                id: index,
-                empId: row.employeeId,
+                id: row.employeeId || index,
                 name: row.employeeName,
                 nameInClientRecords: row.nameInClientRecords,
                 jobTitle: row.jobTitle?.jobTitle
@@ -62,6 +109,13 @@ const PlanningPage = () => {
         })
     }
 
+    const processDataList = (dataList: string[]): KeyValueObject[] => {
+        const DEFAULT_DATA: KeyValueObject = { label: "Select", value: "" };
+        return [DEFAULT_DATA, ...dataList.map((listItem) => ({
+            label: listItem,
+            value: listItem,
+        }))];
+    }
 
     const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setFilter((prevFilter) => {
@@ -81,36 +135,67 @@ const PlanningPage = () => {
                     <Grid container spacing={2} alignItems="center">
                         <Grid item xs={12} sm={4} md={3} lg={2}>
                             <TextField
+                                select
                                 fullWidth
                                 name="org"
                                 label="Organization"
                                 variant="outlined"
                                 value={filter.org}
                                 onChange={handleFormChange}
-                            />
+                            >
+                                {orgList.map((org: KeyValueObject) => (
+                                    <MenuItem key={org.value} value={org.value}>
+                                        {org.label}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
                         </Grid>
                         <Grid item xs={12} sm={4} md={3} lg={2}>
                             <TextField
+                                select
                                 fullWidth
                                 name="team"
                                 label="Team"
                                 variant="outlined"
                                 value={filter.team}
                                 onChange={handleFormChange}
-                            />
+                            >
+                                {teamList.map((team: KeyValueObject) => (
+                                    <MenuItem key={team.value} value={team.value}>
+                                        {team.label}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
                         </Grid>
-                        <Grid item xs={12} sm={4} md={3} lg={2}>
+                        {/* <Grid item xs={12} sm={4} md={3} lg={2}>
                             <TextField
+                                select
                                 fullWidth
                                 name="month"
-                                select
                                 label="Month"
                                 value={filter.month}
                                 onChange={handleFormChange}
                             >
-                                {MonthList.map((month: KeyValueObject) => (
+                                {monthList.map((month: KeyValueObject) => (
                                     <MenuItem key={month.value} value={month.value}>
                                         {month.label}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </Grid> */}
+                        <Grid item xs={12} sm={4} md={3} lg={2}>
+                            <TextField
+                                select
+                                fullWidth
+                                name="location"
+                                label="Location"
+                                variant="outlined"
+                                value={filter.location}
+                                onChange={handleFormChange}
+                            >
+                                {locationList.map((role: KeyValueObject) => (
+                                    <MenuItem key={role.value} value={role.value}>
+                                        {role.label}
                                     </MenuItem>
                                 ))}
                             </TextField>

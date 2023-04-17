@@ -1,13 +1,13 @@
-interface IRequest {
-    username: string,
-    password: string,
-}
-
 interface Role {
     [key: string]: string;
 }
 
-interface IResponse {
+interface SigninRequest {
+    username: string,
+    password: string,
+}
+
+interface SigninResponse {
     username: string;
     userId: string;
     token: string;
@@ -15,4 +15,4 @@ interface IResponse {
     access: string[];
 }
 
-export type { IRequest, IResponse };
+export type { SigninRequest, SigninResponse };

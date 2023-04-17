@@ -1,7 +1,7 @@
 import { GridColDef } from "./DataGrid";
 
 interface LeavePlanningDataField {
-    empId: number | string;
+    id: number | string;
     name: string;
     nameInClientRecords: string;
     jobTitle: string;
@@ -12,7 +12,7 @@ type LeavePlanningColumn<T extends keyof LeavePlanningDataField> = GridColDef & 
 };
 
 type LeavePlanningColumnList = [
-    LeavePlanningColumn<"empId">,
+    LeavePlanningColumn<"id">,
     LeavePlanningColumn<"name">,
     LeavePlanningColumn<"nameInClientRecords">,
     LeavePlanningColumn<"jobTitle">,
