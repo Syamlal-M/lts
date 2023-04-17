@@ -1,9 +1,9 @@
 import Api from "./_Api";
 import { getApiUrl } from "utils/AccessPointUtils";
-import { IRequest, IResponse } from "types/api/employee/Login.types";
+import { SigninRequest, SigninResponse } from "types/api/employee/Authentication.types";
 
 const AuthenticationService = {
-    login: (request: IRequest): Promise<IResponse> => {
+    login: (request: SigninRequest): Promise<SigninResponse> => {
         const url = getApiUrl("LOGIN");
         return Api.post(url, request);
     },
