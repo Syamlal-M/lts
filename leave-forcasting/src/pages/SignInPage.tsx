@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToggle } from "usehooks-ts";
 import { IRequest } from "types/api/employee/Login.types";
@@ -32,15 +32,16 @@ const SignInPage = () => {
     const [showPassword, setShowPassword] = useToggle(false);
     const [userDetails, setUserDetails] = useState<UserDetails>(DEFAULT_USER_DETAILS)
 
+    const redirectToBasePage = useCallback(() => {
+        navigate(getRouteUrl("PLANNING"));
+    }, [navigate]);
+
     useEffect(() => {
         if (isAutheticated()) {
             redirectToBasePage();
         }
-    }, []);
+    }, [redirectToBasePage]);
 
-    const redirectToBasePage = () => {
-        navigate(getRouteUrl("PLANNING"));
-    };
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const { name, value } = event.target;
@@ -55,6 +56,8 @@ const SignInPage = () => {
             })
             .catch(error => {
                 resetToken();
+                alert(`Login failed ${JSON.stringify(error)}`);
+                setUserDetails(DEFAULT_USER_DETAILS);
             })
     };
 

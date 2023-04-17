@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useDebounce } from "usehooks-ts";
 import MonthList from "data/MonthList";
 import { PageContainer } from "components/layout";
 import { KeyValueObject } from "types/KeyValueList";
+import PlanningService from "service/PlanningService";
+import LeavePlanningColumnList from "data/LeavePlanningColumnList";
 import {
     Box, Button, Card, CardContent,
     DataGrid, Grid, MenuItem, TextField
 } from "components/shared-ui";
-import PlanningService from "service/PlanningService";
-import LeavePlanningColumnList from "data/LeavePlanningColumnList";
 
-interface IFormData {
+interface Filter {
     org: string;
     team: string;
     month: string;
@@ -19,7 +20,7 @@ interface IFormData {
     limit: number
 }
 
-const defaultFormData: IFormData = {
+const DEFAULT_FILTER_VALUE: Filter = {
     org: "",
     team: "",
     month: "",
@@ -30,38 +31,47 @@ const defaultFormData: IFormData = {
 };
 
 const PlanningPage = () => {
-    const [formData, setFormData] = useState<IFormData>(defaultFormData);
+    const [filter, setFilter] = useState<Filter>(DEFAULT_FILTER_VALUE);
+    const debounceFilter = useDebounce(filter);
     const [planningData, setPlanningData] = useState<any>([]);
 
-    useEffect(() => {
-        getEmployees();
-    }, []);
-
-    const processPlanningData = (response: any) => {
-        return response.content.map((row: any, index: any) => {
-            return { id: index, ...row }
-        })
-    }
-
-    const getEmployees = (queryParams: IFormData = formData) => {
+    const getEmployees = useCallback((queryParams: Filter = debounceFilter) => {
         PlanningService.searchEmployees(queryParams)
             .then((response: any) => {
-                let data = processPlanningData(response);
-                setPlanningData(data);
+                const processedData = processPlanningData(response);
+                setPlanningData(processedData);
             })
             .catch(error => {
                 console.log(error);
             })
-    };
+    }, [debounceFilter]);
+
+    useEffect(() => {
+        getEmployees();
+    }, [getEmployees]);
+
+    const processPlanningData = (response: any) => {
+        return response.content.map((row: any, index: any) => {
+            return {
+                id: index,
+                empId: row.employeeId,
+                name: row.employeeName,
+                nameInClientRecords: row.nameInClientRecords,
+                jobTitle: row.jobTitle?.jobTitle
+            }
+        })
+    }
+
 
     const handleFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData((prevFormData) => {
-            return { ...prevFormData, [event.target.name]: event.target.value };
+        setFilter((prevFilter) => {
+            const { name, value } = event.target;
+            return { ...prevFilter, [name]: value };
         });
     };
 
     const handleSearch = () => {
-        getEmployees(formData);
+        getEmployees(filter);
     };
 
     return (
@@ -75,7 +85,7 @@ const PlanningPage = () => {
                                 name="org"
                                 label="Organization"
                                 variant="outlined"
-                                value={formData.org}
+                                value={filter.org}
                                 onChange={handleFormChange}
                             />
                         </Grid>
@@ -85,7 +95,7 @@ const PlanningPage = () => {
                                 name="team"
                                 label="Team"
                                 variant="outlined"
-                                value={formData.team}
+                                value={filter.team}
                                 onChange={handleFormChange}
                             />
                         </Grid>
@@ -95,7 +105,7 @@ const PlanningPage = () => {
                                 name="month"
                                 select
                                 label="Month"
-                                value={formData.month}
+                                value={filter.month}
                                 onChange={handleFormChange}
                             >
                                 {MonthList.map((month: KeyValueObject) => (
@@ -111,7 +121,7 @@ const PlanningPage = () => {
                                 name="name"
                                 label="Name"
                                 variant="outlined"
-                                value={formData.name}
+                                value={filter.name}
                                 onChange={handleFormChange}
                             />
                         </Grid>
@@ -133,6 +143,11 @@ const PlanningPage = () => {
                         <Grid item xs={12}>
                             <Box sx={{ height: 300, maxWidth: "calc(100vw - 80px)" }}>
                                 <DataGrid
+                                    hideFooter
+                                    disableColumnFilter
+                                    disableColumnMenu
+                                    disableColumnSelector
+                                    disableRowSelectionOnClick
                                     rows={planningData}
                                     columns={LeavePlanningColumnList}
                                 />
