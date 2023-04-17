@@ -2,16 +2,27 @@ import Cookies from 'universal-cookie';
 
 type Token = Record<any, any>;
 
-const DEFAULT_CONFIG = {
+type TokenConfig = {
+    path?: string;
+    expires?: Date;
+    maxAge?: number;
+    domain?: string;
+    secure?: boolean;
+    httpOnly?: boolean;
+    sameSite?: boolean;
+};
+
+const DEFAULT_CONFIG: TokenConfig = {
     path: '/',
     httpOnly: false,
 };
 
-function setToken(token: Token, config: Token = DEFAULT_CONFIG) {
+function setToken(token: Token, config: TokenConfig = {}) {
     const cookies = new Cookies();
+    const options = Object.assign({}, DEFAULT_CONFIG, config);
 
     Object.entries(token).forEach(([key, value]) => {
-        cookies.set(key, value, config);
+        cookies.set(key, value, options);
     });
 }
 

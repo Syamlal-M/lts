@@ -1,4 +1,4 @@
-import { SxProps } from "@mui/material";
+import { SxProps, Breakpoint } from "@mui/material";
 import { Container } from "components/shared-ui";
 import { useDocumentTitle } from "usehooks-ts";
 
@@ -7,16 +7,17 @@ interface PageContainerProps {
     title?: string,
     disableGutters?: boolean,
     fixed?: boolean,
+    maxWidth?: false | Breakpoint,
     sx?: SxProps,
-    component?: React.ElementType
 }
 
 PageContainer.defaultProps = {
-    title: "Leave Tracker System"
+    title: "Leave Tracker System",
+    maxWidth: false,
 }
 
 function PageContainer(props: PageContainerProps) {
-    const { children, title, disableGutters, sx, ...rest } = props;
+    const { children, title, disableGutters, sx, maxWidth } = props;
 
     useDocumentTitle(`${title}`);
 
@@ -24,7 +25,7 @@ function PageContainer(props: PageContainerProps) {
         <Container
             disableGutters={disableGutters}
             sx={sx ? sx : disableGutters ? { py: 0 } : { py: 3 }}
-            {...rest}
+            maxWidth={maxWidth}
         >
             {children}
         </Container>
