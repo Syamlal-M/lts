@@ -10,7 +10,8 @@ import {
 	Typography,
 } from 'components/shared-ui';
 import { useState } from 'react';
-import EmplolyeeSummary from './EmployeeSummary';
+import EmployeeService from 'service/EmployeeService';
+import EmployeeSummary from './EmployeeSummary';
 
 const DashboardPage = () => {
 	const [fileName, setFileName] = useState('');
@@ -18,25 +19,11 @@ const DashboardPage = () => {
 	const [uploadSuccess, setUploadSuccess] = useState(false);
 	const [uploadError, setUploadError] = useState(false);
 
-	const UPLOAD_ENDPOINT = '/api/employee/import';
 
-	const handleSubmit = async (e: any) => {
-		setUploadProgress(true);
-		console.log(e);
-		e.preventDefault();
-		console.log(e.target.file);
-		let formData = new FormData();
-		formData.append('file', fileName);
-		var requestOptions = {
-			method: 'PUT',
-			body: formData,
-			redirect: 'follow',
-		};
-
-		await fetch('/api/employee/import?file')
-			.then((response) => response.json())
-			.then((result) => {
-				if (result.response) {
+	const fetchEmployee = () => {
+		EmployeeService.fetchEmployee({ 'file': fileName, redirect: 'follow' })
+			.then((response) => {
+				if (response) {
 					setUploadSuccess(true);
 				} else {
 					setUploadSuccess(false);
@@ -44,14 +31,19 @@ const DashboardPage = () => {
 				setUploadProgress(false);
 			})
 			.catch((error) => {
-				console.log('error', error);
+				console.log(error);
 				setUploadProgress(false);
-				setUploadError(true);
-			});
+			setUploadError(true);});
+	};
+
+	const handleSubmit = async (e: any) => {
+		setUploadProgress(true);
+		e.preventDefault();
+		fetchEmployee();
+
 	};
 
 	const handleFileChange = (event: any) => {
-		console.log(event.target.files[0]);
 
 		event.preventDefault();
 		setFileName(event.target.files[0]);
@@ -62,7 +54,7 @@ const DashboardPage = () => {
 			<Card>
 				<CardContent>
 					<Typography variant="subtitle1" fontWeight={600}>
-						Import Emplolyees
+						Import Employees
 					</Typography>
 				</CardContent>
 				<CardContent>
@@ -141,12 +133,12 @@ const DashboardPage = () => {
 			<Card style={{ marginBlockStart: '25px' }}>
 				<CardContent>
 					<Typography variant="subtitle1" fontWeight={600}>
-						Emplolyee Summary
+						Employee Summary
 					</Typography>
 				</CardContent>
 				<CardContent>
 					<Typography>
-						<EmplolyeeSummary />
+						<EmployeeSummary />
 					</Typography>
 				</CardContent>
 			</Card>
