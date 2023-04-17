@@ -5,11 +5,11 @@ import EmployeeSummaryColumnList from 'data/EmployeeSummaryColumnList';
 import EmployeeSummaryService from 'service/EmployeeSummaryService';
 
 const EmployeeSummary = () => {
-	const [empList, setEmpList] = React.useState<any>('');
+	const [empList, setEmpList] = React.useState<any[]>([]);
 	const fetchEmployeeSummary = () => {
 		EmployeeSummaryService.fetchForecast()
-			.then((response) => {
-				setEmpList(response);
+			.then((response: any) => {
+				setEmpList(response.content);
 			})
 			.catch((error) => console.log(error));
 	};

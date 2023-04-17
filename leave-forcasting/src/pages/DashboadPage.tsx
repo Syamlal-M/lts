@@ -33,7 +33,8 @@ const DashboardPage = () => {
 			.catch((error) => {
 				console.log(error);
 				setUploadProgress(false);
-			setUploadError(true);});
+				setUploadError(true);
+			});
 	};
 
 	const handleSubmit = async (e: any) => {
@@ -81,7 +82,7 @@ const DashboardPage = () => {
 														type="file"
 														name="file"
 														onChange={handleFileChange}
-														// accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+													// accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
 													/>
 												</Grid>
 												<Grid item>
@@ -109,7 +110,7 @@ const DashboardPage = () => {
 										fullWidth
 										id=""
 										variant="outlined"
-										onClick={() => {}}
+										onClick={() => { }}
 										style={{
 											borderColor: '#0C9486cc',
 											color: '#47444D',
@@ -123,7 +124,7 @@ const DashboardPage = () => {
 							</Grid>
 						</Grid>
 						<Grid item>
-							<Button fullWidth id="" variant="contained" onClick={() => {}}>
+							<Button fullWidth id="" variant="contained" onClick={() => { }}>
 								Download Table
 							</Button>
 						</Grid>
@@ -137,9 +138,7 @@ const DashboardPage = () => {
 					</Typography>
 				</CardContent>
 				<CardContent>
-					<Typography>
-						<EmployeeSummary />
-					</Typography>
+					<EmployeeSummary />
 				</CardContent>
 			</Card>
 		</PageContainer>
