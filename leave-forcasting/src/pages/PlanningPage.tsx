@@ -131,7 +131,7 @@ const PlanningPage = () => {
     return (
         <PageContainer title="LTS | Leave Forecast">
             <Card>
-                <CardHeader title="Leave Planning" titleTypographyProps={{ variant: "subtitle1", fontWeight: 600 }} />
+                <CardHeader title="Leave Planning" />
                 <CardContent>
                     <Grid container spacing={2} alignItems="center">
                         <Grid item xs={12} sm={4} md={3} lg={2}>

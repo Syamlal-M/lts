@@ -1,8 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import { ThemeProvider as MuiThemeProvider, useMediaQuery } from "@mui/material";
 import { ContextProvider } from "types/ContextProvider";
-import LightTheme from "lib/mui/LightTheme";
-import DarkTheme from "lib/mui/DarkTheme";
+import { DarkTheme, LightTheme } from "lib/mui/Theme";
 import { useLocalStorage } from "usehooks-ts";
 
 type ThemeProviderProps = ContextProvider;
