@@ -64,28 +64,37 @@ public class StartupInit {
             }
             rolesRepository.save(EmployeeRole.builder().roleName(role.name()).permissionsList(permission).build());
         });
-        service.createEmployeeAuth(EmployeeRegistrationRequest.builder().employeeId("A-100").emailId("user@gmail.com").password("password").build());
-        service.updateRole("A-100","ADMIN");
-        EmployeeInfoDto emp = employeeRepository.findByEmployeeId("A-100").get();
-        emp.setEmployeeId("A-100");
-        emp.setEmployeeName("EmployeeName");
-        emp.setNameInClientRecords("ExpediaFgName");
-        emp.setVendorName("VendorName");
-        emp.setJobTitle(JobTitleDto.builder().jobTitle("JobTitle").build());
-        emp.setHm("Hm");
+
+        createEmployee("A-100", "SUPER_ADMIN");
+        createEmployee("A-101", "ADMIN");
+        createEmployee("A-102", "TEAM_USER");
+        createEmployee("A-103", "USER");
+    }
+
+    private void createEmployee(String employeeId, String role) {
+        service.createEmployeeAuth(EmployeeRegistrationRequest.builder()
+                .employeeId(employeeId).emailId(String.format("%s@gmail.com", employeeId))
+                .password("password").roles(List.of(role)).build());
+        EmployeeInfoDto emp = employeeRepository.findByEmployeeId(employeeId).get();
+        emp.setEmployeeId(employeeId);
+        emp.setEmployeeName(String.format("%s-EmployeeName", employeeId));
+        emp.setNameInClientRecords(String.format("%s-ExpediaFgName", employeeId));
+        emp.setVendorName(String.format("%s-VendorName", employeeId));
+        emp.setJobTitle(JobTitleDto.builder().jobTitle(String.format("%s-JobTitle", employeeId)).build());
+        emp.setHm(String.format("%s-Hm", employeeId));
         emp.setBillRate(200.0);
         emp.setCurrency("USD");
         emp.setCountry(CountryDto.builder().country("City").build());
         emp.setCity(EmployeeLocationDto.builder().location("Country").build());
         emp.setSow(SowDto.builder().sow("SOW").build());
-        emp.setOrg(OrganisationDto.builder().organisation("Org").build());
-        emp.setTeam(TeamDto.builder().teamName("Team").build());
+        emp.setOrg(OrganisationDto.builder().organisation(String.format("%s-Org", employeeId)).build());
+        emp.setTeam(TeamDto.builder().teamName(String.format("%s-Team", employeeId)).build());
         emp.setBillability("Billability");
         emp.setRemarks("Remarks");
         emp.setCreated(LocalDateTime.now());
         emp.setUpdated(LocalDateTime.now());
         employeeRepository.save(emp);
-        Optional<EmployeeInfoDto> employee = employeeRepository.findEmployeeById("A-100");
+        Optional<EmployeeInfoDto> employee = employeeRepository.findEmployeeById(employeeId);
         EmployeeLeaveForcastDto forecast = new EmployeeLeaveForcastDto();
         forecast.setEmployee(employee.get());
         forecast.setYear(2023);
@@ -95,5 +104,6 @@ public class StartupInit {
         forecast.setNoOfDays(2);
         forecast.setToDate(LocalDate.now().plusDays(1));
         leaveForecastRepository.save(forecast);
+
     }
 }

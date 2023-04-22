@@ -32,6 +32,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -166,12 +167,12 @@ public class EmployeeServiceImpl implements EmployeeService{
         if (file.getSize() > (10 * 1024 * 1024)) {
             throw new CustomException("file size exceeded more than 10MB");
         }
-        
+
          String extension = FilenameUtils.getExtension(file.getOriginalFilename());
         if (!extension.equalsIgnoreCase("xlsx")){
             throw new CustomException("File type not supported. Supported type is xlsx");
         }
-        
+
         boolean isUploadCompleted = false;
         XSSFWorkbook workbook;
         try {
@@ -196,8 +197,8 @@ public class EmployeeServiceImpl implements EmployeeService{
                 saveOrUpdateEmployees(employeeIdList, employeeFormMap, existingEmployeeMap);
             }
             isUploadCompleted = true;
-            
-        } 
+
+        }
         catch(CSVExceptionWrapper csvException){
             throw csvException;
         }
@@ -206,7 +207,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         }
         return new BasicResponseView(isUploadCompleted);
     }
-    
+
     private void formValidation(List<EmployeeRegistrationRequest> employeeFormList) {
         try {
             ValidationUtil.validate(employeeFormList);
@@ -218,7 +219,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         }
 
     }
-    
+
     private void findExistingEmployees(List<String> employeeIdList,Map<String, EmployeeInfoDto> existingEmployeeMap) throws Exception{
         try{
             int size = employeeIdList.size();
@@ -242,7 +243,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         }catch(Exception ex){
             throw new Exception();
         }
-            
+
     }
 
     @Override
@@ -258,7 +259,7 @@ public class EmployeeServiceImpl implements EmployeeService{
                saveOrUpdateEmployees(Collections.singletonList(request.getEmployeeId()), employeeRequestMap, Collections.EMPTY_MAP);
            }
     }
-    
+
     private void saveOrUpdateEmployees(List<String> employeeIdList, Map<String, EmployeeRegistrationRequest> employeeFormMap, Map<String, EmployeeInfoDto> existingEmployeeMap) throws Exception {
         try {
             List<EmployeeInfoDto> saveUpdateEmployeeList = new ArrayList<>();
@@ -317,12 +318,36 @@ public class EmployeeServiceImpl implements EmployeeService{
                 case TEAM_USER: return employeeRepository.findAll(hasEmployeesByEmployeeName(employeeName)
                         .and(hasEmployeesByTeam(emp.getTeam().getTeamName())), pageable);
                 case ADMIN:
-                case SUPER_ADMIN: return employeeRepository.findAll(hasEmployeesByEmployeeName(employeeName).or(hasEmployeesByTeam(team)).or(hasEmployeesByOrganisation(organization)), pageable);
+                case SUPER_ADMIN: if(employeeName == null && organization == null && team == null && city == null) {
+                    return employeeRepository.findAll(pageable);
+                } else {
+                    return employeeRepository.findAll(mapQuery(employeeName, organization, team, city), pageable);
+                }
             }
         }
         // map the dto to response Model
         return null;
     }
+
+    private Specification<EmployeeInfoDto> mapQuery(String employeeName, String organization, String team, String city) {
+        Specification<EmployeeInfoDto> finalQuery = null;
+        finalQuery = addToQuery(employeeName, hasEmployeesByEmployeeName(employeeName), finalQuery);
+        finalQuery = addToQuery(organization, hasEmployeesByOrganisation(organization), finalQuery);
+        finalQuery = addToQuery(team, hasEmployeesByTeam(team), finalQuery);
+        return finalQuery;
+    }
+
+    private Specification<EmployeeInfoDto> addToQuery(String value, Specification<EmployeeInfoDto> valueCondition, Specification<EmployeeInfoDto> finalQuery) {
+        if(value != null) {
+            if(finalQuery == null) {
+                return valueCondition;
+            } else {
+                return finalQuery.and(valueCondition);
+            }
+        }
+        return finalQuery;
+    }
+
 
     private Optional<Roles> getPriorityRole() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

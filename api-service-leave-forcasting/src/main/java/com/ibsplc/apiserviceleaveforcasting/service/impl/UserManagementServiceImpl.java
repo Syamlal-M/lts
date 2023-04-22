@@ -56,8 +56,13 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
         user.setEmployeeId(request.getEmployeeId());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmailId(request.getEmailId());
-        Optional<EmployeeRole> role = rolesRepository.findByRoleName("ADMIN");
-        user.setRoles(Arrays.asList(role.get()));
+        List<EmployeeRole> roles = null;
+        if(request.getRoles().size() > 0) {
+            roles = rolesRepository.findByRoleNameIn(request.getRoles());
+        } else {
+            roles = rolesRepository.findByRoleNameIn(List.of("USER"));
+        }
+        user.setRoles(roles);
         employeeInfoRepository.save(user);
     }
 

@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public enum Roles {
 
-    SUPER_ADMIN("SUPER ADMIN", 1),
+    SUPER_ADMIN("SUPER_ADMIN", 1),
     ADMIN("ADMIN", 5),
-    TEAM_USER("TEAM USER", 10),
+    TEAM_USER("TEAM_USER", 10),
     USER("USER", 15);
     private String role;
     private int priority;
@@ -22,6 +22,6 @@ public enum Roles {
     }
 
     public static Optional<Roles> getPriority(List<String> roles) {
-        return Arrays.stream(values()).filter(r -> roles.contains(r.role)).min(Enum::compareTo);
+        return Arrays.stream(values()).filter(r -> roles.contains(r.role)).sorted().findFirst();
     }
 }

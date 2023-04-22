@@ -9,6 +9,7 @@ import com.ibsplc.apiserviceleaveforcasting.repository.LeaveForecastRepository;
 import com.ibsplc.apiserviceleaveforcasting.response.*;
 import com.ibsplc.apiserviceleaveforcasting.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -88,11 +89,24 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private Map<EmployeeInfoDto, List<EmployeeLeaveForcastDto>> getEmployeeLeaveForcastDtos(String month, String year, String organization, String team) {
-        List<EmployeeLeaveForcastDto> leaveSummaryResponseList = leaveForecastRepository.findAll(hasLeaveForecastByOrganisation(organization)
-                .or((hasLeaveForecastByMonth(month).and(hasLeaveForecastByYear(year)))
-                        .or(hasLeaveForecastByTeam(team))));
-        return leaveSummaryResponseList.stream().collect(groupingBy(leave -> leave.getEmployee()));
+        Specification<EmployeeLeaveForcastDto> spec = null;
+        spec = addToQuery(organization, hasLeaveForecastByOrganisation(organization), spec);
+        spec = addToQuery(team, hasLeaveForecastByTeam(team), spec);
+        spec = addToQuery(month, hasLeaveForecastByMonth(month), spec);
+        spec = addToQuery(year, hasLeaveForecastByYear(year), spec);
+        List<EmployeeLeaveForcastDto> leaveSummaryResponseList = leaveForecastRepository.findAll(spec);
+        return leaveSummaryResponseList.stream().collect(groupingBy(EmployeeLeaveForcastDto::getEmployee));
 
+    }
+
+    private Specification<EmployeeLeaveForcastDto> addToQuery(String value, Specification<EmployeeLeaveForcastDto> valueCondition, Specification<EmployeeLeaveForcastDto> finalQuery) {
+        if(value != null) {
+            if(finalQuery == null) {
+                return valueCondition;
+            } else {
+                return finalQuery.and(valueCondition);
+            }
+        } return finalQuery;
     }
 
     @Override
