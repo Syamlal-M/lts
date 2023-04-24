@@ -19,6 +19,10 @@ import com.ibsplc.apiserviceleaveforcasting.enums.Roles;
 import com.ibsplc.apiserviceleaveforcasting.repository.*;
 import com.ibsplc.apiserviceleaveforcasting.request.EmployeeRegistrationRequest;
 import com.ibsplc.apiserviceleaveforcasting.request.LeaveForcastRequest;
+import com.ibsplc.apiserviceleaveforcasting.response.EmployeeResponse;
+import com.ibsplc.apiserviceleaveforcasting.response.EmployeeRolePermissionResponse;
+import com.ibsplc.apiserviceleaveforcasting.response.EmployeeRoleResponse;
+import com.ibsplc.apiserviceleaveforcasting.view.EmployeeInfoResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -81,8 +85,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Override
     public void exportEmployees(int page, int limit, String employeeName, String organization, String team, String location, HttpServletResponse response) throws Exception {
-        Page<EmployeeInfoDto> employeeViewPage = searchEmployee(0, Integer.MAX_VALUE, employeeName, organization, team, location);
-        List<EmployeeInfoDto> employeeViews = employeeViewPage.get().collect(Collectors.toList());
+        List<EmployeeResponse> employeeViews = searchEmployee(0, Integer.MAX_VALUE, employeeName, organization, team, location);
         String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=report.xlsx";
         response.setHeader(headerKey, headerValue);
@@ -133,7 +136,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         cell.setCellStyle(style);
     }
 
-    private void writeDataLines(XSSFWorkbook workbook, XSSFSheet sheet, List<EmployeeInfoDto> employeeViews) {
+    private void writeDataLines(XSSFWorkbook workbook, XSSFSheet sheet, List<EmployeeResponse> employeeViews) {
         int rowCount = 1;
 
         CellStyle style = workbook.createCellStyle();
@@ -141,7 +144,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         font.setFontHeight(14);
         style.setFont(font);
 
-        for (EmployeeInfoDto employeeView : employeeViews) {
+        for (EmployeeResponse employeeView : employeeViews) {
             Row row = sheet.createRow(rowCount++);
             int columnCount = 0;
             createCell(row, columnCount++, rowCount - 1, style, sheet);
@@ -149,14 +152,14 @@ public class EmployeeServiceImpl implements EmployeeService{
             createCell(row, columnCount++, employeeView.getEmployeeName(), style, sheet);
             createCell(row, columnCount++, employeeView.getNameInClientRecords(), style, sheet);
             createCell(row, columnCount++, employeeView.getVendorName(), style, sheet);
-            createCell(row, columnCount++, employeeView.getJobTitle().getJobTitle(), style, sheet);
+            createCell(row, columnCount++, employeeView.getJobTitle(), style, sheet);
             createCell(row, columnCount++, employeeView.getHm(), style, sheet);
             createCell(row, columnCount++, employeeView.getBillRate().toString(), style, sheet);
-            createCell(row, columnCount++, employeeView.getCountry().getCountry(), style, sheet);
-            createCell(row, columnCount++, employeeView.getCity().getLocation(), style, sheet);
-            createCell(row, columnCount++, employeeView.getSow().getSow(), style, sheet);
-            createCell(row, columnCount++, employeeView.getOrg().getOrganisation(), style, sheet);
-            createCell(row, columnCount++, employeeView.getTeam().getTeamName(), style, sheet);
+            createCell(row, columnCount++, employeeView.getCountry(), style, sheet);
+            createCell(row, columnCount++, employeeView.getCity(), style, sheet);
+            createCell(row, columnCount++, employeeView.getSow(), style, sheet);
+            createCell(row, columnCount++, employeeView.getOrg(), style, sheet);
+            createCell(row, columnCount++, employeeView.getTeam(), style, sheet);
             createCell(row, columnCount++, employeeView.getBillability(), style, sheet);
             createCell(row, columnCount++, employeeView.getRemarks(), style, sheet);
         }
@@ -308,25 +311,44 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public Page searchEmployee(int page, int limit, String employeeName, String organization, String team, String city) {
+    public List<EmployeeResponse> searchEmployee(int page, int limit, String employeeName, String organization, String team, String city) {
         Pageable pageable = PageRequest.of(page, limit);
         Optional<Roles> role = getPriorityRole();
         EmployeeInfoDto emp = (EmployeeInfoDto) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()).getAttribute("employeeDetails", RequestAttributes.SCOPE_REQUEST);
         if(role.isPresent()) {
             switch (role.get()) {
-                case USER:  return employeeRepository.findAll(hasEmployeesByEmployeeName(emp.getEmployeeName()), pageable);
-                case TEAM_USER: return employeeRepository.findAll(hasEmployeesByEmployeeName(employeeName)
-                        .and(hasEmployeesByTeam(emp.getTeam().getTeamName())), pageable);
+                case USER:  return mapEmployeeResponse(employeeRepository.findAll(hasEmployeesByEmployeeName(emp.getEmployeeName()), pageable));
+                case TEAM_USER: return mapEmployeeResponse(employeeRepository.findAll(hasEmployeesByEmployeeName(employeeName)
+                        .and(hasEmployeesByTeam(emp.getTeam().getTeamName())), pageable));
                 case ADMIN:
                 case SUPER_ADMIN: if(employeeName == null && organization == null && team == null && city == null) {
-                    return employeeRepository.findAll(pageable);
+                    return mapEmployeeResponse(employeeRepository.findAll(pageable));
                 } else {
-                    return employeeRepository.findAll(mapQuery(employeeName, organization, team, city), pageable);
+                    return mapEmployeeResponse(employeeRepository.findAll(mapQuery(employeeName, organization, team, city), pageable));
                 }
             }
         }
         // map the dto to response Model
         return null;
+    }
+
+    private List<EmployeeResponse> mapEmployeeResponse(Page<EmployeeInfoDto> employeeInfoDtos) {
+        return employeeInfoDtos.stream().map(employeeInfoDto -> {
+            return EmployeeResponse.builder().employeeInfoId(employeeInfoDto.getEmployeeInfoId())
+                    .employeeName(employeeInfoDto.getEmployeeName())
+                    .hm(employeeInfoDto.getHm())
+                    .billability(employeeInfoDto.getBillability())
+                    .emailId(employeeInfoDto.getEmailId())
+                    .vendorName(employeeInfoDto.getVendorName())
+                    .billRate(employeeInfoDto.getBillRate())
+                    .city(employeeInfoDto.getCity().getLocation())
+                    .country(employeeInfoDto.getCountry().getCountry())
+                    .sow(employeeInfoDto.getSow().getSow())
+                    .jobTitle(employeeInfoDto.getJobTitle().getJobTitle())
+                    .roles(employeeInfoDto.getRoles().stream().map(r -> EmployeeRoleResponse.builder().roleName(r.getRoleName())
+                            .permissionsList(r.getPermissionsList().stream().map(pl -> EmployeeRolePermissionResponse.builder()
+                                    .permissionName(pl.getPermissionName()).read(pl.isRead()).write(pl.isWrite()).build()).collect(Collectors.toList())).build()).collect(Collectors.toList()))
+                    .build();}).collect(Collectors.toList());
     }
 
     private Specification<EmployeeInfoDto> mapQuery(String employeeName, String organization, String team, String city) {
@@ -347,7 +369,6 @@ public class EmployeeServiceImpl implements EmployeeService{
         }
         return finalQuery;
     }
-
 
     private Optional<Roles> getPriorityRole() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

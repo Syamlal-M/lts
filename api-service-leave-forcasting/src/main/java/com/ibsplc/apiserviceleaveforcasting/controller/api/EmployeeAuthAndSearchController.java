@@ -4,6 +4,7 @@ import com.ibsplc.apiserviceleaveforcasting.custom.exception.CSVExceptionWrapper
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
 import com.ibsplc.apiserviceleaveforcasting.request.UserLoginRequest;
 import com.ibsplc.apiserviceleaveforcasting.request.EmployeeRegistrationRequest;
+import com.ibsplc.apiserviceleaveforcasting.response.EmployeeResponse;
 import com.ibsplc.apiserviceleaveforcasting.service.EmployeeService;
 import com.ibsplc.apiserviceleaveforcasting.service.EmployeeManagementService;
 import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
@@ -101,12 +102,12 @@ public class EmployeeAuthAndSearchController {
     }
 
     @GetMapping("search")
-    public Page searchEmployee(@RequestParam(required = false, defaultValue = "0") int page,
-                               @RequestParam(required = false, defaultValue = "50") int limit,
-                               @RequestParam(required = false) String name,
-                               @RequestParam(required = false) String org,
-                               @RequestParam(required = false) String team,
-                               @RequestParam(required = false) String location) {
+    public List<EmployeeResponse> searchEmployee(@RequestParam(required = false, defaultValue = "0") int page,
+                                                 @RequestParam(required = false, defaultValue = "50") int limit,
+                                                 @RequestParam(required = false) String name,
+                                                 @RequestParam(required = false) String org,
+                                                 @RequestParam(required = false) String team,
+                                                 @RequestParam(required = false) String location) {
         return employeeService.searchEmployee(page, limit, name, org, team, location);
     }
 

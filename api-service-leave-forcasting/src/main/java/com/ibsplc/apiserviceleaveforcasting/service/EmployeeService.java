@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.ibsplc.apiserviceleaveforcasting.request.EmployeeRegistrationRequest;
 import com.ibsplc.apiserviceleaveforcasting.request.LeaveForcastRequest;
+import com.ibsplc.apiserviceleaveforcasting.response.EmployeeResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 public interface EmployeeService {    
     public void exportEmployees(int page, int limit, String employeeName, String organization, String team, String location, HttpServletResponse response) throws Exception;
     public BasicResponseView importEmployees(MultipartFile file) throws CSVExceptionWrapper, Exception;
-    public Page searchEmployee(int page, int limit, String employeeName, String organization, String team, String location);
+    public List<EmployeeResponse> searchEmployee(int page, int limit, String employeeName, String organization, String team, String location);
     public List<String> getTeams();
 
     List<String> getRoles();
