@@ -21,7 +21,7 @@ const ReportsPage = () => {
 
     const processUserRoleResponse = (response: any) => {
         let tempLeaveForcastData: Array<any> = [];
-        for(const employeeInfo of response.content){
+        for(const employeeInfo of response){
             const map = {'employeeId': employeeInfo.employeeId,
                 'employeeName': employeeInfo.employeeName,
                 'roleName': employeeInfo.roles[0].roleName
@@ -35,7 +35,6 @@ const ReportsPage = () => {
       UserRoleService.fetchUserRole()
         .then(response => {
           processUserRoleResponse(response);
-          console.log(response);
         })
         .catch(error => console.log(error))
     }
@@ -57,6 +56,15 @@ const ReportsPage = () => {
                 console.log(error);
             });
     }, []);
+
+      const sendToServer = async (event: Event) => {
+//         for (const role in roles) {
+//           if (event.value.toLowerCase() == roles[role].label.toLowerCase()) {
+//             setSelectedRoleMap(selectedRoleMap.set(event.id, roles[role].label.toLowerCase()));
+//             break;
+//           }
+//         }
+      }
 
     React.useEffect(() => {
       getRoles()
@@ -88,6 +96,7 @@ const ReportsPage = () => {
                       },
                     },
                   }}
+//                   onCellEditStop={sendToServer}
                 />
               </Box>
             </Grid>
