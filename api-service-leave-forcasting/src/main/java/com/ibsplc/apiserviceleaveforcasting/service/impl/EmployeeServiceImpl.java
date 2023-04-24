@@ -333,10 +333,15 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     private List<EmployeeResponse> mapEmployeeResponse(Page<EmployeeInfoDto> employeeInfoDtos) {
-        return employeeInfoDtos.stream().map(employeeInfoDto -> {
-            return EmployeeResponse.builder().employeeInfoId(employeeInfoDto.getEmployeeInfoId())
+        return employeeInfoDtos.stream().map(employeeInfoDto ->
+             EmployeeResponse.builder().employeeInfoId(employeeInfoDto.getEmployeeInfoId())
                     .employeeName(employeeInfoDto.getEmployeeName())
+                     .employeeId(employeeInfoDto.getEmployeeId())
                     .hm(employeeInfoDto.getHm())
+                     .org(employeeInfoDto.getOrg().getOrganisation())
+                     .jobTitle(employeeInfoDto.getJobTitle().getJobTitle())
+                     .nameInClientRecords(employeeInfoDto.getNameInClientRecords())
+                     .remarks(employeeInfoDto.getRemarks())
                     .billability(employeeInfoDto.getBillability())
                     .emailId(employeeInfoDto.getEmailId())
                     .vendorName(employeeInfoDto.getVendorName())
@@ -348,7 +353,7 @@ public class EmployeeServiceImpl implements EmployeeService{
                     .roles(employeeInfoDto.getRoles().stream().map(r -> EmployeeRoleResponse.builder().roleName(r.getRoleName())
                             .permissionsList(r.getPermissionsList().stream().map(pl -> EmployeeRolePermissionResponse.builder()
                                     .permissionName(pl.getPermissionName()).read(pl.isRead()).write(pl.isWrite()).build()).collect(Collectors.toList())).build()).collect(Collectors.toList()))
-                    .build();}).collect(Collectors.toList());
+                    .build()).collect(Collectors.toList());
     }
 
     private Specification<EmployeeInfoDto> mapQuery(String employeeName, String organization, String team, String city) {
