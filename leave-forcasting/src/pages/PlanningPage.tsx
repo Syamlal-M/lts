@@ -7,8 +7,7 @@ import PlanningService from "service/PlanningService";
 import { LeavePlanningDataField } from "types/LeavePlanningTable";
 import LeavePlanningColumnList from "data/LeavePlanningColumnList";
 import {
-    Box, Button, Card, CardContent, CardHeader,
-    DataGrid, Grid, MenuItem, TextField
+    Box, Button, Card, CardContent, DataGrid, Grid, MenuItem, TextField, Typography
 } from "components/shared-ui";
 
 interface Filter {
@@ -131,7 +130,11 @@ const PlanningPage = () => {
     return (
         <PageContainer title="LTS | Leave Forecast">
             <Card>
-                <CardHeader title="Leave Planning" />
+                <CardContent>
+                    <Typography variant="subtitle1" fontWeight={600}>
+                        Leave Planning
+                    </Typography>
+                </CardContent>
                 <CardContent>
                     <Grid container spacing={2} alignItems="center">
                         <Grid item xs={12} sm={4} md={3} lg={2}>

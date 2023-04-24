@@ -1,6 +1,7 @@
 import { DataGrid } from '@mui/x-data-grid';
 import { PageContainer } from "components/layout";
-import { Box, Button, Card, CardContent, Grid, MenuItem, TextField } from "components/shared-ui";
+import { Box, Button, Card, CardContent, Grid, MenuItem, TextField,
+	Typography } from "components/shared-ui";
 import LeaveForecastReportColumnList from "data/LeaveForecastReportColumnList";
 
 import MonthList from "data/MonthList";
@@ -20,7 +21,7 @@ const ReportsPage = () => {
 
   const processDataForTableView = (): any => {
     let tempLeaveForcastData: Array<any> = [];
-    if (leaveForecast != null && leaveForecast.length !== 0) {
+    if (leaveForecast?.length !== 0) {
       for (const lf of leaveForecast) {
         let leaveForcastObject: LeaveForecastInfo = {
           id: lf['employeeId'],
@@ -100,6 +101,11 @@ const ReportsPage = () => {
 
     <PageContainer title="LTS | Reports">
       <Card>
+        <CardContent>
+            <Typography variant="subtitle1" fontWeight={600}>
+                Leave Forecast Report
+            </Typography>
+      	</CardContent>
         <CardContent>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} sm={4} md={4} lg={2}>

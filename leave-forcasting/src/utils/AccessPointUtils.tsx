@@ -9,7 +9,7 @@ type RouteKey = keyof typeof ROUTE_URLS;
 type ApiUrlKey = keyof typeof API_ENDPOINTS;
 
 const replaceParams = (url: string, params: Params = {}, regex: RegExp): string => {
-    const path = url ? url.replace(regex, (_, key) => String(params[key])) : "";
+    const path = url ? url.replace(regex, (_, key) => String(params[key] || "")) : "";
     return path;
 };
 
