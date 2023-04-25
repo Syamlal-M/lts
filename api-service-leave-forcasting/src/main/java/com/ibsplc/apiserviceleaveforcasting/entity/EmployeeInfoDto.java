@@ -59,7 +59,7 @@ public class EmployeeInfoDto implements Serializable {
     private String password;
     private LocalDateTime created;
     private LocalDateTime updated;
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<EmployeeRole> roles;
 
 }
