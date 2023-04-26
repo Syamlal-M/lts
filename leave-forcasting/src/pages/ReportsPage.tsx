@@ -2,11 +2,13 @@ import { DataGrid } from '@mui/x-data-grid';
 import { PageContainer } from "components/layout";
 import { Box, Button, Card, CardContent, Grid, MenuItem, TextField,
 	Typography } from "components/shared-ui";
+import { KeyValueObject } from "types/KeyValueList";
 import LeaveForecastReportColumnList from "data/LeaveForecastReportColumnList";
 
 import MonthList from "data/MonthList";
 import * as React from 'react';
 import ReportService from "service/ReportService";
+import DataStoreService from "service/DataStoreService";
 import { LeaveForecastInfo } from "types/LeaveForecastInfo";
 
 const ReportsPage = () => {
@@ -17,7 +19,8 @@ const ReportsPage = () => {
   const [year] = React.useState(new Date().getFullYear());
   const [org, setOrg] = React.useState("");
   const [team, setTeam] = React.useState("");
-  const [monthYear, setMonthYear] = React.useState(month + "_" + year);
+  const [orgList, setOrgList] = React.useState<KeyValueObject[]>([]);
+  const [teamList, setTeamList] = React.useState<KeyValueObject[]>([]);
 
   const processDataForTableView = (): any => {
     let tempLeaveForcastData: Array<any> = [];
@@ -62,10 +65,9 @@ const ReportsPage = () => {
   }
 
   const fetchLeaveForcastReport = () => {
-    ReportService.fetchForecast({ 'duration': monthYear, 'org': org, 'team': team })
+    ReportService.fetchForecast({ 'month`': month, 'year': year, 'org': org, 'team': team })
       .then(response => {
         setLeaveForecast(response);
-        console.log(response);
       })
       .catch(error => console.log(error))
   }
@@ -73,8 +75,6 @@ const ReportsPage = () => {
   const onMonthChange = (event: any) => {
     let selectedMonth = event.target.value
     setMonth(selectedMonth);
-    let selectedMonthYear = selectedMonth + "_" + year;
-    setMonthYear(selectedMonthYear);
   };
 
   const handleOrgChange = (event: any) => {
@@ -88,6 +88,41 @@ const ReportsPage = () => {
   const viewReport = () => {
     fetchLeaveForcastReport();
   }
+
+  const processDataList = (dataList: string[]): KeyValueObject[] => {
+      const DEFAULT_DATA: KeyValueObject = { label: "Select", value: "" };
+      return [DEFAULT_DATA, ...dataList.map((listItem) => ({
+          label: listItem,
+          value: listItem,
+      }))];
+  }
+
+  const getOrganizations = () => {
+          DataStoreService.getOrganizationList()
+              .then(response => {
+                  const orgList = processDataList(response)
+                  setOrgList(orgList);
+              })
+              .catch(error => {
+                  console.log(error);
+              });
+      };
+
+      const getTeams = () => {
+          DataStoreService.getTeamList()
+              .then(response => {
+                  const teamList = processDataList(response)
+                  setTeamList(teamList);
+              })
+              .catch(error => {
+                  console.log(error);
+              });
+      };
+
+  React.useEffect(() => {
+    getOrganizations();
+    getTeams();
+  }, []);
 
   React.useEffect(() => {
     if (typeof leaveForecast?.length !== 'undefined') {
@@ -110,21 +145,35 @@ const ReportsPage = () => {
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} sm={4} md={4} lg={2}>
               <TextField
-                fullWidth
-                id="organization"
-                label="Organization"
-                variant="outlined"
-                onChange={handleOrgChange}
-              />
+                  select
+                  fullWidth
+                  name="org"
+                  label="Organization"
+                  variant="outlined"
+                  onChange={handleOrgChange}
+              >
+                  {orgList.map((org: KeyValueObject) => (
+                      <MenuItem key={org.value} value={org.value}>
+                          {org.label}
+                      </MenuItem>
+                  ))}
+              </TextField>
             </Grid>
             <Grid item xs={12} sm={4} md={4} lg={2}>
               <TextField
-                fullWidth
-                id="team"
-                label="Team"
-                variant="outlined"
-                onChange={handleTeamChange}
-              />
+                  select
+                  fullWidth
+                  name="team"
+                  label="Team"
+                  variant="outlined"
+                  onChange={handleTeamChange}
+              >
+                  {teamList.map((org: KeyValueObject) => (
+                      <MenuItem key={org.value} value={org.value}>
+                          {org.label}
+                      </MenuItem>
+                  ))}
+              </TextField>
             </Grid>
             <Grid item xs={12} sm={4} md={4} lg={2}>
               <TextField

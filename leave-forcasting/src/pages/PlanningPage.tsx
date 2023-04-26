@@ -3,6 +3,7 @@ import { useDebounce } from "usehooks-ts";
 // import MonthList from "data/MonthList";
 import { PageContainer } from "components/layout";
 import { KeyValueObject } from "types/KeyValueList";
+import DataStoreService from "service/DataStoreService";
 import PlanningService from "service/PlanningService";
 import { LeavePlanningDataField } from "types/LeavePlanningTable";
 import LeavePlanningColumnList from "data/LeavePlanningColumnList";
@@ -55,7 +56,7 @@ const PlanningPage = () => {
     }, [debounceFilter]);
 
     const getOrganizations = useCallback(() => {
-        PlanningService.getOrganizationList()
+        DataStoreService.getOrganizationList()
             .then(response => {
                 const orgList = processDataList(response)
                 setOrgList(orgList);
@@ -66,7 +67,7 @@ const PlanningPage = () => {
     }, []);
 
     const getTeams = useCallback(() => {
-        PlanningService.getTeamList()
+        DataStoreService.getTeamList()
             .then(response => {
                 const teamList = processDataList(response)
                 setTeamList(teamList);
@@ -77,7 +78,7 @@ const PlanningPage = () => {
     }, []);
 
     const getLocations = useCallback(() => {
-        PlanningService.getLocationList()
+        DataStoreService.getLocationList()
             .then(response => {
                 const locationList = processDataList(response)
                 setLocationList(locationList);
