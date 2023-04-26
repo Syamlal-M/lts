@@ -22,8 +22,23 @@ const DEFAULT_USER_DETAILS: UserDetails = {
     password: "",
 }
 
-const TEST_USER: UserDetails = {
+const SUPER_ADMIN: UserDetails = {
     username: "A-100",
+    password: "password"
+}
+
+const ADMIN: UserDetails = {
+    username: "A-101",
+    password: "password"
+}
+
+const TEAM_USER: UserDetails = {
+    username: "A-102",
+    password: "password"
+}
+
+const USER: UserDetails = {
+    username: "A-103",
     password: "password"
 }
 
@@ -66,8 +81,8 @@ const SignInPage = () => {
         handleSignIn(userDetails);
     };
 
-    const handleTestUserAuth = (): void => {
-        handleSignIn(TEST_USER);
+    const handleTestUserAuth = (user: any): void => {
+        handleSignIn(user);
     };
 
     return (
@@ -137,9 +152,45 @@ const SignInPage = () => {
                             size="large"
                             variant="contained"
                             color="warning"
-                            onClick={handleTestUserAuth}
+                            onClick={() => handleTestUserAuth(USER)}
                         >
-                            Sign-in as Test User
+                            Sign-in as User
+                        </Button>
+                    </Grid>
+                     <Grid item>
+                        <Button
+                            fullWidth
+                            type="button"
+                            size="large"
+                            variant="contained"
+                            color="warning"
+                            onClick={() => handleTestUserAuth(TEAM_USER)}
+                        >
+                            Sign-in as Team User
+                        </Button>
+                    </Grid>
+                     <Grid item>
+                        <Button
+                            fullWidth
+                            type="button"
+                            size="large"
+                            variant="contained"
+                            color="warning"
+                            onClick={() => handleTestUserAuth(ADMIN)}
+                        >
+                            Sign-in as Admin
+                        </Button>
+                    </Grid>
+                     <Grid item>
+                        <Button
+                            fullWidth
+                            type="button"
+                            size="large"
+                            variant="contained"
+                            color="warning"
+                            onClick={() => handleTestUserAuth(SUPER_ADMIN)}
+                        >
+                            Sign-in as Super Admin
                         </Button>
                     </Grid>
                 </Grid>
