@@ -81,7 +81,7 @@ const SignInPage = () => {
         handleSignIn(userDetails);
     };
 
-    const handleTestUserAuth = (user: any): void => {
+    const handleTestUserAuth = (user: UserDetails): void => {
         handleSignIn(user);
     };
 
@@ -157,7 +157,7 @@ const SignInPage = () => {
                             Sign-in as User
                         </Button>
                     </Grid>
-                     <Grid item>
+                    <Grid item>
                         <Button
                             fullWidth
                             type="button"
@@ -169,7 +169,7 @@ const SignInPage = () => {
                             Sign-in as Team User
                         </Button>
                     </Grid>
-                     <Grid item>
+                    <Grid item>
                         <Button
                             fullWidth
                             type="button"
@@ -181,7 +181,7 @@ const SignInPage = () => {
                             Sign-in as Admin
                         </Button>
                     </Grid>
-                     <Grid item>
+                    <Grid item>
                         <Button
                             fullWidth
                             type="button"

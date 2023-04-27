@@ -8,15 +8,15 @@ import PlanningService from "service/PlanningService";
 import { LeavePlanningDataField } from "types/LeavePlanningTable";
 import LeavePlanningColumnList from "data/LeavePlanningColumnList";
 import {
-    Box, Button, Card, CardContent, DataGrid, Grid, MenuItem, TextField, Typography
+    Box, Button, Card, CardContent, CardHeader, DataGrid, Grid, MenuItem, TextField
 } from "components/shared-ui";
 
 interface Filter {
     org: string;
     team: string;
-    month: string;
     name: string;
-    location: string,
+    // month: string;
+    // location: string,
     page: number,
     limit: number
 }
@@ -24,9 +24,9 @@ interface Filter {
 const DEFAULT_FILTER_VALUE: Filter = {
     org: "",
     team: "",
-    month: "",
     name: "",
-    location: "",
+    // month: "",
+    // location: "",
     page: 0,
     limit: 50
 };
@@ -37,7 +37,7 @@ const PlanningPage = () => {
 
     const [orgList, setOrgList] = useState<KeyValueObject[]>([]);
     const [teamList, setTeamList] = useState<KeyValueObject[]>([]);
-    const [locationList, setLocationList] = useState<KeyValueObject[]>([]);
+    // const [locationList, setLocationList] = useState<KeyValueObject[]>([]);
 
     // const selectableMonthList: KeyValueObject[] = [{ label: "Select", value: "" }, ...MonthList]
     // const [monthList] = useState<KeyValueObject[]>(selectableMonthList);
@@ -47,13 +47,13 @@ const PlanningPage = () => {
     const getEmployees = useCallback((queryParams: Filter = debounceFilter) => {
         PlanningService.searchEmployees(queryParams)
             .then((response: any) => {
-                const processedData = processPlanningData(response.content);
+                const processedData = processPlanningData(response);
                 setPlanningData(processedData);
             })
             .catch(error => {
                 console.log(error);
             });
-    }, [debounceFilter]);
+    }, []);
 
     const getOrganizations = useCallback(() => {
         DataStoreService.getOrganizationList()
@@ -77,22 +77,21 @@ const PlanningPage = () => {
             });
     }, []);
 
-    const getLocations = useCallback(() => {
-        DataStoreService.getLocationList()
-            .then(response => {
-                const locationList = processDataList(response)
-                setLocationList(locationList);
-            })
-            .catch(error => {
-                console.log(error);
-            });
-    }, []);
+    // const getLocations = useCallback(() => {
+    //     DataStoreService.getLocationList()
+    //         .then(response => {
+    //             const locationList = processDataList(response)
+    //             setLocationList(locationList);
+    //         })
+    //         .catch(error => {
+    //             console.log(error);
+    //         });
+    // }, []);
 
     useEffect(() => {
         getOrganizations();
         getTeams();
-        getLocations();
-    }, [getOrganizations, getTeams, getLocations]);
+    }, [getOrganizations, getTeams]);
 
     useEffect(() => {
         getEmployees();
@@ -104,7 +103,7 @@ const PlanningPage = () => {
                 id: row.employeeId || index,
                 name: row.employeeName,
                 nameInClientRecords: row.nameInClientRecords,
-                jobTitle: row.jobTitle?.jobTitle
+                jobTitle: row.jobTitle
             }
         })
     }
@@ -128,14 +127,14 @@ const PlanningPage = () => {
         getEmployees(filter);
     };
 
+    const handleRowSelection = (e: any) => {
+        console.log(e);
+    }
+
     return (
         <PageContainer title="LTS | Leave Forecast">
             <Card>
-                <CardContent>
-                    <Typography variant="subtitle1" fontWeight={600}>
-                        Leave Planning
-                    </Typography>
-                </CardContent>
+                <CardHeader title="Leave Planning" />
                 <CardContent>
                     <Grid container spacing={2} alignItems="center">
                         <Grid item xs={12} sm={4} md={3} lg={2}>
@@ -187,7 +186,7 @@ const PlanningPage = () => {
                                     </MenuItem>
                                 ))}
                             </TextField>
-                        </Grid> */}
+                        </Grid> 
                         <Grid item xs={12} sm={4} md={3} lg={2}>
                             <TextField
                                 select
@@ -204,7 +203,7 @@ const PlanningPage = () => {
                                     </MenuItem>
                                 ))}
                             </TextField>
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={12} sm={4} md={3} lg={2}>
                             <TextField
                                 fullWidth
@@ -237,9 +236,9 @@ const PlanningPage = () => {
                                     disableColumnFilter
                                     disableColumnMenu
                                     disableColumnSelector
-                                    disableRowSelectionOnClick
                                     rows={planningData}
                                     columns={LeavePlanningColumnList}
+                                    onRowSelectionModelChange={handleRowSelection}
                                 />
                             </Box>
                         </Grid>

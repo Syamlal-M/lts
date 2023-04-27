@@ -25,6 +25,7 @@ const getThemeOptions = (mode: PaletteMode): ThemeOptions => ({
         MuiCardHeader: {
             styleOverrides: {
                 title: {
+                    fontSize: "1.6rem",
                     fontWeight: 600,
                     textTransform: "capitalize"
                 }
