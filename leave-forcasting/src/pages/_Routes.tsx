@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { DashboardTemplate } from 'components/layout';
 import DashboardPage from './DashboadPage';
 import LandingPage from './LandingPage';
-import PlanningPage from './PlanningPage';
+import PlanningPage from './leave-forecast/page';
 import ReportsPage from './ReportsPage';
 import SettingsPage from './SettingsPage';
 import SignInPage from './SignInPage';
