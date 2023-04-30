@@ -18,7 +18,7 @@ public class EmployeeRegistrationRequest {
     private String password;
     @NotEmpty(message = "EmailId must not be null or empty")
     private String emailId;
-    private List<String> roles;
+    private String role;
     @NotEmpty(message = "Employee Name must not be null or empty")
     private String employeeName;
     @NotEmpty(message = "Expedia FG Name must not be null or empty")

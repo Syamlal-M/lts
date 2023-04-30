@@ -56,13 +56,13 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
         user.setEmployeeId(request.getEmployeeId());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmailId(request.getEmailId());
-        List<EmployeeRole> roles = null;
-        if(request.getRoles().size() > 0) {
-            roles = rolesRepository.findByRoleNameIn(request.getRoles());
+        EmployeeRole role = null;
+        if(request.getRole() != null && !request.getRole().isEmpty()) {
+            role = rolesRepository.findByRoleName(request.getRole()).get();
         } else {
-            roles = rolesRepository.findByRoleNameIn(List.of("USER"));
+            role = rolesRepository.findByRoleName("USER").get();
         }
-        user.setRoles(roles);
+        user.setRole(role);
         employeeInfoRepository.save(user);
     }
 
@@ -80,12 +80,8 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
         }
         EmployeeInfoDto employeeInfoDto = employee.get();
         Optional<EmployeeRole> currentRole = rolesRepository.findByRoleName(role);
-        if(currentRole.isPresent() &&
-                employeeInfoDto.getRoles().stream().noneMatch(r -> r.getRoleName().equalsIgnoreCase(currentRole.get().getRoleName()))) {
-            employeeInfoDto.getRoles().add(currentRole.get());
-            employeeInfoDto.setRoles(employeeInfoDto.getRoles().stream().distinct().collect(Collectors.toList()));
-            employeeInfoRepository.save(employeeInfoDto);
-        }
+        employeeInfoDto.setRole(currentRole.get());
+        employeeInfoRepository.save(employeeInfoDto);
     }
 
     /**
@@ -102,20 +98,16 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
             builder.username(user.get().getEmployeeId());
             HashMap<Integer, String> role = new HashMap<>();
             List<GrantedAuthority> authorities = new ArrayList<>();
-            for(EmployeeRole userRole: user.get().getRoles()) {
-                role.put(userRole.getRoleId(), userRole.getRoleName());
-                SimpleGrantedAuthority authority = new SimpleGrantedAuthority(userRole.getRoleName());
+            EmployeeRole employeeRole = user.get().getRole();
+                role.put(employeeRole.getRoleId(), employeeRole.getRoleName());
+                SimpleGrantedAuthority authority = new SimpleGrantedAuthority(employeeRole.getRoleName());
                 authorities.add(authority);
-            }
             builder.role(role);
             final UserDetails userDetails = new org.springframework.security.core.userdetails.User(request.getUsername(),
                     passwordEncoder.encode(request.getPassword()), authorities);
             final String token = jwtTokenUtil.generateToken(userDetails);
             builder.token(token);
-            builder.access(user.get().getRoles().stream()
-                    .flatMap(r -> r.getPermissionsList().stream().map(EmployeeRolePermissionDto::getPermissionName))
-                    .distinct()
-                    .collect(Collectors.toList()));
+            builder.access(user.get().getRole().getPermissionsList().stream().map(EmployeeRolePermissionDto::getPermissionName).collect(Collectors.toList()));
         } else {
             throw new CustomException("Authentication failure");
         }
@@ -134,7 +126,7 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
         return allUserList.stream().map(employeeInfo -> {
             EmployeeInfoResponse.EmployeeInfoResponseBuilder builder = EmployeeInfoResponse.builder();
             builder.username(employeeInfo.getEmployeeId());
-            builder.role(employeeInfo.getRoles().stream().collect(Collectors.toMap(EmployeeRole::getRoleId, EmployeeRole::getRoleName)));
+            builder.role(Map.of(employeeInfo.getRole().getRoleId(), employeeInfo.getRole().getRoleName()));
             return builder.build();
         }).collect(Collectors.toList());
     }

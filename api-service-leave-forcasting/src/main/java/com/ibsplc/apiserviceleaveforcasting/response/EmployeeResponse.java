@@ -27,6 +27,6 @@ public class EmployeeResponse {
     private String team;
     private String billability;
     private String remarks;
-    private List<EmployeeRoleResponse> roles;
+    private EmployeeRoleResponse role;
 
 }

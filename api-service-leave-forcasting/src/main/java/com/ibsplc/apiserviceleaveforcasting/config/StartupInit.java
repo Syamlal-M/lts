@@ -74,7 +74,7 @@ public class StartupInit {
     private void createEmployee(String employeeId, String role) {
         service.createEmployeeAuth(EmployeeRegistrationRequest.builder()
                 .employeeId(employeeId).emailId(String.format("%s@gmail.com", employeeId))
-                .password("password").roles(List.of(role)).build());
+                .password("password").role(role).build());
         EmployeeInfoDto emp = employeeRepository.findByEmployeeId(employeeId).get();
         emp.setEmployeeId(employeeId);
         emp.setEmployeeName(String.format("%s-EmployeeName", employeeId));

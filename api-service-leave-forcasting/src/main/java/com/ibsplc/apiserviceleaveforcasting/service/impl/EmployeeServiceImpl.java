@@ -4,25 +4,16 @@
  */
 package com.ibsplc.apiserviceleaveforcasting.service.impl;
 
-import java.time.DayOfWeek;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.temporal.ChronoField;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import com.ibsplc.apiserviceleaveforcasting.entity.*;
-import com.ibsplc.apiserviceleaveforcasting.enums.PlanningType;
 import com.ibsplc.apiserviceleaveforcasting.enums.Roles;
 import com.ibsplc.apiserviceleaveforcasting.repository.*;
 import com.ibsplc.apiserviceleaveforcasting.request.EmployeeRegistrationRequest;
-import com.ibsplc.apiserviceleaveforcasting.request.LeaveForcastRequest;
 import com.ibsplc.apiserviceleaveforcasting.response.EmployeeResponse;
 import com.ibsplc.apiserviceleaveforcasting.response.EmployeeRolePermissionResponse;
 import com.ibsplc.apiserviceleaveforcasting.response.EmployeeRoleResponse;
-import com.ibsplc.apiserviceleaveforcasting.view.EmployeeInfoResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -33,12 +24,9 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -58,14 +46,12 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import static com.ibsplc.apiserviceleaveforcasting.repository.CustomerSpecifications.*;
-import static java.time.temporal.ChronoUnit.DAYS;
 
 /**
- *
  * @author jithin123
  */
 @Service
-public class EmployeeServiceImpl implements EmployeeService{
+public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private EmployeeInfoRepository employeeRepository;
@@ -117,7 +103,7 @@ public class EmployeeServiceImpl implements EmployeeService{
         List<String> headers = List.of("SNo", "EmpId", "EmployeeName", "ExpediaFgName", "VendorName", "JobTitle",
                 "HM", "BillRate", "Country", "City", "SOW", "Org", "Team", "Billability", "Remarks");
         int index = 0;
-        for(String header: headers) {
+        for (String header : headers) {
             createCell(row, index, header, style, sheet);
             index++;
         }
@@ -130,7 +116,7 @@ public class EmployeeServiceImpl implements EmployeeService{
             cell.setCellValue((Integer) value);
         } else if (value instanceof Boolean) {
             cell.setCellValue((Boolean) value);
-        }else {
+        } else {
             cell.setCellValue((String) value);
         }
         cell.setCellStyle(style);
@@ -166,13 +152,13 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public BasicResponseView importEmployees(MultipartFile file) throws CSVExceptionWrapper, Exception{
+    public BasicResponseView importEmployees(MultipartFile file) throws CSVExceptionWrapper, Exception {
         if (file.getSize() > (10 * 1024 * 1024)) {
             throw new CustomException("file size exceeded more than 10MB");
         }
 
-         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-        if (!extension.equalsIgnoreCase("xlsx")){
+        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+        if (!extension.equalsIgnoreCase("xlsx")) {
             throw new CustomException("File type not supported. Supported type is xlsx");
         }
 
@@ -185,7 +171,7 @@ public class EmployeeServiceImpl implements EmployeeService{
             List<EmployeeRegistrationRequest> employeeFormList = new ArrayList<>();
             Map<String, EmployeeRegistrationRequest> employeeFormMap = new HashMap<>();
             for (int index = 0; index < worksheet.getPhysicalNumberOfRows(); index++) {
-                if(index > 0){
+                if (index > 0) {
                     XSSFRow row = worksheet.getRow(index);
                     EmployeeRegistrationRequest employeeForm = new EmployeeRegistrationRequest(row);
                     employeeFormList.add(employeeForm);
@@ -201,11 +187,9 @@ public class EmployeeServiceImpl implements EmployeeService{
             }
             isUploadCompleted = true;
 
-        }
-        catch(CSVExceptionWrapper csvException){
+        } catch (CSVExceptionWrapper csvException) {
             throw csvException;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw ex;
         }
         return new BasicResponseView(isUploadCompleted);
@@ -223,8 +207,8 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     }
 
-    private void findExistingEmployees(List<String> employeeIdList,Map<String, EmployeeInfoDto> existingEmployeeMap) throws Exception{
-        try{
+    private void findExistingEmployees(List<String> employeeIdList, Map<String, EmployeeInfoDto> existingEmployeeMap) throws Exception {
+        try {
             int size = employeeIdList.size();
             int counter = 1;
             List<String> tempEmployeeIdList = new ArrayList<>();
@@ -233,17 +217,17 @@ public class EmployeeServiceImpl implements EmployeeService{
                 tempEmployeeIdList.add(employeeId);
                 if (counter % 1000 == 0 || counter == size) {
                     List<EmployeeInfoDto> temployeeList = employeeRepository.findByEmployeeIdIn(tempEmployeeIdList);
-                    if(temployeeList != null && !temployeeList.isEmpty()){
+                    if (temployeeList != null && !temployeeList.isEmpty()) {
                         employeeList.addAll(temployeeList);
                         tempEmployeeIdList.clear();
                     }
                 }
                 counter++;
             }
-            if(!employeeList.isEmpty()){
+            if (!employeeList.isEmpty()) {
                 existingEmployeeMap = employeeList.stream().collect(Collectors.toMap(x -> x.getEmployeeId(), x -> x));
             }
-        }catch(Exception ex){
+        } catch (Exception ex) {
             throw new Exception();
         }
 
@@ -251,16 +235,16 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Override
     public void createEmployee(EmployeeRegistrationRequest request) throws Exception {
-           Optional<EmployeeInfoDto> employeeInfo = employeeRepository.findEmployeeById(request.getEmployeeId());
-           Map<String, EmployeeRegistrationRequest> employeeRequestMap = new HashMap<>();
+        Optional<EmployeeInfoDto> employeeInfo = employeeRepository.findEmployeeById(request.getEmployeeId());
+        Map<String, EmployeeRegistrationRequest> employeeRequestMap = new HashMap<>();
         employeeRequestMap.put(request.getEmployeeId(), request);
-           if(employeeInfo.isPresent()) {
-               Map<String, EmployeeInfoDto> existingEmployeeRequestMap = new HashMap<>();
-               existingEmployeeRequestMap.put(employeeInfo.get().getEmployeeId(), employeeInfo.get());
-               saveOrUpdateEmployees(Collections.singletonList(request.getEmployeeId()), employeeRequestMap, existingEmployeeRequestMap);
-           } else {
-               saveOrUpdateEmployees(Collections.singletonList(request.getEmployeeId()), employeeRequestMap, Collections.EMPTY_MAP);
-           }
+        if (employeeInfo.isPresent()) {
+            Map<String, EmployeeInfoDto> existingEmployeeRequestMap = new HashMap<>();
+            existingEmployeeRequestMap.put(employeeInfo.get().getEmployeeId(), employeeInfo.get());
+            saveOrUpdateEmployees(Collections.singletonList(request.getEmployeeId()), employeeRequestMap, existingEmployeeRequestMap);
+        } else {
+            saveOrUpdateEmployees(Collections.singletonList(request.getEmployeeId()), employeeRequestMap, Collections.EMPTY_MAP);
+        }
     }
 
     private void saveOrUpdateEmployees(List<String> employeeIdList, Map<String, EmployeeRegistrationRequest> employeeFormMap, Map<String, EmployeeInfoDto> existingEmployeeMap) throws Exception {
@@ -315,45 +299,48 @@ public class EmployeeServiceImpl implements EmployeeService{
         Pageable pageable = PageRequest.of(page, limit);
         Optional<Roles> role = getPriorityRole();
         EmployeeInfoDto emp = (EmployeeInfoDto) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()).getAttribute("employeeDetails", RequestAttributes.SCOPE_REQUEST);
-        if(role.isPresent()) {
+        if (role.isPresent()) {
             switch (role.get()) {
-                case USER:  return mapEmployeeResponse(employeeRepository.findAll(hasEmployeesByEmployeeName(emp.getEmployeeName()), pageable));
-                case TEAM_USER: return mapEmployeeResponse(employeeRepository.findAll(hasEmployeesByEmployeeName(employeeName)
-                        .and(hasEmployeesByTeam(emp.getTeam().getTeamName())), pageable));
+                case USER:
+                    return mapEmployeeResponse(employeeRepository.findAll(hasEmployeesByEmployeeName(emp.getEmployeeName()), pageable), role.get());
+                case TEAM_USER:
+                    return mapEmployeeResponse(employeeRepository.findAll(hasEmployeesByEmployeeName(employeeName)
+                            .and(hasEmployeesByTeam(emp.getTeam().getTeamName())), pageable), role.get());
                 case ADMIN:
-                case SUPER_ADMIN: if(employeeName == null && organization == null && team == null && city == null) {
-                    return mapEmployeeResponse(employeeRepository.findAll(pageable));
-                } else {
-                    return mapEmployeeResponse(employeeRepository.findAll(mapQuery(employeeName, organization, team, city), pageable));
-                }
+                case SUPER_ADMIN:
+                    if (employeeName == null && organization == null && team == null && city == null) {
+                        return mapEmployeeResponse(employeeRepository.findAll(pageable), role.get());
+                    } else {
+                        return mapEmployeeResponse(employeeRepository.findAll(mapQuery(employeeName, organization, team, city), pageable), role.get());
+                    }
             }
         }
         // map the dto to response Model
         return null;
     }
 
-    private List<EmployeeResponse> mapEmployeeResponse(Page<EmployeeInfoDto> employeeInfoDtos) {
+    private List<EmployeeResponse> mapEmployeeResponse(Page<EmployeeInfoDto> employeeInfoDtos, Roles role) {
         return employeeInfoDtos.stream().map(employeeInfoDto ->
-             EmployeeResponse.builder().employeeInfoId(employeeInfoDto.getEmployeeInfoId())
-                    .employeeName(employeeInfoDto.getEmployeeName())
-                     .employeeId(employeeInfoDto.getEmployeeId())
-                    .hm(employeeInfoDto.getHm())
-                     .org(employeeInfoDto.getOrg().getOrganisation())
-                     .jobTitle(employeeInfoDto.getJobTitle().getJobTitle())
-                     .nameInClientRecords(employeeInfoDto.getNameInClientRecords())
-                     .remarks(employeeInfoDto.getRemarks())
-                    .billability(employeeInfoDto.getBillability())
-                    .emailId(employeeInfoDto.getEmailId())
-                    .vendorName(employeeInfoDto.getVendorName())
-                    .billRate(employeeInfoDto.getBillRate())
-                    .city(employeeInfoDto.getCity().getLocation())
-                    .country(employeeInfoDto.getCountry().getCountry())
-                    .sow(employeeInfoDto.getSow().getSow())
-                    .jobTitle(employeeInfoDto.getJobTitle().getJobTitle())
-                    .roles(employeeInfoDto.getRoles().stream().map(r -> EmployeeRoleResponse.builder().roleName(r.getRoleName())
-                            .permissionsList(r.getPermissionsList().stream().map(pl -> EmployeeRolePermissionResponse.builder()
-                                    .permissionName(pl.getPermissionName()).read(pl.isRead()).write(pl.isWrite()).build()).collect(Collectors.toList())).build()).collect(Collectors.toList()))
-                    .build()).collect(Collectors.toList());
+                        EmployeeResponse.builder().employeeInfoId(employeeInfoDto.getEmployeeInfoId())
+                                .employeeName(employeeInfoDto.getEmployeeName())
+                                .employeeId(employeeInfoDto.getEmployeeId())
+                                .hm(employeeInfoDto.getHm())
+                                .org(employeeInfoDto.getOrg().getOrganisation())
+                                .jobTitle(employeeInfoDto.getJobTitle().getJobTitle())
+                                .nameInClientRecords(employeeInfoDto.getNameInClientRecords())
+                                .remarks(employeeInfoDto.getRemarks())
+                                .billability(employeeInfoDto.getBillability())
+                                .emailId(employeeInfoDto.getEmailId())
+                                .vendorName(employeeInfoDto.getVendorName())
+                                .billRate((role == Roles.ADMIN || role == Roles.SUPER_ADMIN) ? employeeInfoDto.getBillRate() : 0.0)
+                                .city(employeeInfoDto.getCity().getLocation())
+                                .country(employeeInfoDto.getCountry().getCountry())
+                                .sow((role == Roles.ADMIN || role == Roles.SUPER_ADMIN) ? employeeInfoDto.getSow().getSow() : "")
+                                .jobTitle(employeeInfoDto.getJobTitle().getJobTitle())
+                                .role(EmployeeRoleResponse.builder().roleName(employeeInfoDto.getRole().getRoleName())
+                                        .permissionsList(employeeInfoDto.getRole().getPermissionsList().stream().map(pl -> EmployeeRolePermissionResponse.builder()
+                                                .permissionName(pl.getPermissionName()).read(pl.isRead()).write(pl.isWrite()).build()).collect(Collectors.toList())).build()).build())
+                .collect(Collectors.toList());
     }
 
     private Specification<EmployeeInfoDto> mapQuery(String employeeName, String organization, String team, String city) {
@@ -365,8 +352,8 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     private Specification<EmployeeInfoDto> addToQuery(String value, Specification<EmployeeInfoDto> valueCondition, Specification<EmployeeInfoDto> finalQuery) {
-        if(value != null) {
-            if(finalQuery == null) {
+        if (value != null) {
+            if (finalQuery == null) {
                 return valueCondition;
             } else {
                 return finalQuery.and(valueCondition);
