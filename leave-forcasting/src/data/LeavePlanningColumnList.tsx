@@ -5,7 +5,7 @@ const LeavePlanningColumnList: PlanningColumnList = [
     {
         field: 'id',
         headerName: 'ID',
-        renderCell: (params) => (
+        renderCell: (params: any) => (
             <Tooltip title={params.row.id}>
                 <span>{params.row.id}</span>
             </Tooltip>
@@ -15,7 +15,7 @@ const LeavePlanningColumnList: PlanningColumnList = [
     {
         field: 'name',
         headerName: 'Name',
-        renderCell: (params) => (
+        renderCell: (params: any) => (
             <Tooltip title={params.row.name}>
                 <span>{params.row.name}</span>
             </Tooltip>
@@ -25,7 +25,7 @@ const LeavePlanningColumnList: PlanningColumnList = [
     {
         field: 'nameInClientRecords',
         headerName: 'Eg Name',
-        renderCell: (params) => (
+        renderCell: (params: any) => (
             <Tooltip title={params.row.nameInClientRecords}>
                 <span>{params.row.nameInClientRecords}</span>
             </Tooltip>
@@ -35,13 +35,20 @@ const LeavePlanningColumnList: PlanningColumnList = [
     {
         field: 'jobTitle',
         headerName: 'Job Title',
-        renderCell: (params) => (
+        renderCell: (params: any) => (
             <Tooltip title={params.row.jobTitle}>
                 <span>{params.row.jobTitle}</span>
             </Tooltip>
         ),
         width: 200,
-    }
+    },
+    {
+        field: 'actions',
+        headerName: 'Actions',
+        renderCell: (params: any) => (params.row.actions),
+        width: 200,
+        sortable: false,
+    },
 ];
 
 export default LeavePlanningColumnList;

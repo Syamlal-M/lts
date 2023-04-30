@@ -9,7 +9,7 @@ import EmployeeSearchFilter from "./EmployeeSearchFilter";
 import { LeavePlanningDataField } from "types/LeavePlanningTable";
 import LeavePlanningColumnList from "data/LeavePlanningColumnList";
 import { LeaveSummaryQueryParams, LeaveSummaryResponse } from "types/api/employee/LeaveSummary.types";
-import { Box, Card, CardContent, CardHeader, DataGrid, Grid } from "components/shared-ui";
+import { Box, Button, Card, CardContent, CardHeader, DataGrid, Grid } from "components/shared-ui";
 import { EmployeeSearchItem, EmployeeSearchQueryParams, EmployeeSearchResponse } from "types/api/employee/EmployeeSearch.types";
 
 const DEFAULT_EMPLOYEE_SEARCH_FILTER_VALUE: EmployeeSearchQueryParams = {
@@ -41,6 +41,11 @@ const PlanningPage = () => {
 
     const [planningData, setPlanningData] = useState<LeavePlanningDataField[]>([]);
 
+    useEffect(() => {
+        getEmployees();
+        getLeaveSummary();
+    }, []);
+
     const getEmployees = useCallback((queryParams: EmployeeSearchQueryParams = debounceEmployeeSearchFilter) => {
         PlanningService.searchEmployees(queryParams)
             .then((response) => {
@@ -62,20 +67,26 @@ const PlanningPage = () => {
             });
     }, [leaveSummaryFilter]);
 
-    useEffect(() => {
-        getEmployees();
-        getLeaveSummary();
-    }, []);
-
     const processPlanningData = (data: EmployeeSearchResponse): LeavePlanningDataField[] => {
         return data.map((item: EmployeeSearchItem, index: number): LeavePlanningDataField => {
             return {
                 id: item.employeeId || index,
                 name: item.employeeName,
                 nameInClientRecords: item.nameInClientRecords,
-                jobTitle: item.jobTitle
+                jobTitle: item.jobTitle,
+                actions:
+                    <Button
+                        variant="contained"
+                        onClick={() => handleEdit(item)}
+                    >
+                        Edit leaves
+                    </Button>
             }
         })
+    }
+
+    const handleEdit = (params: EmployeeSearchItem) => {
+        console.log("Edit", params)
     }
 
     const handleEmployeeSearchFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,13 +96,9 @@ const PlanningPage = () => {
         });
     };
 
-    const handleSearchEmployees = (filter: EmployeeSearchQueryParams) => {
+    const handleEmployeeSearchSubmit = (filter: EmployeeSearchQueryParams) => {
         getEmployees(filter);
     };
-
-    const handleRowSelection = (e: any) => {
-        console.log(e);
-    }
 
     return (
         <PageContainer title="LTS | Leave Forecast">
@@ -102,7 +109,7 @@ const PlanningPage = () => {
                         <EmployeeSearchFilter
                             filter={employeeSearchFilter}
                             onChange={handleEmployeeSearchFormChange}
-                            onSubmit={handleSearchEmployees}
+                            onSubmit={handleEmployeeSearchSubmit}
                         />
                         <Grid item xs={12}>
                             <Box sx={{ height: 300, maxWidth: "calc(100vw - 80px)" }}>
@@ -114,7 +121,6 @@ const PlanningPage = () => {
                                     disableRowSelectionOnClick
                                     rows={planningData}
                                     columns={LeavePlanningColumnList}
-                                    onRowClick={handleRowSelection}
                                 />
                             </Box>
                         </Grid>
