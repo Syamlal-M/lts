@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useDebounce } from "usehooks-ts";
+import { useDebounce, useToggle } from "usehooks-ts";
 import YearList from "data/YearList";
 import MonthList from "data/MonthList";
 import { PageContainer } from "components/layout";
@@ -11,6 +11,7 @@ import LeavePlanningColumnList from "data/LeavePlanningColumnList";
 import { LeaveSummaryQueryParams, LeaveSummaryResponse } from "types/api/employee/LeaveSummary.types";
 import { Box, Button, Card, CardContent, CardHeader, DataGrid, Grid } from "components/shared-ui";
 import { EmployeeSearchItem, EmployeeSearchQueryParams, EmployeeSearchResponse } from "types/api/employee/EmployeeSearch.types";
+import LeaveSubmissionDialog from "./LeaveSubmissionDialog";
 
 const DEFAULT_EMPLOYEE_SEARCH_FILTER_VALUE: EmployeeSearchQueryParams = {
     name: "",
@@ -29,6 +30,7 @@ const DEFAULT_LEAVE_SUMMARY_FILTER_VALUE: LeaveSummaryQueryParams = {
 };
 
 const PlanningPage = () => {
+    const [isLeaveSubmissionDialogOpen, setIsLeaveSubmissionDialogOpen] = useToggle(false);
     const [employeeSearchFilter, setEmployeeSearchFilter] = useState<EmployeeSearchQueryParams>(DEFAULT_EMPLOYEE_SEARCH_FILTER_VALUE);
     const debounceEmployeeSearchFilter = useDebounce(employeeSearchFilter);
 
@@ -86,7 +88,8 @@ const PlanningPage = () => {
     }
 
     const handleEdit = (params: EmployeeSearchItem) => {
-        console.log("Edit", params)
+        console.log("Edit", params);
+        setIsLeaveSubmissionDialogOpen();
     }
 
     const handleEmployeeSearchFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,6 +101,17 @@ const PlanningPage = () => {
 
     const handleEmployeeSearchSubmit = (filter: EmployeeSearchQueryParams) => {
         getEmployees(filter);
+    };
+
+    const handleLeaveSummaryFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setLeaveSummaryFilter((prevFilter) => {
+            const { name, value } = event.target;
+            return { ...prevFilter, [name]: value };
+        });
+    };
+
+    const handleLeaveSummarySubmit = (filter: LeaveSummaryQueryParams) => {
+        getLeaveSummary(filter);
     };
 
     return (
@@ -127,6 +141,13 @@ const PlanningPage = () => {
                     </Grid>
                 </CardContent>
             </Card>
+            <LeaveSubmissionDialog
+                isOpen={isLeaveSubmissionDialogOpen}
+                onClose={setIsLeaveSubmissionDialogOpen}
+                filter={leaveSummaryFilter}
+                onFilterChange={handleLeaveSummaryFormChange}
+                onFilterSubmit={handleLeaveSummarySubmit}
+            />
         </PageContainer>
     );
 };
