@@ -47,7 +47,7 @@ const LeftHandNavigation = (props: LeftSideNavigationProps) => {
         >
             <Box component="nav" sx={navContainerStyles}>
                 <List
-                    sx={{ ...navListStyles, flexGrow: 1 }}
+                    sx={{ ...navListStyles(isDarkMode), flexGrow: 1 }}
                     subheader={
                         <>
                             <ListItem sx={{ py: { sm: 1.5 } }}>
@@ -90,7 +90,7 @@ const LeftHandNavigation = (props: LeftSideNavigationProps) => {
                     }
                 </List>
                 <Divider />
-                <List sx={navListStyles}>
+                <List sx={navListStyles(isDarkMode)}>
                     <ListItem>
                         <ListItemButton
                             sx={isDarkMode ? navItemActiveStyles : {}}
