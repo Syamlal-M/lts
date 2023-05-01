@@ -7,6 +7,7 @@ import ReportsPage from './ReportsPage';
 import SettingsPage from './SettingsPage';
 import SignInPage from './SignInPage';
 import { getRouteUrl } from 'utils/AccessPointUtils';
+import { SelectListProvider } from 'context/SelectListContext';
 import PrivateRouteGuard from 'components/hoc/PrivateRouteGuard';
 import ProtectedRouteGuard from 'components/hoc/ProtectedRouteGuard';
 
@@ -16,7 +17,9 @@ const PageRoutes = () => {
             <Routes>
                 <Route path={getRouteUrl("ROOT")} element={<LandingPage />} />
                 <Route path={getRouteUrl("SIGN_IN")} element={<SignInPage />} />
-                <Route element={<PrivateRouteGuard children={<DashboardTemplate />} />}>
+                <Route element={<PrivateRouteGuard
+                    children={<SelectListProvider
+                        children={<DashboardTemplate />} />} />}>
                     <Route
                         path={getRouteUrl("PLANNING")}
                         element={<ProtectedRouteGuard
