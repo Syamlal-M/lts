@@ -7,11 +7,11 @@ const navContainerStyles: SxProps = {
     height: "100%"
 }
 
-const navListStyles: SxProps = {
+const navListStyles = (isDarkMode: boolean): SxProps => ({
     ".MuiListItem-root": {
         ".MuiButtonBase-root": {
             borderRadius: 2,
-            color: COLOR.grey[600],
+            color: isDarkMode ? COLOR.common.white : COLOR.grey[600],
 
             '&:hover': {
                 background: COLOR.primary.light,
@@ -26,7 +26,7 @@ const navListStyles: SxProps = {
             },
         }
     }
-}
+});
 
 const navItemActiveStyles: SxProps = {
     backgroundColor: `${COLOR.primary.main} !important`,

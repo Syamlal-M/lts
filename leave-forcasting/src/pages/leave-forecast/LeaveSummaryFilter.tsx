@@ -13,8 +13,8 @@ const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
     const { orgList, teamList, monthList, yearList } = useSelectListContext();
 
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={12} sm={4} md={3} lg={3}>
+        <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} sm={4} md={3} lg={2}>
                 <TextField
                     select
                     fullWidth
@@ -31,7 +31,7 @@ const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
                     ))}
                 </TextField>
             </Grid>
-            <Grid item xs={12} sm={4} md={3} lg={3}>
+            <Grid item xs={12} sm={4} md={3} lg={2}>
                 <TextField
                     select
                     fullWidth
@@ -48,7 +48,7 @@ const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
                     ))}
                 </TextField>
             </Grid>
-            <Grid item xs={12} sm={4} md={3} lg={3}>
+            <Grid item xs={12} sm={4} md={3} lg={2}>
                 <TextField
                     select
                     fullWidth
@@ -65,7 +65,7 @@ const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
                     ))}
                 </TextField>
             </Grid>
-            <Grid item xs={12} sm={4} md={3} lg={3}>
+            <Grid item xs={12} sm={4} md={3} lg={2}>
                 <TextField
                     select
                     fullWidth
@@ -82,7 +82,7 @@ const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
                     ))}
                 </TextField>
             </Grid>
-            <Grid item xs={12} sm={4} md={3} lg={3}>
+            <Grid item xs={12} sm={4} md={3} lg={2}>
                 <Button
                     fullWidth
                     type="submit"

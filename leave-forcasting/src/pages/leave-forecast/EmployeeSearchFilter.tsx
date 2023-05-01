@@ -57,7 +57,7 @@ const EmployeeSearchFilter = ({ filter, onChange, onSubmit }: Filter) => {
                     onChange={onChange}
                 />
             </Grid>
-            {/* <Grid item xs={12} sm={4} md={3} lg={2}>
+            <Grid item xs={12} sm={4} md={3} lg={2}>
                 <TextField
                     fullWidth
                     name="location"
@@ -65,7 +65,7 @@ const EmployeeSearchFilter = ({ filter, onChange, onSubmit }: Filter) => {
                     value={filter.location}
                     onChange={onChange}
                 />
-            </Grid> */}
+            </Grid>
             <Grid item xs={12} sm={4} md={3} lg={2}>
                 <Button
                     fullWidth
