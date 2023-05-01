@@ -1,4 +1,5 @@
 import { Button, Grid, MenuItem, TextField } from "components/shared-ui";
+import { useSelectListContext } from "context/SelectListContext";
 import { KeyValueObject } from "types/KeyValueList";
 import { LeaveSummaryQueryParams } from "types/api/employee/LeaveSummary.types";
 
@@ -9,10 +10,7 @@ interface Filter {
 }
 
 const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
-    const orgList: KeyValueObject[] = [];
-    const teamList: KeyValueObject[] = [];
-    const monthList: KeyValueObject[] = [];
-    const yearList: KeyValueObject[] = [];
+    const { orgList, teamList, monthList, yearList } = useSelectListContext();
 
     return (
         <Grid container spacing={2}>

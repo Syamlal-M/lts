@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDebounce, useToggle } from "usehooks-ts";
-import YearList from "data/YearList";
 import MonthList from "data/MonthList";
 import { PageContainer } from "components/layout";
-import { KeyValueObject } from "types/KeyValueList";
 import PlanningService from "service/PlanningService";
 import EmployeeSearchFilter from "./EmployeeSearchFilter";
 import { LeavePlanningDataField } from "types/LeavePlanningTable";
@@ -36,10 +34,6 @@ const PlanningPage = () => {
 
     const [leaveSummaryFilter, setLeaveSummaryFilter] = useState<LeaveSummaryQueryParams>(DEFAULT_LEAVE_SUMMARY_FILTER_VALUE);
     const [leaveSummaryList, setLeaveSummaryList] = useState<LeaveSummaryResponse>([]);
-
-    const DEFAULT_SELECT_ITEM: KeyValueObject = { label: "Select", value: "" };
-    const monthList: KeyValueObject[] = [DEFAULT_SELECT_ITEM, ...MonthList];
-    const yearList: KeyValueObject[] = [DEFAULT_SELECT_ITEM, ...YearList];
 
     const [planningData, setPlanningData] = useState<LeavePlanningDataField[]>([]);
 
