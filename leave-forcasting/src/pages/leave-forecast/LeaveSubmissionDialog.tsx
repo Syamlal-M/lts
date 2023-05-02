@@ -1,9 +1,8 @@
-import { Button, Dialog, DialogContent, DialogTitle, Grid, Icon, IconButton, Typography } from "components/shared-ui";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Icon, IconButton, Typography } from "components/shared-ui";
 import { LeaveSummaryItem, LeaveSummaryQueryParams } from "types/api/employee/LeaveSummary.types";
 import LeaveSummaryFilter from "./LeaveSummaryFilter";
 import { UpdateLeaveRequest } from "types/api/employee/UpdateLeave.types";
 import { useState } from "react";
-import { DialogActions } from "@mui/material";
 
 interface LeaveSubmissionDialogProps {
     isOpen: boolean;

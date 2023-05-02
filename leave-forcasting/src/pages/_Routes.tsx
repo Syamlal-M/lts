@@ -4,7 +4,7 @@ import DashboardPage from './DashboadPage';
 import LandingPage from './LandingPage';
 import PlanningPage from './leave-forecast/page';
 import ReportsPage from './ReportsPage';
-import SettingsPage from './SettingsPage';
+import SettingsPage from './settings/page';
 import SignInPage from './SignInPage';
 import { getRouteUrl } from 'utils/AccessPointUtils';
 import { SelectListProvider } from 'context/SelectListContext';

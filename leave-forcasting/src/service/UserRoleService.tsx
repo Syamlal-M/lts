@@ -12,6 +12,10 @@ const UserRoleService = {
         const url: string = getApiUrl("GET_ROLE_LIST");
         return Api.get(url);
     },
+    assignRole: (criteria: Record<string, any> = {}) => {
+         let url = getApiUrl("ASSIGN_ROLE", criteria);
+         return Api.put(url, criteria);
+    },
 };
 
 export default UserRoleService;

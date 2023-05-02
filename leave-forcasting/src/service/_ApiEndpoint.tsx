@@ -9,6 +9,7 @@ const API_ENDPOINTS = {
     GET_ROLE_LIST: "api/employee/roles",
     GET_TEAM_LIST: "api/employee/teams",
     PUT_EMPLOYEE_LEAVES: "/api/employee/leaves/{:employeeId}",
+    ASSIGN_ROLE: "api/employee/role/{:employeeId}?roleName={:roleName}"
 };
 
 export default API_ENDPOINTS;

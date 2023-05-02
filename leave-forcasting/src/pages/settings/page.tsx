@@ -1,35 +1,41 @@
 import { DataGrid } from '@mui/x-data-grid';
 import { PageContainer } from "components/layout";
-import { Box, Button, Card, CardContent, Grid, MenuItem, TextField,
-	Typography } from "components/shared-ui";
+import { Box, Button, Card, CardContent, Grid, Typography } from "components/shared-ui";
 import UserRoleColumnList from "data/UserRoleColumnList";
 
-import MonthList from "data/MonthList";
 import * as React from 'react';
 import UserRoleService from "service/UserRoleService";
-import { LeaveForecastInfo } from "types/LeaveForecastInfo";
 
+import { useCallback } from "react";
 import { KeyValueObject } from "types/KeyValueList";
-import { useCallback, useEffect, useState } from "react";
 
+import RoleChangeDialog from "./RoleChangeDialog"
 
-const ReportsPage = () => {
+const SettingsPage = () => {
 
-  const [userRole, setUserRole] = React.useState<any>();
+  const [open, setOpen] = React.useState(false);
+  const [selectedValue, setSelectedValue] = React.useState<any>({});
   const [processedLtsRoleData, setProcessedLtsRoleData] = React.useState<any>([]);
-  const [column, setColumn] = React.useState(UserRoleColumnList);
+  const [column] = React.useState(UserRoleColumnList);
 
-    const processUserRoleResponse = (response: any) => {
-        let tempLeaveForcastData: Array<any> = [];
-        for(const employeeInfo of response){
-            const map = {'employeeId': employeeInfo.employeeId,
-                'employeeName': employeeInfo.employeeName,
-                'roleName': employeeInfo.roles[0].roleName
-                }
-            tempLeaveForcastData.push(map)
-        }
-        setProcessedLtsRoleData(tempLeaveForcastData);
+  const processUserRoleResponse = (response: any) => {
+    let tempLeaveForcastData: Array<any> = [];
+    for(const employeeInfo of response){
+        const map = {'employeeId': employeeInfo.employeeId,
+            'employeeName': employeeInfo.employeeName,
+            'roleName': employeeInfo.role.roleName,
+            'actions':
+                <Button
+                    variant="contained"
+                    onClick={() => handleClickOpen(employeeInfo)}
+                >
+                    Change Role
+                </Button>
+            }
+        tempLeaveForcastData.push(map)
     }
+    setProcessedLtsRoleData(tempLeaveForcastData);
+  }
 
     const fetchUserRoles = () => {
       UserRoleService.fetchUserRole()
@@ -50,21 +56,37 @@ const ReportsPage = () => {
         UserRoleService.getRoleList()
             .then(response => {
                 const roleList = processDataList(response)
-                 console.log(roleList);
             })
             .catch(error => {
                 console.log(error);
             });
     }, []);
 
-      const sendToServer = async (event: Event) => {
-//         for (const role in roles) {
-//           if (event.value.toLowerCase() == roles[role].label.toLowerCase()) {
-//             setSelectedRoleMap(selectedRoleMap.set(event.id, roles[role].label.toLowerCase()));
-//             break;
-//           }
-//         }
+      const sendToServer = async (employeeId: string, roleName: string) => {
+        UserRoleService.assignRole({employeeId: employeeId, roleName:roleName})
+            .then(response => {
+                console.log(response);
+                //update the page with new value
+                fetchUserRoles()
+            })
+            .catch(error => {
+                console.log(error)
+            })
       }
+
+  const handleClickOpen = (params: any) => {
+    setSelectedValue(params);
+    setOpen(true);
+  };
+
+  const handleClose = (selectedValue: any, roleName: string) => {
+    if(roleName) {
+        sendToServer(selectedValue.employeeId, roleName);
+    }
+    setOpen(false);
+  };
+
+
 
     React.useEffect(() => {
       getRoles()
@@ -96,14 +118,20 @@ const ReportsPage = () => {
                       },
                     },
                   }}
-//                   onCellEditStop={sendToServer}
                 />
               </Box>
             </Grid>
           </Grid>
+          <RoleChangeDialog
+            selectedValue={selectedValue}
+            isOpen={open}
+            onClose={handleClose}
+          />
+
         </CardContent>
       </Card>
+
     </PageContainer>)
 };
 
-export default ReportsPage;
+export default SettingsPage;

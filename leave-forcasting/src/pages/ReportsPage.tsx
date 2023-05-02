@@ -65,7 +65,7 @@ const ReportsPage = () => {
   }
 
   const fetchLeaveForcastReport = () => {
-    ReportService.fetchForecast({ 'month`': month, 'year': year, 'org': org, 'team': team })
+    ReportService.fetchForecast({ 'month': month, 'year': year, 'org': org, 'team': team })
       .then(response => {
         setLeaveForecast(response);
       })

@@ -19,20 +19,15 @@ const UserRoleColumnList: RoleColumnList = [
       field: 'roleName',
       headerName: 'Role',
       description: 'Role',
-      type: 'singleSelect',
       width: 250,
-      editable: true,
-      valueOptions: ["ADMIN","SUPER_ADMIN","TEAM_USER","USER"]
+      editable: false,
     },
-//     {
-//       field: 'save',
-//       headerName: 'Action',
-//       description: 'Action',
-// //       renderCell: (params) => (
-// //         <Button id={params.row.userId} variant="contained" size="small" onClick={() => update(params.row.userId, params)}>
-// //           update
-// //         </Button>
-// //       ),
-//     }
+    {
+        field: 'action',
+        headerName: 'Actions',
+        renderCell: (params: any) => (params.row.actions),
+        width: 200,
+        sortable: false,
+    },
   ]
 export default UserRoleColumnList;
