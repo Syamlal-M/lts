@@ -8,6 +8,7 @@ const API_ENDPOINTS = {
     GET_LOCATION_LIST: "api/employee/roles",
     GET_ROLE_LIST: "api/employee/roles",
     GET_TEAM_LIST: "api/employee/teams",
+    PUT_EMPLOYEE_LEAVES: "/api/employee/leaves/{:employeeId}",
 };
 
 export default API_ENDPOINTS;

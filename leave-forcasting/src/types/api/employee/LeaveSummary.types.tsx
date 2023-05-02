@@ -37,4 +37,4 @@ type LeaveSummaryQueryParams = {
     year: string;
 };
 
-export type { LeaveSummaryQueryParams, LeaveSummaryResponse }
+export type { LeaveSummaryQueryParams, LeaveSummaryResponse, LeaveSummaryItem }

@@ -4,12 +4,13 @@ import MonthList from "data/MonthList";
 import { PageContainer } from "components/layout";
 import PlanningService from "service/PlanningService";
 import EmployeeSearchFilter from "./EmployeeSearchFilter";
+import LeaveSubmissionDialog from "./LeaveSubmissionDialog";
 import { LeavePlanningDataField } from "types/LeavePlanningTable";
 import LeavePlanningColumnList from "data/LeavePlanningColumnList";
+import { UpdateLeaveQueryParams, UpdateLeaveRequest } from "types/api/employee/UpdateLeave.types";
 import { LeaveSummaryQueryParams, LeaveSummaryResponse } from "types/api/employee/LeaveSummary.types";
 import { Box, Button, Card, CardContent, CardHeader, DataGrid, Grid } from "components/shared-ui";
 import { EmployeeSearchItem, EmployeeSearchQueryParams, EmployeeSearchResponse } from "types/api/employee/EmployeeSearch.types";
-import LeaveSubmissionDialog from "./LeaveSubmissionDialog";
 
 const DEFAULT_EMPLOYEE_SEARCH_FILTER_VALUE: EmployeeSearchQueryParams = {
     name: "",
@@ -34,13 +35,9 @@ const PlanningPage = () => {
 
     const [leaveSummaryFilter, setLeaveSummaryFilter] = useState<LeaveSummaryQueryParams>(DEFAULT_LEAVE_SUMMARY_FILTER_VALUE);
     const [leaveSummaryList, setLeaveSummaryList] = useState<LeaveSummaryResponse>([]);
+    const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
 
     const [planningData, setPlanningData] = useState<LeavePlanningDataField[]>([]);
-
-    useEffect(() => {
-        getEmployees();
-        getLeaveSummary();
-    }, []);
 
     const getEmployees = useCallback((queryParams: EmployeeSearchQueryParams = debounceEmployeeSearchFilter) => {
         PlanningService.searchEmployees(queryParams)
@@ -63,6 +60,12 @@ const PlanningPage = () => {
             });
     }, [leaveSummaryFilter]);
 
+    const updateLeave = useCallback((params: UpdateLeaveQueryParams, leaveList: UpdateLeaveRequest) => {
+        PlanningService.updateLeave(params, leaveList)
+            .then(response => { getLeaveSummary(); })
+            .catch(error => { console.log(error); })
+    }, []);
+
     const processPlanningData = (data: EmployeeSearchResponse): LeavePlanningDataField[] => {
         return data.map((item: EmployeeSearchItem, index: number): LeavePlanningDataField => {
             return {
@@ -82,7 +85,7 @@ const PlanningPage = () => {
     }
 
     const handleEdit = (params: EmployeeSearchItem) => {
-        console.log("Edit", params);
+        setSelectedEmployeeId(params.employeeId);
         setIsLeaveSubmissionDialogOpen();
     }
 
@@ -93,7 +96,7 @@ const PlanningPage = () => {
         });
     };
 
-    const handleEmployeeSearchSubmit = (filter: EmployeeSearchQueryParams) => {
+    const handleEmployeeSearchFilterSubmit = (filter: EmployeeSearchQueryParams) => {
         getEmployees(filter);
     };
 
@@ -104,9 +107,22 @@ const PlanningPage = () => {
         });
     };
 
-    const handleLeaveSummarySubmit = (filter: LeaveSummaryQueryParams) => {
+    const handleLeaveSummaryFilterSubmit = (filter: LeaveSummaryQueryParams) => {
         getLeaveSummary(filter);
     };
+
+    const handleLeaveUpdate = (leaveList: UpdateLeaveRequest) => {
+        const params = { employeeId: leaveList[0].empId };
+        // updateLeave(params, leaveList);
+    }
+
+    useEffect(() => {
+        getEmployees();
+    }, [getEmployees]);
+
+    useEffect(() => {
+        getLeaveSummary();
+    }, [getLeaveSummary]);
 
     return (
         <PageContainer title="LTS | Leave Forecast">
@@ -117,7 +133,7 @@ const PlanningPage = () => {
                         <EmployeeSearchFilter
                             filter={employeeSearchFilter}
                             onChange={handleEmployeeSearchFormChange}
-                            onSubmit={handleEmployeeSearchSubmit}
+                            onSubmit={handleEmployeeSearchFilterSubmit}
                         />
                         <Grid item xs={12}>
                             <Box sx={{ height: 300, maxWidth: "calc(100vw - 80px)" }}>
@@ -140,7 +156,9 @@ const PlanningPage = () => {
                 onClose={setIsLeaveSubmissionDialogOpen}
                 filter={leaveSummaryFilter}
                 onFilterChange={handleLeaveSummaryFormChange}
-                onFilterSubmit={handleLeaveSummarySubmit}
+                onFilterSubmit={handleLeaveSummaryFilterSubmit}
+                leaveSummary={leaveSummaryList.find(leave => leave.employeeId === selectedEmployeeId)}
+                onLeaveSubmit={handleLeaveUpdate}
             />
         </PageContainer>
     );
