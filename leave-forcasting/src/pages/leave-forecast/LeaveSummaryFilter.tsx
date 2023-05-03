@@ -10,7 +10,7 @@ interface Filter {
 }
 
 const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
-    const { orgList, teamList, monthList, yearList } = useSelectListContext();
+    const { ORGANIZATIONS, TEAMS, MONTHS, YEARS } = useSelectListContext();
 
     return (
         <Grid container spacing={2} alignItems="center">
@@ -24,7 +24,7 @@ const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
                     value={filter.org}
                     onChange={onChange}
                 >
-                    {orgList.map((org: KeyValueObject) => (
+                    {ORGANIZATIONS.map((org: KeyValueObject) => (
                         <MenuItem key={org.value} value={org.value}>
                             {org.label}
                         </MenuItem>
@@ -41,7 +41,7 @@ const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
                     value={filter.team}
                     onChange={onChange}
                 >
-                    {teamList.map((team: KeyValueObject) => (
+                    {TEAMS.map((team: KeyValueObject) => (
                         <MenuItem key={team.value} value={team.value}>
                             {team.label}
                         </MenuItem>
@@ -58,7 +58,7 @@ const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
                     value={filter.month}
                     onChange={onChange}
                 >
-                    {monthList.map((month: KeyValueObject) => (
+                    {MONTHS.map((month: KeyValueObject) => (
                         <MenuItem key={month.value} value={month.value}>
                             {month.label}
                         </MenuItem>
@@ -75,7 +75,7 @@ const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
                     value={filter.year}
                     onChange={onChange}
                 >
-                    {yearList.map((year: KeyValueObject) => (
+                    {YEARS.map((year: KeyValueObject) => (
                         <MenuItem key={year.value} value={year.value}>
                             {year.label}
                         </MenuItem>

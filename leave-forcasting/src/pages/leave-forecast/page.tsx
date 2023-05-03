@@ -39,6 +39,29 @@ const PlanningPage = () => {
 
     const [planningData, setPlanningData] = useState<LeavePlanningDataField[]>([]);
 
+    const handleEdit = useCallback((params: EmployeeSearchItem) => {
+        setSelectedEmployeeId(params.employeeId);
+        setIsLeaveSubmissionDialogOpen();
+    }, [setIsLeaveSubmissionDialogOpen]);
+
+    const processPlanningData = useCallback((data: EmployeeSearchResponse): LeavePlanningDataField[] => {
+        return data.map((item: EmployeeSearchItem, index: number): LeavePlanningDataField => {
+            return {
+                employeeId: item.employeeId,
+                name: item.employeeName,
+                nameInClientRecords: item.nameInClientRecords,
+                jobTitle: item.jobTitle,
+                actions:
+                    <Button
+                        variant="contained"
+                        onClick={() => handleEdit(item)}
+                    >
+                        Edit leaves
+                    </Button>
+            }
+        })
+    }, [handleEdit]);
+
     const getEmployees = useCallback((queryParams: EmployeeSearchQueryParams = debounceEmployeeSearchFilter) => {
         PlanningService.searchEmployees(queryParams)
             .then((response) => {
@@ -48,7 +71,7 @@ const PlanningPage = () => {
             .catch(error => {
                 console.log(error);
             });
-    }, [debounceEmployeeSearchFilter]);
+    }, [debounceEmployeeSearchFilter, processPlanningData]);
 
     const getLeaveSummary = useCallback((queryParams: LeaveSummaryQueryParams = leaveSummaryFilter) => {
         PlanningService.getLeaveSummary(queryParams)
@@ -64,30 +87,7 @@ const PlanningPage = () => {
         PlanningService.updateLeave(params, leaveList)
             .then(response => { getLeaveSummary(); })
             .catch(error => { console.log(error); })
-    }, []);
-
-    const processPlanningData = (data: EmployeeSearchResponse): LeavePlanningDataField[] => {
-        return data.map((item: EmployeeSearchItem, index: number): LeavePlanningDataField => {
-            return {
-                id: item.employeeId || index,
-                name: item.employeeName,
-                nameInClientRecords: item.nameInClientRecords,
-                jobTitle: item.jobTitle,
-                actions:
-                    <Button
-                        variant="contained"
-                        onClick={() => handleEdit(item)}
-                    >
-                        Edit leaves
-                    </Button>
-            }
-        })
-    }
-
-    const handleEdit = (params: EmployeeSearchItem) => {
-        setSelectedEmployeeId(params.employeeId);
-        setIsLeaveSubmissionDialogOpen();
-    }
+    }, [getLeaveSummary]);
 
     const handleEmployeeSearchFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setEmployeeSearchFilter((prevFilter) => {
@@ -113,7 +113,7 @@ const PlanningPage = () => {
 
     const handleLeaveUpdate = (leaveList: UpdateLeaveRequest) => {
         const params = { employeeId: leaveList[0].empId };
-        // updateLeave(params, leaveList);
+        updateLeave(params, leaveList);
     }
 
     useEffect(() => {
@@ -144,6 +144,7 @@ const PlanningPage = () => {
                                     disableColumnSelector
                                     disableRowSelectionOnClick
                                     rows={planningData}
+                                    getRowId={(row) => row.employeeId}
                                     columns={LeavePlanningColumnList}
                                 />
                             </Box>

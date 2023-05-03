@@ -16,24 +16,24 @@ import EmployeeSummary from './EmployeeSummary';
 const DashboardPage = () => {
 	const [fileName, setFileName] = useState('');
 	const [uploadProgress, setUploadProgress] = useState(false);
-	const [uploadSuccess, setUploadSuccess] = useState(false);
-	const [uploadError, setUploadError] = useState(false);
+	// const [uploadSuccess, setUploadSuccess] = useState(false);
+	// const [uploadError, setUploadError] = useState(false);
 
 
 	const fetchEmployee = () => {
 		EmployeeService.fetchEmployee({ 'file': fileName, redirect: 'follow' })
 			.then((response) => {
 				if (response) {
-					setUploadSuccess(true);
+					// setUploadSuccess(true);
 				} else {
-					setUploadSuccess(false);
+					// setUploadSuccess(false);
 				}
 				setUploadProgress(false);
 			})
 			.catch((error) => {
 				console.log(error);
 				setUploadProgress(false);
-				setUploadError(true);
+				// setUploadError(true);
 			});
 	};
 

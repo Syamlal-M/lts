@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import DataStoreService from "service/DataStoreService";
 import { ContextProvider } from "types/ContextProvider";
 import { KeyValueObject } from "types/KeyValueList";
@@ -8,20 +8,26 @@ import YearList from "data/YearList";
 type SelectListProviderProps = ContextProvider;
 
 type SelectListContextProps = {
-    orgList: KeyValueObject[];
-    teamList: KeyValueObject[];
-    monthList: KeyValueObject[];
-    yearList: KeyValueObject[];
+    ORGANIZATIONS: KeyValueObject[];
+    TEAMS: KeyValueObject[];
+    MONTHS: KeyValueObject[];
+    YEARS: KeyValueObject[];
+    ROLES: KeyValueObject[];
 }
 
 const SelectListContext = createContext<SelectListContextProps>({} as SelectListContextProps);
 
 const SelectListProvider = ({ children }: SelectListProviderProps) => {
-    const DEFAULT_SELECT_ITEM: KeyValueObject = { label: "Select", value: "" };
+    const DEFAULT_SELECT_ITEM: KeyValueObject = useMemo(() => ({ label: "Select", value: "" }), []);
     const monthList: KeyValueObject[] = [DEFAULT_SELECT_ITEM, ...MonthList];
     const yearList: KeyValueObject[] = [DEFAULT_SELECT_ITEM, ...YearList];
     const [orgList, setOrgList] = useState<KeyValueObject[]>([]);
     const [teamList, setTeamList] = useState<KeyValueObject[]>([]);
+    const [roleList, setRoleList] = useState<KeyValueObject[]>([]);
+
+    const processSelectList = useCallback((dataList: string[]): KeyValueObject[] => {
+        return [DEFAULT_SELECT_ITEM, ...dataList.map((listItem) => ({ label: listItem, value: listItem, }))];
+    }, [DEFAULT_SELECT_ITEM]);
 
     const getOrganizations = useCallback(() => {
         DataStoreService.getOrganizationList()
@@ -32,7 +38,7 @@ const SelectListProvider = ({ children }: SelectListProviderProps) => {
             .catch(error => {
                 console.log(error);
             });
-    }, []);
+    }, [processSelectList]);
 
     const getTeams = useCallback(() => {
         DataStoreService.getTeamList()
@@ -43,22 +49,31 @@ const SelectListProvider = ({ children }: SelectListProviderProps) => {
             .catch(error => {
                 console.log(error);
             });
-    }, []);
+    }, [processSelectList]);
 
-    const processSelectList = (dataList: string[]): KeyValueObject[] => {
-        return [DEFAULT_SELECT_ITEM, ...dataList.map((listItem) => ({ label: listItem, value: listItem, }))];
-    };
+    const getRoles = useCallback(() => {
+        DataStoreService.getRoleList()
+            .then(response => {
+                const roleList = processSelectList(response)
+                setRoleList(roleList);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }, [processSelectList]);
 
     useEffect(() => {
         getOrganizations();
         getTeams();
-    }, [getOrganizations, getTeams]);
+        getRoles();
+    }, [getOrganizations, getTeams, getRoles]);
 
     const value = {
-        orgList,
-        teamList,
-        monthList,
-        yearList,
+        ORGANIZATIONS: orgList,
+        TEAMS: teamList,
+        MONTHS: monthList,
+        YEARS: yearList,
+        ROLES: roleList,
     };
 
     return (
