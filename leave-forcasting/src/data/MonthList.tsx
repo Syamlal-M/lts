@@ -2,52 +2,52 @@ import { KeyValueList } from "types/KeyValueList";
 
 const MonthList: KeyValueList = [
     {
-      value: 'JAN',
-      label: 'January'
+      value: 'JANUARY',
+      label: 'JANUARY'
     },
     {
-      value: 'FEB',
-      label: 'February'
+      value: 'FEBRUARY',
+      label: 'FEBRUARY'
     },
     {
-      value: 'MAR',
-      label: 'March'
+      value: 'MARCH',
+      label: 'MARCH'
     },
     {
-      value: 'APR',
-      label: 'April'
+      value: 'APRIL',
+      label: 'APRIL'
     },
     {
       value: 'MAY',
-      label: 'May'
+      label: 'MAY'
     },
     {
-      value: 'JUN',
-      label: 'June'
+      value: 'JUNE',
+      label: 'JUNE'
     },
     {
-      value: 'JUL',
-      label: 'July'
+      value: 'JULY',
+      label: 'JULY'
     },
     {
-      value: 'AUG',
-      label: 'August'
+      value: 'AUGUST',
+      label: 'AUGUST'
     },
     {
-      value: 'SEP',
-      label: 'September'
+      value: 'SEPTEMBER',
+      label: 'SEPTEMBER'
     },
     {
-      value: 'OCT',
-      label: 'October'
+      value: 'OCTOBER',
+      label: 'OCTOBER'
     },
     {
-      value: 'NOV',
-      label: 'November'
+      value: 'NOVEMBER',
+      label: 'NOVEMBER'
     },
     {
-      value: 'DEC',
-      label: 'December'
+      value: 'DECEMBER',
+      label: 'DECEMBER'
     }
 ];
 
