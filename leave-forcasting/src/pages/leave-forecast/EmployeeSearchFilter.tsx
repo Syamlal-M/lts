@@ -10,7 +10,7 @@ interface Filter {
 }
 
 const EmployeeSearchFilter = ({ filter, onChange, onSubmit }: Filter) => {
-    const { orgList, teamList } = useSelectListContext();
+    const { ORGANIZATIONS, TEAMS } = useSelectListContext();
 
     return (
         <>
@@ -24,7 +24,7 @@ const EmployeeSearchFilter = ({ filter, onChange, onSubmit }: Filter) => {
                     value={filter.org}
                     onChange={onChange}
                 >
-                    {orgList.map((org: KeyValueObject) => (
+                    {ORGANIZATIONS.map((org: KeyValueObject) => (
                         <MenuItem key={org.value} value={org.value}>
                             {org.label}
                         </MenuItem>
@@ -41,7 +41,7 @@ const EmployeeSearchFilter = ({ filter, onChange, onSubmit }: Filter) => {
                     value={filter.team}
                     onChange={onChange}
                 >
-                    {teamList.map((team: KeyValueObject) => (
+                    {TEAMS.map((team: KeyValueObject) => (
                         <MenuItem key={team.value} value={team.value}>
                             {team.label}
                         </MenuItem>

@@ -3,14 +3,14 @@ import { LeavePlanningColumnList as PlanningColumnList } from "types/LeavePlanni
 
 const LeavePlanningColumnList: PlanningColumnList = [
     {
-        field: 'id',
-        headerName: 'ID',
+        field: 'employeeId',
+        headerName: 'Employee ID',
         renderCell: (params: any) => (
-            <Tooltip title={params.row.id}>
-                <span>{params.row.id}</span>
+            <Tooltip title={params.row.employeeId}>
+                <span>{params.row.employeeId}</span>
             </Tooltip>
         ),
-        width: 100,
+        width: 200,
     },
     {
         field: 'name',

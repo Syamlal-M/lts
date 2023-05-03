@@ -1,8 +1,12 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Icon, IconButton, Typography } from "components/shared-ui";
-import { LeaveSummaryItem, LeaveSummaryQueryParams } from "types/api/employee/LeaveSummary.types";
+import { useState } from "react";
 import LeaveSummaryFilter from "./LeaveSummaryFilter";
 import { UpdateLeaveRequest } from "types/api/employee/UpdateLeave.types";
-import { useState } from "react";
+import { LeaveSummaryItem, LeaveSummaryQueryParams } from "types/api/employee/LeaveSummary.types";
+// import {DatePicker} from "@mu"
+import {
+    Button, Dialog, DialogActions, DialogContent, DialogTitle,
+    Grid, Icon, IconButton, Typography
+} from "components/shared-ui";
 
 interface LeaveSubmissionDialogProps {
     isOpen: boolean;
@@ -16,15 +20,27 @@ interface LeaveSubmissionDialogProps {
 
 const DUMMY_LEAVE_LIST: UpdateLeaveRequest = [
     {
-        empId: "A-101",
-        fromDate: "2023-05-04",
+        empId: "A-100",
+        fromDate: "2023-05-05",
         planningType: "ACTUAL",
-        toDate: "2023-05-04"
+        toDate: "2023-05-05"
     }
 ];
 
+const LeaveSummary = () => {
+    return (
+        <>
+            <Grid container>
+                <Grid item>
+                    {/* <DatePicker /> */}
+                </Grid>
+            </Grid>
+        </>
+    );
+}
+
 const LeaveSubmissionDialog = ({ isOpen, onClose, filter, onFilterChange, onFilterSubmit, leaveSummary, onLeaveSubmit }: LeaveSubmissionDialogProps) => {
-    const [leaveList, setLeaveList] = useState<UpdateLeaveRequest>(DUMMY_LEAVE_LIST);
+    const [leaveList] = useState<UpdateLeaveRequest>(DUMMY_LEAVE_LIST);
 
     const handleLeaveSubmit = () => (onLeaveSubmit(leaveList));
 
@@ -50,6 +66,7 @@ const LeaveSubmissionDialog = ({ isOpen, onClose, filter, onFilterChange, onFilt
                         <Grid container sx={{ minHeight: 200 }} alignItems="center">
                             <Grid item xs={12}>
                                 <Typography variant="caption">{JSON.stringify(leaveSummary)}</Typography>
+                                <LeaveSummary />
                             </Grid>
                         </Grid> :
                         <Grid container sx={{ minHeight: 200 }} alignItems="center" textAlign="center">

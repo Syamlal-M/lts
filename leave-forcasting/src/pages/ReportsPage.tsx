@@ -1,28 +1,30 @@
 import { DataGrid } from '@mui/x-data-grid';
 import { PageContainer } from "components/layout";
-import { Box, Button, Card, CardContent, Grid, MenuItem, TextField,
-	Typography } from "components/shared-ui";
+import {
+  Box, Button, Card, CardContent, Grid, MenuItem, TextField,
+  Typography
+} from "components/shared-ui";
 import { KeyValueObject } from "types/KeyValueList";
 import LeaveForecastReportColumnList from "data/LeaveForecastReportColumnList";
 
 import MonthList from "data/MonthList";
 import * as React from 'react';
 import ReportService from "service/ReportService";
-import DataStoreService from "service/DataStoreService";
 import { LeaveForecastInfo } from "types/LeaveForecastInfo";
+import { useSelectListContext } from 'context/SelectListContext';
 
 const ReportsPage = () => {
 
+  const { ORGANIZATIONS: orgList, TEAMS: teamList } = useSelectListContext();
   const [leaveForecast, setLeaveForecast] = React.useState<any>();
   const [processedLeaveForcastData, setProcessedLeaveForcastData] = React.useState<any>([]);
-  const [month, setMonth] = React.useState(MonthList[new Date().getMonth() + 1].value);
-  const [year] = React.useState(new Date().getFullYear());
+
   const [org, setOrg] = React.useState("");
   const [team, setTeam] = React.useState("");
-  const [orgList, setOrgList] = React.useState<KeyValueObject[]>([]);
-  const [teamList, setTeamList] = React.useState<KeyValueObject[]>([]);
+  const [year] = React.useState(new Date().getFullYear());
+  const [month, setMonth] = React.useState(MonthList[new Date().getMonth() + 1].value);
 
-  const processDataForTableView = (): any => {
+  const processDataForTableView = React.useCallback((): any => {
     let tempLeaveForcastData: Array<any> = [];
     if (leaveForecast?.length !== 0) {
       for (const lf of leaveForecast) {
@@ -62,7 +64,7 @@ const ReportsPage = () => {
       setProcessedLeaveForcastData(tempLeaveForcastData);
 
     }
-  }
+  }, [leaveForecast]);
 
   const fetchLeaveForcastReport = () => {
     ReportService.fetchForecast({ 'month': month, 'year': year, 'org': org, 'team': team })
@@ -84,95 +86,58 @@ const ReportsPage = () => {
     setTeam(event.target.value.trim());
   }
 
-
   const viewReport = () => {
     fetchLeaveForcastReport();
   }
-
-  const processDataList = (dataList: string[]): KeyValueObject[] => {
-      const DEFAULT_DATA: KeyValueObject = { label: "Select", value: "" };
-      return [DEFAULT_DATA, ...dataList.map((listItem) => ({
-          label: listItem,
-          value: listItem,
-      }))];
-  }
-
-  const getOrganizations = () => {
-          DataStoreService.getOrganizationList()
-              .then(response => {
-                  const orgList = processDataList(response)
-                  setOrgList(orgList);
-              })
-              .catch(error => {
-                  console.log(error);
-              });
-      };
-
-      const getTeams = () => {
-          DataStoreService.getTeamList()
-              .then(response => {
-                  const teamList = processDataList(response)
-                  setTeamList(teamList);
-              })
-              .catch(error => {
-                  console.log(error);
-              });
-      };
-
-  React.useEffect(() => {
-    getOrganizations();
-    getTeams();
-  }, []);
 
   React.useEffect(() => {
     if (typeof leaveForecast?.length !== 'undefined') {
       processDataForTableView();
 
     }
-  }, [leaveForecast])
-
+  }, [leaveForecast, processDataForTableView])
 
   return (
 
     <PageContainer title="LTS | Reports">
       <Card>
         <CardContent>
-            <Typography variant="subtitle1" fontWeight={600}>
-                Leave Forecast Report
-            </Typography>
-      	</CardContent>
+          <Typography variant="subtitle1" fontWeight={600}>
+            Leave Forecast Report
+          </Typography>
+        </CardContent>
         <CardContent>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} sm={4} md={4} lg={2}>
               <TextField
-                  select
-                  fullWidth
-                  name="org"
-                  label="Organization"
-                  variant="outlined"
-                  onChange={handleOrgChange}
+                select
+                fullWidth
+                name="org"
+                label="Organization"
+                variant="outlined"
+                onChange={handleOrgChange}
               >
-                  {orgList.map((org: KeyValueObject) => (
-                      <MenuItem key={org.value} value={org.value}>
-                          {org.label}
-                      </MenuItem>
-                  ))}
+                {orgList.map((org: KeyValueObject) => (
+                  <MenuItem key={org.value} value={org.value}>
+                    {org.label}
+                  </MenuItem>
+                ))}
               </TextField>
             </Grid>
             <Grid item xs={12} sm={4} md={4} lg={2}>
               <TextField
-                  select
-                  fullWidth
-                  name="team"
-                  label="Team"
-                  variant="outlined"
-                  onChange={handleTeamChange}
+                select
+                fullWidth
+                name="team"
+                label="Team"
+                variant="outlined"
+                onChange={handleTeamChange}
               >
-                  {teamList.map((org: KeyValueObject) => (
-                      <MenuItem key={org.value} value={org.value}>
-                          {org.label}
-                      </MenuItem>
-                  ))}
+                {teamList.map((org: KeyValueObject) => (
+                  <MenuItem key={org.value} value={org.value}>
+                    {org.label}
+                  </MenuItem>
+                ))}
               </TextField>
             </Grid>
             <Grid item xs={12} sm={4} md={4} lg={2}>

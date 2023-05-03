@@ -2,7 +2,7 @@ import React from "react";
 import { GridColDef } from "./DataGrid";
 
 interface LeavePlanningDataField {
-    id: number | string;
+    employeeId: number | string;
     name: string;
     nameInClientRecords: string;
     jobTitle: string;
@@ -14,7 +14,7 @@ type LeavePlanningColumn<T extends keyof LeavePlanningDataField> = GridColDef & 
 };
 
 type LeavePlanningColumnList = [
-    LeavePlanningColumn<"id">,
+    LeavePlanningColumn<"employeeId">,
     LeavePlanningColumn<"name">,
     LeavePlanningColumn<"nameInClientRecords">,
     LeavePlanningColumn<"jobTitle">,
