@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { DashboardTemplate } from 'components/layout';
-import DashboardPage from './DashboadPage';
+import DashboardPage from './employee-info/DashboadPage';
 import LandingPage from './LandingPage';
 import PlanningPage from './leave-forecast/page';
 import ReportsPage from './ReportsPage';

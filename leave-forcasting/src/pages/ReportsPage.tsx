@@ -24,9 +24,13 @@ const ReportsPage = () => {
   const [year] = React.useState(new Date().getFullYear());
   const [month, setMonth] = React.useState(MonthList[new Date().getMonth() + 1].value);
 
+  const getLeaveDates = (weekLeave: any) => {
+    return weekLeave?.noOfDays === 1 ? weekLeave?.leaveDates[0].fromDate : (weekLeave?.leaveDates[0].fromDate + ' to ' + weekLeave?.leaveDates[0].toDate)
+  }
+
   const processDataForTableView = React.useCallback((): any => {
     let tempLeaveForcastData: Array<any> = [];
-    if (leaveForecast?.length !== 0) {
+    if (leaveForecast?.length > 0) {
       for (const lf of leaveForecast) {
         let leaveForcastObject: LeaveForecastInfo = {
           id: lf['employeeId'],
@@ -34,31 +38,17 @@ const ReportsPage = () => {
           employeeName: lf['employeeName'],
           organizationName: lf['organizationName'],
           teamName: lf['teamName'],
-          week_1: 0,
-          week_2: 0,
-          week_3: 0,
-          week_4: 0,
-          week_5: 0,
+          week_1: lf['weeks'][0]?.noOfDays,
+          week_1_leaveDates: getLeaveDates(lf['weeks'][0]),
+          week_2: lf['weeks'][1]?.noOfDays,
+          week_2_leaveDates: getLeaveDates(lf['weeks'][1]),
+          week_3: lf['weeks'][2]?.noOfDays,
+          week_3_leaveDates: getLeaveDates(lf['weeks'][2]),
+          week_4: lf['weeks'][3]?.noOfDays,
+          week_4_leaveDates: getLeaveDates(lf['weeks'][3]),
+          week_5: lf['weeks'][4]?.noOfDays,
+          week_5_leaveDates: getLeaveDates(lf['weeks'][4]),
         };
-        let leaveSummaryResponse = lf['leaveSummaryResponseList']['0']['dateBasedOnWeek']['0']
-        for (var key in leaveSummaryResponse) {
-          if (key.toString() === "1") {
-            leaveForcastObject.week_1 = leaveSummaryResponse[key]?.length;
-            leaveForcastObject['week_1_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
-          } else if (key.toString() === "2") {
-            leaveForcastObject['week_2'] = leaveSummaryResponse[key].length;
-            leaveForcastObject['week_2_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
-          } else if (key.toString() === "3") {
-            leaveForcastObject['week_3'] = leaveSummaryResponse[key].length;
-            leaveForcastObject['week_3_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
-          } else if (key.toString() === "4") {
-            leaveForcastObject['week_4'] = leaveSummaryResponse[key].length;
-            leaveForcastObject['week_4_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
-          } else if (key.toString() === "5") {
-            leaveForcastObject['week_5'] = leaveSummaryResponse[key].length;
-            leaveForcastObject['week_5_leaveDates'] = leaveSummaryResponse[key].toString().replace(",", "\n");
-          }
-        }
         tempLeaveForcastData.push(leaveForcastObject);
       }
       setProcessedLeaveForcastData(tempLeaveForcastData);
