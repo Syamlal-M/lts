@@ -19,6 +19,7 @@ import CircularProgress from "./CircularProgress";
 import Container from "./Container";
 import CssBaseline from "./CssBaseline";
 import DataGrid from "./DataGrid";
+import DateRangePicker from "./DateRangePicker";
 import Dialog from "./Dialog";
 import DialogActions from "./DialogActions";
 import DialogContent from "./DialogContent";
@@ -26,6 +27,7 @@ import DialogContentText from "./DialogContentText";
 import DialogTitle from "./DialogTitle";
 import Divider from "./Divider";
 import Drawer from "./Drawer";
+import Fab from "./Fab";
 import Grid from "./Grid";
 import Icon from "./Icon";
 import IconButton from "./IconButton";
@@ -70,6 +72,7 @@ export {
     Container,
     CssBaseline,
     DataGrid,
+    DateRangePicker,
     Dialog,
     DialogActions,
     DialogContent,
@@ -77,6 +80,7 @@ export {
     DialogTitle,
     Divider,
     Drawer,
+    Fab,
     Grid,
     Icon,
     IconButton,
