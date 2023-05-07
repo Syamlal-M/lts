@@ -112,7 +112,7 @@ const PlanningPage = () => {
     };
 
     const handleLeaveUpdate = (leaveList: UpdateLeaveRequest) => {
-        const params = { employeeId: leaveList[0].empId };
+        const params = { employeeId: selectedEmployeeId };
         updateLeave(params, leaveList);
     }
 
