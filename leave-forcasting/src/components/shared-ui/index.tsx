@@ -45,7 +45,9 @@ import Menu from "./Menu";
 import MenuItem from "./MenuItem";
 import MenuList from "./MenuList";
 import Paper from "./Paper";
+import Switch from "./Switch";
 import TextField from "./TextField";
+import ToggleButton from "./ToggleButton";
 import Toolbar from "./Toolbar";
 import Tooltip from "./Tooltip";
 import Typography from "./Typography";
@@ -98,7 +100,9 @@ export {
     MenuItem,
     MenuList,
     Paper,
+    Switch,
     TextField,
+    ToggleButton,
     Toolbar,
     Typography,
     Tooltip
