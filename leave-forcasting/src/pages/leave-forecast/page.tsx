@@ -136,9 +136,8 @@ const PlanningPage = () => {
                             onSubmit={handleEmployeeSearchFilterSubmit}
                         />
                         <Grid item xs={12}>
-                            <Box sx={{ height: 300, maxWidth: "calc(100vw - 80px)" }}>
+                            <Box sx={{ height: 520, maxWidth: "calc(100vw - 80px)" }}>
                                 <DataGrid
-                                    hideFooter
                                     disableColumnFilter
                                     disableColumnMenu
                                     disableColumnSelector

@@ -1,5 +1,3 @@
-import { KeyValueList } from "types/KeyValueList";
-
 const MonthList = [
   {
     value: 'JANUARY',

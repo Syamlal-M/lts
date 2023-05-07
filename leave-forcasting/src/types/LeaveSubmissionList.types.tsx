@@ -33,14 +33,14 @@ type Leaves = {
 export type { HavePlans, Months, LeaveDate, LeaveDateProps, LeaveMonth, Leaves }
 
 export const DUMMY_LEAVES: Leaves = {
-    APR: {
+    APRIL: {
         isVisible: false,
         isEditable: false,
         havePlans: { value: "" },
         dateList: [],
     },
     MAY: {
-        isVisible: false,
+        isVisible: true,
         isEditable: false,
         havePlans: { value: "yes" },
         dateList: [
@@ -54,7 +54,7 @@ export const DUMMY_LEAVES: Leaves = {
             },
         ],
     },
-    JUN: {
+    JUNE: {
         isVisible: false,
         isEditable: false,
         havePlans: { value: "no" },
