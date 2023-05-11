@@ -1,5 +1,5 @@
 import { RegularBreakpoints } from "@mui/material";
-import MonthList from 'data/MonthList'
+import MonthList from 'data/MonthList';
 
 type Months = typeof MonthList[number]['value'];
 
@@ -15,14 +15,14 @@ type LeaveDateProps = {
 type LeaveDate = {
     startDate: LeaveDateProps;
     endDate: LeaveDateProps;
+    isEditable: boolean;
 };
 
 type HavePlans = "" | "yes" | "no";
 
 type LeaveMonth = {
     isVisible: boolean;
-    isEditable: boolean;
-    havePlans: { label?: string; value: HavePlans };
+    havePlans: { label?: string; value: HavePlans, helperText?: string };
     dateList: LeaveDate[];
 };
 
@@ -35,28 +35,27 @@ export type { HavePlans, Months, LeaveDate, LeaveDateProps, LeaveMonth, Leaves }
 export const DUMMY_LEAVES: Leaves = {
     APRIL: {
         isVisible: false,
-        isEditable: false,
         havePlans: { value: "" },
         dateList: [],
     },
     MAY: {
         isVisible: true,
-        isEditable: false,
         havePlans: { value: "yes" },
         dateList: [
             {
                 startDate: { value: '10-05-2023' },
                 endDate: { value: '10-05-2023' },
+                isEditable: false,
             },
             {
                 startDate: { value: '15-05-2023' },
                 endDate: { value: '19-05-2023' },
+                isEditable: true,
             },
         ],
     },
     JUNE: {
         isVisible: false,
-        isEditable: false,
         havePlans: { value: "no" },
         dateList: [],
     },
