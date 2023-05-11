@@ -49,6 +49,8 @@ import Menu from "./Menu";
 import MenuItem from "./MenuItem";
 import MenuList from "./MenuList";
 import Paper from "./Paper";
+import Popover from "./Popover";
+import Popper from "./Popper";
 import Switch from "./Switch";
 import TextField from "./TextField";
 import ToggleButton from "./ToggleButton";
@@ -108,6 +110,8 @@ export {
     MenuItem,
     MenuList,
     Paper,
+    Popover,
+    Popper,
     Switch,
     TextField,
     ToggleButton,
