@@ -5,6 +5,9 @@ import AccordionSummary from "./AccordionSummary";
 import Alert from "./Alert";
 import AlertTitle from "./AlertTitle";
 import AppBar from "./AppBar";
+import Avatar from "./Avatar";
+import AvatarGroup from "./AvatarGroup";
+import Badge from "./Badge";
 import Box from "./Box";
 import Button from "./Button";
 import ButtonBase from "./ButtonBase";
@@ -61,6 +64,9 @@ export {
     Alert,
     AlertTitle,
     AppBar,
+    Avatar,
+    AvatarGroup,
+    Badge,
     Box,
     Button,
     ButtonBase,
