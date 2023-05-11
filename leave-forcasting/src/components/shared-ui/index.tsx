@@ -29,6 +29,7 @@ import Divider from "./Divider";
 import Drawer from "./Drawer";
 import Fab from "./Fab";
 import Grid from "./Grid";
+import Hidden from "./Hidden";
 import Icon from "./Icon";
 import IconButton from "./IconButton";
 import LinearProgress from "./LinearProgress";
@@ -84,6 +85,7 @@ export {
     Drawer,
     Fab,
     Grid,
+    Hidden,
     Icon,
     IconButton,
     LinearProgress,
