@@ -3,7 +3,7 @@ import { SxProps } from "@mui/material";
 import { NavigationList } from "types/NavigationList";
 import { useThemeContext } from "context/ThemeContext";
 import {
-    Box, Divider, Drawer, Icon, IconButton, List, ListItem,
+    Box, Divider, Drawer, Hidden, Icon, IconButton, List, ListItem,
     ListItemButton, ListItemIcon, ListItemText, Typography
 } from "components/shared-ui";
 import {
@@ -20,23 +20,28 @@ interface LeftSideNavigationProps {
     drawerSx: SxProps
     variant: LeftHandNavigationVariants,
     isAuthenticated: boolean,
-    handleLogout: () => void,
+    onLogout: () => void,
 }
 
 const LeftHandNavigation = (props: LeftSideNavigationProps) => {
-    const { open, onClose, navigationList, variant, drawerSx, isAuthenticated, handleLogout } = props;
+    const { open, onClose, navigationList, variant, drawerSx, isAuthenticated, onLogout } = props;
     const { isDarkMode, toggleTheme } = useThemeContext();
 
     const currentUrlpath = useLocation().pathname;
     const isNavLinkActive = (path: string) => {
         return currentUrlpath === path;
-    }
+    };
 
     const navigate = useNavigate();
     const onNavLinkClick = (urlPath: string) => {
         onClose();
         navigate(urlPath);
-    }
+    };
+
+    const handleLogout = () => {
+        onClose();
+        onLogout();
+    };
 
     return (
         <Drawer
@@ -89,32 +94,34 @@ const LeftHandNavigation = (props: LeftSideNavigationProps) => {
                         )
                     }
                 </List>
-                <Divider />
-                <List sx={navListStyles(isDarkMode)}>
-                    <ListItem>
-                        <ListItemButton
-                            sx={isDarkMode ? navItemActiveStyles : {}}
-                            onClick={toggleTheme}
-                        >
-                            <ListItemIcon>
-                                <Icon>brightness_4</Icon>
-                                <Icon></Icon>
-                            </ListItemIcon>
-                            <ListItemText>Dark Mode</ListItemText>
-                        </ListItemButton>
-                    </ListItem>
-                    {
-                        isAuthenticated &&
+                <Hidden mdUp>
+                    <Divider />
+                    <List sx={navListStyles(isDarkMode)}>
                         <ListItem>
-                            <ListItemButton onClick={handleLogout}>
+                            <ListItemButton
+                                sx={isDarkMode ? navItemActiveStyles : {}}
+                                onClick={toggleTheme}
+                            >
                                 <ListItemIcon>
-                                    <Icon>logout</Icon>
+                                    <Icon>brightness_4</Icon>
+                                    <Icon></Icon>
                                 </ListItemIcon>
-                                <ListItemText>Logout</ListItemText>
+                                <ListItemText>Dark Mode</ListItemText>
                             </ListItemButton>
                         </ListItem>
-                    }
-                </List>
+                        {
+                            isAuthenticated &&
+                            <ListItem>
+                                <ListItemButton onClick={handleLogout}>
+                                    <ListItemIcon>
+                                        <Icon>logout</Icon>
+                                    </ListItemIcon>
+                                    <ListItemText>Logout</ListItemText>
+                                </ListItemButton>
+                            </ListItem>
+                        }
+                    </List>
+                </Hidden>
             </Box>
         </Drawer >
     );

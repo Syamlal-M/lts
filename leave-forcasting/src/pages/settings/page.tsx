@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { capitalize } from "utils/StringUtils";
 import RoleChangeDialog from "./RoleChangeDialog"
 import { PageContainer } from "components/layout";
 import UserRoleService from "service/UserRoleService";
@@ -18,7 +19,7 @@ const SettingsPage = () => {
       const map = {
         'employeeId': employeeInfo.employeeId,
         'employeeName': employeeInfo.employeeName,
-        'roleName': employeeInfo.role.roleName,
+        'roleName': capitalize(`${employeeInfo.role.roleName}`.split("_").join(" ")),
         'actions':
           <Button
             variant="contained"

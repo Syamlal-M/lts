@@ -5,6 +5,9 @@ import AccordionSummary from "./AccordionSummary";
 import Alert from "./Alert";
 import AlertTitle from "./AlertTitle";
 import AppBar from "./AppBar";
+import Avatar from "./Avatar";
+import AvatarGroup from "./AvatarGroup";
+import Badge from "./Badge";
 import Box from "./Box";
 import Button from "./Button";
 import ButtonBase from "./ButtonBase";
@@ -29,6 +32,7 @@ import Divider from "./Divider";
 import Drawer from "./Drawer";
 import Fab from "./Fab";
 import Grid from "./Grid";
+import Hidden from "./Hidden";
 import Icon from "./Icon";
 import IconButton from "./IconButton";
 import LinearProgress from "./LinearProgress";
@@ -45,9 +49,12 @@ import Menu from "./Menu";
 import MenuItem from "./MenuItem";
 import MenuList from "./MenuList";
 import Paper from "./Paper";
+import Popover from "./Popover";
+import Popper from "./Popper";
 import Switch from "./Switch";
 import TextField from "./TextField";
 import ToggleButton from "./ToggleButton";
+import ToggleButtonGroup from "./ToggleButtonGroup";
 import Toolbar from "./Toolbar";
 import Tooltip from "./Tooltip";
 import Typography from "./Typography";
@@ -60,6 +67,9 @@ export {
     Alert,
     AlertTitle,
     AppBar,
+    Avatar,
+    AvatarGroup,
+    Badge,
     Box,
     Button,
     ButtonBase,
@@ -84,6 +94,7 @@ export {
     Drawer,
     Fab,
     Grid,
+    Hidden,
     Icon,
     IconButton,
     LinearProgress,
@@ -100,9 +111,12 @@ export {
     MenuItem,
     MenuList,
     Paper,
+    Popover,
+    Popper,
     Switch,
     TextField,
     ToggleButton,
+    ToggleButtonGroup,
     Toolbar,
     Typography,
     Tooltip
