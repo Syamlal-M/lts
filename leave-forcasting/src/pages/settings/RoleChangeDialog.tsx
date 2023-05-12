@@ -1,12 +1,10 @@
-import PersonIcon from '@mui/icons-material/Person';
-import Avatar from '@mui/material/Avatar';
-import { settingAvatarStyles } from "components/layout/SettingsTemplate/SettingsTemplate.styles";
-
-import {
-  Dialog, DialogTitle, DialogContent, List, ListItem,
-  ListItemAvatar, ListItemButton, ListItemText, Icon, IconButton
-} from "components/shared-ui";
+import COLOR from 'styles/Color';
+import { capitalize } from 'utils/StringUtils';
 import { useSelectListContext } from 'context/SelectListContext';
+import {
+  Dialog, DialogTitle, DialogContent, List, ListItem, ListItemAvatar,
+  ListItemButton, ListItemText, Icon, IconButton, Avatar
+} from "components/shared-ui";
 
 export interface RoleChangeDialogProps {
   isOpen: boolean;
@@ -16,7 +14,7 @@ export interface RoleChangeDialogProps {
 
 function RoleChangeDialog(props: RoleChangeDialogProps) {
   const { ROLES } = useSelectListContext();
-  const userRoles = ROLES.slice(1).map(role => (role.value));
+  const userRoles = ROLES.slice(1).map(role => (capitalize((role.value).split("_").join(" "))));
 
   const { onClose, selectedValue, isOpen } = props;
 
@@ -46,8 +44,8 @@ function RoleChangeDialog(props: RoleChangeDialogProps) {
             <ListItem disableGutters key={userRole}>
               <ListItemButton onClick={() => listItemClick(userRole)}>
                 <ListItemAvatar>
-                  <Avatar sx={settingAvatarStyles}>
-                    <PersonIcon />
+                  <Avatar sx={{ bgcolor: COLOR.blue[100], color: COLOR.blue[600] }}>
+                    <Icon>person</Icon>
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText primary={userRole} />
