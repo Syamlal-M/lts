@@ -36,6 +36,8 @@ function DashboardTemplate({ children }: TemplatePageProps) {
         <Box sx={{ display: 'flex' }}>
             <NavigationBar
                 onMenuClick={toggleNavDrawerOpened}
+                isAuthenticated={isAutheticated()}
+                onLogout={handleLogout}
             />
             <Box
                 component="aside"
@@ -52,7 +54,7 @@ function DashboardTemplate({ children }: TemplatePageProps) {
                             navigationDrawerStylesForMD
                     }
                     isAuthenticated={isAutheticated()}
-                    handleLogout={handleLogout}
+                    onLogout={handleLogout}
                 />
             </Box>
             <Box
