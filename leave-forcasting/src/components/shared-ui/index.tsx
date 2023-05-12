@@ -54,6 +54,7 @@ import Popper from "./Popper";
 import Switch from "./Switch";
 import TextField from "./TextField";
 import ToggleButton from "./ToggleButton";
+import ToggleButtonGroup from "./ToggleButtonGroup";
 import Toolbar from "./Toolbar";
 import Tooltip from "./Tooltip";
 import Typography from "./Typography";
@@ -115,6 +116,7 @@ export {
     Switch,
     TextField,
     ToggleButton,
+    ToggleButtonGroup,
     Toolbar,
     Typography,
     Tooltip
