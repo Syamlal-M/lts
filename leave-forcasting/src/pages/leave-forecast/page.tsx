@@ -35,12 +35,12 @@ const PlanningPage = () => {
 
     const [leaveSummaryFilter, setLeaveSummaryFilter] = useState<LeaveSummaryQueryParams>(DEFAULT_LEAVE_SUMMARY_FILTER_VALUE);
     const [leaveSummaryList, setLeaveSummaryList] = useState<LeaveSummaryResponse>([]);
-    const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
+    const [selectedEmployee, setSelectedEmployee] = useState<EmployeeSearchItem>({} as EmployeeSearchItem);
 
     const [planningData, setPlanningData] = useState<LeavePlanningDataField[]>([]);
 
     const handleEdit = useCallback((params: EmployeeSearchItem) => {
-        setSelectedEmployeeId(params.employeeId);
+        setSelectedEmployee(params);
         setIsLeaveSubmissionDialogOpen();
     }, [setIsLeaveSubmissionDialogOpen]);
 
@@ -112,7 +112,7 @@ const PlanningPage = () => {
     };
 
     const handleLeaveUpdate = (leaveList: UpdateLeaveRequest) => {
-        const params = { employeeId: selectedEmployeeId };
+        const params = { employeeId: selectedEmployee?.employeeId };
         updateLeave(params, leaveList);
     }
 
@@ -123,6 +123,10 @@ const PlanningPage = () => {
     useEffect(() => {
         getLeaveSummary();
     }, [getLeaveSummary]);
+
+    useEffect(() => {
+        setLeaveSummaryFilter(DEFAULT_LEAVE_SUMMARY_FILTER_VALUE);
+    }, [isLeaveSubmissionDialogOpen]);
 
     return (
         <PageContainer title="LTS | Leave Forecast">
@@ -157,7 +161,8 @@ const PlanningPage = () => {
                 filter={leaveSummaryFilter}
                 onFilterChange={handleLeaveSummaryFormChange}
                 onFilterSubmit={handleLeaveSummaryFilterSubmit}
-                leaveSummary={leaveSummaryList.find(leave => leave.employeeId === selectedEmployeeId)}
+                employeeDetails={selectedEmployee}
+                leaveSummary={leaveSummaryList.find(leave => leave.employeeId === selectedEmployee.employeeId)}
                 onLeaveSubmit={handleLeaveUpdate}
             />
         </PageContainer>
