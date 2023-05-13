@@ -20,5 +20,7 @@ public class MonthLeaveSummaryResponse {
 
     private String planningType;
 
+    private String planningType;
+
     private List<String> dateList;
 }
