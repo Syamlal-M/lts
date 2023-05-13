@@ -30,4 +30,6 @@ public class EmployeeResponse {
     private String remarks;
     private EmployeeRoleResponse role;
 
+    private Optional<String> token;
+
 }

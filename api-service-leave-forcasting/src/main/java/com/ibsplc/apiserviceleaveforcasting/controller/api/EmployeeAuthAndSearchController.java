@@ -9,9 +9,8 @@ import com.ibsplc.apiserviceleaveforcasting.response.EmployeeResponse;
 import com.ibsplc.apiserviceleaveforcasting.service.EmployeeService;
 import com.ibsplc.apiserviceleaveforcasting.service.EmployeeManagementService;
 import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
-import com.ibsplc.apiserviceleaveforcasting.view.EmployeeInfoResponse;
+import com.ibsplc.apiserviceleaveforcasting.response.EmployeeInfoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -73,7 +72,7 @@ public class EmployeeAuthAndSearchController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<EmployeeInfoResponse> login(@RequestBody UserLoginRequest request) throws Exception {
+    public ResponseEntity<EmployeeResponse> login(@RequestBody UserLoginRequest request) throws Exception {
         try {
             return ResponseEntity.ok(employeeManagementService.login(request));
         } catch (CustomException e) {

@@ -1,4 +1,4 @@
-package com.ibsplc.apiserviceleaveforcasting.view;
+package com.ibsplc.apiserviceleaveforcasting.response;
 
 import lombok.Builder;
 import lombok.Getter;

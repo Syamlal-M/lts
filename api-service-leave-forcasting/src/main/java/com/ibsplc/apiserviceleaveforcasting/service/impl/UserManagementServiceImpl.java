@@ -5,14 +5,17 @@ import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeRole;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeRolePermissionDto;
 import com.ibsplc.apiserviceleaveforcasting.enums.Roles;
+import com.ibsplc.apiserviceleaveforcasting.mapper.EmployeeMapper;
 import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeInfoRepository;
 import com.ibsplc.apiserviceleaveforcasting.repository.RolesRepository;
 import com.ibsplc.apiserviceleaveforcasting.request.UserLoginRequest;
 import com.ibsplc.apiserviceleaveforcasting.request.EmployeeRegistrationRequest;
+import com.ibsplc.apiserviceleaveforcasting.response.EmployeeResponse;
 import com.ibsplc.apiserviceleaveforcasting.service.EmployeeManagementService;
 import com.ibsplc.apiserviceleaveforcasting.util.JwtTokenUtil;
-import com.ibsplc.apiserviceleaveforcasting.view.EmployeeInfoResponse;
+import com.ibsplc.apiserviceleaveforcasting.response.EmployeeInfoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -89,31 +92,25 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
      * @return
      */
     @Override
-    public EmployeeInfoResponse login(UserLoginRequest request) {
+    public EmployeeResponse login(UserLoginRequest request) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmployeeId(), request.getPassword()));
-        EmployeeInfoResponse.EmployeeInfoResponseBuilder builder = EmployeeInfoResponse.builder();
-        Optional<EmployeeInfoDto> user = employeeInfoRepository.findByEmployeeId(request.getEmployeeId());
-        if (user.isPresent()) {
-            builder.empId(user.get().getEmployeeId());
-            builder.employeeName(user.get().getEmployeeName());
+        Optional<EmployeeInfoDto> employee = employeeInfoRepository.findByEmployeeId(request.getEmployeeId());
+        if (employee.isPresent()) {
             HashMap<Integer, String> role = new HashMap<>();
             List<GrantedAuthority> authorities = new ArrayList<>();
-            EmployeeRole employeeRole = user.get().getRole();
+            EmployeeRole employeeRole = employee.get().getRole();
                 role.put(employeeRole.getRoleId(), employeeRole.getRoleName());
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority(employeeRole.getRoleName());
                 authorities.add(authority);
-            builder.role(role);
             final UserDetails userDetails = new org.springframework.security.core.userdetails.User(request.getEmployeeId(),
                     passwordEncoder.encode(request.getPassword()), authorities);
             final String token = jwtTokenUtil.generateToken(userDetails);
-            builder.token(token);
-            builder.access(user.get().getRole().getPermissionsList().stream().map(EmployeeRolePermissionDto::getPermissionName).collect(Collectors.toList()));
+            EmployeeResponse  response = EmployeeMapper.map(employee.get(), Roles.getRole(employee.get().getRole().getRoleName()).get());
+            response.setToken(Optional.of(token));
+            return response;
         } else {
             throw new CustomException("Authentication failure");
         }
-
-        return builder.build();
-
 
     }
 

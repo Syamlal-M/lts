@@ -319,14 +319,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         return null;
     }
 
-    private List<EmployeeResponse> mapEmployeeResponse(Page<EmployeeInfoDto> employeeInfoDtos, Roles role) {
+    public List<EmployeeResponse> mapEmployeeResponse(Page<EmployeeInfoDto> employeeInfoDtos, Roles role) {
         return employeeInfoDtos.stream().map(employeeInfoDto ->
                         EmployeeResponse.builder().employeeInfoId(employeeInfoDto.getEmployeeInfoId())
                                 .employeeName(employeeInfoDto.getEmployeeName())
                                 .employeeId(employeeInfoDto.getEmployeeId())
                                 .hm(employeeInfoDto.getHm())
-                                .org(employeeInfoDto.getOrg().getOrganisation())
-                                .jobTitle(employeeInfoDto.getJobTitle().getJobTitle())
+                                .org(employeeInfoDto.getOrg() != null ? employeeInfoDto.getOrg().getOrganisation() : null)
+                                .jobTitle(employeeInfoDto.getJobTitle() != null ? employeeInfoDto.getJobTitle().getJobTitle(): null)
                                 .nameInClientRecords(employeeInfoDto.getNameInClientRecords())
                                 .remarks(employeeInfoDto.getRemarks())
                                 .billability(employeeInfoDto.getBillability())
@@ -335,7 +335,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                                 .billRate((role == Roles.ADMIN || role == Roles.SUPER_ADMIN) ? Optional.of(employeeInfoDto.getBillRate()) : Optional.empty())
                                 .city(employeeInfoDto.getCity().getLocation())
                                 .country(employeeInfoDto.getCountry().getCountry())
-                                .sow((role == Roles.ADMIN || role == Roles.SUPER_ADMIN) ? employeeInfoDto.getSow().getSow() : "")
+                                .sow(((role == Roles.ADMIN || role == Roles.SUPER_ADMIN) && employeeInfoDto.getSow() != null) ? employeeInfoDto.getSow().getSow() : "")
                                 .jobTitle(employeeInfoDto.getJobTitle().getJobTitle())
                                 .role(EmployeeRoleResponse.builder().roleName(employeeInfoDto.getRole().getRoleName())
                                         .permissionsList(employeeInfoDto.getRole().getPermissionsList().stream().map(pl -> EmployeeRolePermissionResponse.builder()
