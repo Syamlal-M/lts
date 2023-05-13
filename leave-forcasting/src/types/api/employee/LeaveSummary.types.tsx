@@ -1,8 +1,10 @@
+import { Months } from "types/LeaveSubmissionList.types";
+
 type DateList = string[];
 
 type LeaveDate = {
     fromDate: string;
-    month: string;
+    month: Months;
     noOfDays: number;
     planningType: string;
     toDate: string;
