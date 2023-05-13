@@ -5,7 +5,8 @@ import { ThemeOptions, createTheme } from '@mui/material/styles';
 const getThemeOptions = (mode: PaletteMode): ThemeOptions => ({
     typography: {
         htmlFontSize: 10,
-        fontSize: 14
+        fontSize: 14,
+        fontFamily: 'Roboto, sans-serif',
     },
     palette: {
         mode: mode,
