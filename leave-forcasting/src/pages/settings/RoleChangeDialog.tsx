@@ -14,7 +14,7 @@ export interface RoleChangeDialogProps {
 
 function RoleChangeDialog(props: RoleChangeDialogProps) {
   const { ROLES } = useSelectListContext();
-  const userRoles = ROLES.slice(1).map(role => (capitalize((role.value).split("_").join(" "))));
+  const userRoles = ROLES.slice(1).map(role => ({ ...role, label: capitalize((role.value).split("_").join(" ")) }));
 
   const { onClose, selectedValue, isOpen } = props;
 
@@ -41,14 +41,14 @@ function RoleChangeDialog(props: RoleChangeDialogProps) {
       <DialogContent dividers>
         <List sx={{ pt: 0 }}>
           {userRoles.map((userRole) => (
-            <ListItem disableGutters key={userRole}>
-              <ListItemButton onClick={() => listItemClick(userRole)}>
+            <ListItem disableGutters key={userRole.value}>
+              <ListItemButton onClick={() => listItemClick(userRole.value)}>
                 <ListItemAvatar>
                   <Avatar sx={{ bgcolor: COLOR.blue[100], color: COLOR.blue[600] }}>
                     <Icon>person</Icon>
                   </Avatar>
                 </ListItemAvatar>
-                <ListItemText primary={userRole} />
+                <ListItemText primary={userRole.label} />
               </ListItemButton>
             </ListItem>
           ))}
