@@ -36,10 +36,8 @@ public class EmployeeLeaveController {
     @PutMapping("leaves/{employeeId}")
     public ResponseEntity updateLeaves(@RequestBody List<LeaveForcastRequest> leaveForecast,
                                        @PathVariable String employeeId) {
-        List<LeaveForcastRequest> correctedLeaves = leaveForecast.stream()
-                .map(l -> l.getToDate() == null ? new LeaveForcastRequest(l.getEmpId(), l.getFromDate(), l.getFromDate(), l.getPlanningType()): l).collect(Collectors.toList());
-        validateLeaveForecast(correctedLeaves);
-        return leaveForecastService.updateLeaves(correctedLeaves, employeeId);
+        validateLeaveForecast(leaveForecast);
+        return leaveForecastService.updateLeaves(leaveForecast, employeeId);
     }
 
     @PutMapping("leaves/bulk")
@@ -49,9 +47,7 @@ public class EmployeeLeaveController {
 
         groupedLeaves.forEach((empId, employeeForecast)  -> {
             validateLeaveForecast(employeeForecast);
-            List<LeaveForcastRequest> correctedLeaves = employeeForecast.stream()
-                    .map(l -> l.getToDate() == null ? new LeaveForcastRequest(l.getEmpId(), l.getFromDate(), l.getFromDate(), l.getPlanningType()): l).collect(Collectors.toList());
-            leaveForecastService.updateLeaves(correctedLeaves, empId);
+            leaveForecastService.updateLeaves(employeeForecast, empId);
                         });
         return ResponseEntity.noContent().build();
     }

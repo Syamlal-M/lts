@@ -4,6 +4,7 @@ import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeLeaveForcastDto;
 import com.ibsplc.apiserviceleaveforcasting.enums.PlanningType;
+import com.ibsplc.apiserviceleaveforcasting.enums.Status;
 import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeInfoRepository;
 import com.ibsplc.apiserviceleaveforcasting.repository.LeaveForecastRepository;
 import com.ibsplc.apiserviceleaveforcasting.response.*;
@@ -44,32 +45,30 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public List<EmployeeLeaveReportResponse> fetchLeaveSummary(String month, String year, String organization, String team) throws CustomException {
 
-        Map<EmployeeInfoDto, List<EmployeeLeaveForcastDto>> groupedReport = getEmployeeLeaveForcastDtos(month, year, organization, team);
+        Map<EmployeeInfoDto, List<EmployeeLeaveForcastDto>> queryResult = getEmployeeLeaveForcastDtos(month, year, organization, team);
 
-        return groupedReport.entrySet().stream().map(emp -> {
-            Map<Integer, List<EmployeeLeaveForcastDto>> groupedWeek = emp.getValue()
-                    .stream().collect(groupingBy(l -> l.getFromDate().get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear())));
+        return queryResult.entrySet().stream().map(emp -> {
+            Map<String, List<EmployeeLeaveForcastDto>> groupedMonth = emp.getValue()
+                    .stream().collect(groupingBy(l -> l.getFromDate().getMonth().toString()));
 
-            List<WeekLeaveSummaryResponse> weekSummaryList = groupedWeek.entrySet().stream().map((weekNumber) -> {
-                LocalDate week = LocalDate.now().with(ChronoField.ALIGNED_WEEK_OF_YEAR, weekNumber.getKey());
-                LocalDate start = week.with(DayOfWeek.MONDAY);
-                LocalDate end = week.with(DayOfWeek.FRIDAY);
-                List<LeaveDetailResponse> leaveDetails = weekNumber.getValue()
+            List<MonthLeaveSummaryResponse> monthSummary = groupedMonth.entrySet().stream().map((monthName) -> {
+                List<LeaveDetailResponse> leaveDetails = monthName.getValue()
                         .stream().map(ReportServiceImpl::getLeaveDetailResponse).collect(Collectors.toList());
                 int totalNoOfDaysInWeek = leaveDetails.stream().mapToInt(LeaveDetailResponse::getNoOfDays).sum();
                 List<String> datesList  = leaveDetails.stream().flatMap(ld -> ld.getDateList().stream()).collect(Collectors.toList());
-                return WeekLeaveSummaryResponse.builder().weekNumber(weekNumber.getKey())
+                return MonthLeaveSummaryResponse.builder()
+                        .month(monthName.getKey())
                         .leaveDates(leaveDetails)
-                        .startAndEndDate(start + " to " + end)
+                        .planningType(monthName.getValue().stream().findFirst().get().getPlanningType())
                         .noOfDays(totalNoOfDaysInWeek)
                         .dateList(datesList)
                         .build();
             }).collect(Collectors.toList());
 
-            int totalLeaves = weekSummaryList.stream().mapToInt(days -> Math.toIntExact(days.getNoOfDays())).sum();
+            int totalLeaves = monthSummary.stream().mapToInt(days -> Math.toIntExact(days.getNoOfDays())).sum();
             return EmployeeLeaveReportResponse.builder().employeeId(emp.getKey().getEmployeeId())
                     .employeeName(emp.getKey().getEmployeeName())
-                    .weeks(weekSummaryList.stream().sorted(Comparator.comparing(WeekLeaveSummaryResponse::getWeekNumber)).collect(Collectors.toList())).noOfDays(totalLeaves).build();
+                    .month(monthSummary.stream().sorted(Comparator.comparing(MonthLeaveSummaryResponse::getMonth)).collect(Collectors.toList())).noOfDays(totalLeaves).build();
         }).collect(Collectors.toList());
     }
 
@@ -94,6 +93,7 @@ public class ReportServiceImpl implements ReportService {
         spec = addToQuery(team, hasLeaveForecastByTeam(team), spec);
         spec = addToQuery(month, hasLeaveForecastByMonth(month), spec);
         spec = addToQuery(year, hasLeaveForecastByYear(year), spec);
+        spec =  addToQuery(Status.ACTIVE.toString(), hasLeaveForecastByStatus(Status.ACTIVE.toString()), spec);
         List<EmployeeLeaveForcastDto> leaveSummaryResponseList = leaveForecastRepository.findAll(spec);
         return leaveSummaryResponseList.stream().collect(groupingBy(EmployeeLeaveForcastDto::getEmployee));
 
@@ -122,7 +122,7 @@ public class ReportServiceImpl implements ReportService {
                 LocalDate start = week.with(DayOfWeek.MONDAY);
                 LocalDate end = week.with(DayOfWeek.FRIDAY);
                 List<LeaveDetailResponse> leaveDetails = weekNumber.getValue().stream().map(ReportServiceImpl::getLeaveDetailResponse).collect(Collectors.toList());
-                List<LeaveDetailResponse> expectedLeaves = leaveDetails.stream().filter(l ->  l.getPlanningType().equalsIgnoreCase(PlanningType.EXPECTED.name())).collect(Collectors.toList());
+                List<LeaveDetailResponse> expectedLeaves = leaveDetails.stream().filter(l ->  l.getPlanningType().equalsIgnoreCase(PlanningType.EXPECTED_WITH_LEAVES.name())).collect(Collectors.toList());
                 List<LeaveDetailResponse> actualLeaves = leaveDetails.stream().filter(l ->  l.getPlanningType().equalsIgnoreCase(PlanningType.ACTUAL.name())).collect(Collectors.toList());
                 int totalExpectedDays = expectedLeaves.stream().mapToInt(LeaveDetailResponse::getNoOfDays).sum();
                 int totalActualDays = actualLeaves.stream().mapToInt(LeaveDetailResponse::getNoOfDays).sum();

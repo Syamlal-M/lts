@@ -2,6 +2,7 @@ package com.ibsplc.apiserviceleaveforcasting.controller.api;
 
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CSVExceptionWrapper;
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.UnAuthorisedException;
 import com.ibsplc.apiserviceleaveforcasting.request.UserLoginRequest;
 import com.ibsplc.apiserviceleaveforcasting.request.EmployeeRegistrationRequest;
 import com.ibsplc.apiserviceleaveforcasting.response.EmployeeResponse;
@@ -80,7 +81,7 @@ public class EmployeeAuthAndSearchController {
             throw new CustomException(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("Exception Occurred in login :: " + e.getMessage());
+            throw new UnAuthorisedException();
         }
     }
 

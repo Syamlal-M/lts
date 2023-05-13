@@ -3,6 +3,7 @@ package com.ibsplc.apiserviceleaveforcasting.config;
 import com.ibsplc.apiserviceleaveforcasting.entity.*;
 import com.ibsplc.apiserviceleaveforcasting.enums.PlanningType;
 import com.ibsplc.apiserviceleaveforcasting.enums.Roles;
+import com.ibsplc.apiserviceleaveforcasting.enums.Status;
 import com.ibsplc.apiserviceleaveforcasting.repository.RolePermissionRepository;
 import com.ibsplc.apiserviceleaveforcasting.repository.RolesRepository;
 import com.ibsplc.apiserviceleaveforcasting.request.EmployeeRegistrationRequest;
@@ -98,10 +99,14 @@ public class StartupInit {
         EmployeeLeaveForcastDto forecast = new EmployeeLeaveForcastDto();
         forecast.setEmployee(employee.get());
         forecast.setYear(2023);
-        forecast.setMonth("APRIL");
+        forecast.setMonth(LocalDate.now().getMonth().toString());
         forecast.setFromDate(LocalDate.now());
-        forecast.setPlanningType(PlanningType.EXPECTED.toString());
+        forecast.setPlanningType(PlanningType.EXPECTED_WITH_LEAVES.toString());
         forecast.setNoOfDays(2);
+        forecast.setModifiedBy(employeeId);
+        forecast.setUpdatedDate(LocalDateTime.now());
+        forecast.setCreatedDate(LocalDateTime.now());
+        forecast.setStatus(Status.ACTIVE.toString());
         forecast.setToDate(LocalDate.now().plusDays(1));
         leaveForecastRepository.save(forecast);
 

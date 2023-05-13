@@ -12,8 +12,8 @@ import java.util.Map;
 @Builder
 public class EmployeeInfoResponse {
 
-    private String userId;
-    private String username;
+    private String empId;
+    private String employeeName;
     private String token;
     private Map<Integer, String> role;
 

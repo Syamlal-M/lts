@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -18,7 +19,7 @@ public class EmployeeResponse {
     private String vendorName;
     private String jobTitle;
     private String hm;
-    private Double billRate;
+    private Optional<Double> billRate;
     private String currency;
     private String country;
     private String city;

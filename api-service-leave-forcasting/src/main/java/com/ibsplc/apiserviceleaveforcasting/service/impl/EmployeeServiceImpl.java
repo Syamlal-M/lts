@@ -140,7 +140,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             createCell(row, columnCount++, employeeView.getVendorName(), style, sheet);
             createCell(row, columnCount++, employeeView.getJobTitle(), style, sheet);
             createCell(row, columnCount++, employeeView.getHm(), style, sheet);
-            createCell(row, columnCount++, employeeView.getBillRate().toString(), style, sheet);
+            createCell(row, columnCount++, employeeView.getBillRate().orElse(0.0).toString(), style, sheet);
             createCell(row, columnCount++, employeeView.getCountry(), style, sheet);
             createCell(row, columnCount++, employeeView.getCity(), style, sheet);
             createCell(row, columnCount++, employeeView.getSow(), style, sheet);
@@ -332,7 +332,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                                 .billability(employeeInfoDto.getBillability())
                                 .emailId(employeeInfoDto.getEmailId())
                                 .vendorName(employeeInfoDto.getVendorName())
-                                .billRate((role == Roles.ADMIN || role == Roles.SUPER_ADMIN) ? employeeInfoDto.getBillRate() : 0.0)
+                                .billRate((role == Roles.ADMIN || role == Roles.SUPER_ADMIN) ? Optional.of(employeeInfoDto.getBillRate()) : Optional.empty())
                                 .city(employeeInfoDto.getCity().getLocation())
                                 .country(employeeInfoDto.getCountry().getCountry())
                                 .sow((role == Roles.ADMIN || role == Roles.SUPER_ADMIN) ? employeeInfoDto.getSow().getSow() : "")

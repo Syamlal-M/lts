@@ -7,6 +7,7 @@ import com.ibsplc.apiserviceleaveforcasting.entity.TeamDto;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Join;
+import java.time.LocalDate;
 
 public class CustomerSpecifications {
 
@@ -22,6 +23,13 @@ public class CustomerSpecifications {
         return (root, query, criteriaBuilder) -> {
             Join<EmployeeLeaveForcastDto, EmployeeInfoDto> employee = root.join("employee");
             return criteriaBuilder.like(employee.get("employeeName"), "%" + employeeName + "%");
+        };
+    }
+
+    public static Specification<EmployeeLeaveForcastDto> hasLeaveForecastByEmployeeId(String employeeId) {
+        return (root, query, criteriaBuilder) -> {
+            Join<EmployeeLeaveForcastDto, EmployeeInfoDto> employee = root.join("employee");
+            return criteriaBuilder.equal(employee.get("employeeId"), employeeId);
         };
     }
 
@@ -42,6 +50,18 @@ public class CustomerSpecifications {
 
     public static Specification<EmployeeLeaveForcastDto> hasLeaveForecastByMonth(String month) {
         return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("month"), month);
+    }
+
+    public static Specification<EmployeeLeaveForcastDto> hasLeaveForecastByStatus(String status) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("status"), status);
+    }
+
+    public static Specification<EmployeeLeaveForcastDto> hasLeaveForecastByFromDate(LocalDate fromDate) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("fromDate"), fromDate);
+    }
+
+    public static Specification<EmployeeLeaveForcastDto> hasLeaveForecastByToDate(LocalDate toDate) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("toDate"), toDate);
     }
 
     public static Specification<EmployeeLeaveForcastDto> hasLeaveForecastByYear(String year) {

@@ -1,6 +1,7 @@
 package com.ibsplc.apiserviceleaveforcasting.response;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +15,9 @@ import java.util.List;
 @Builder
 public class LeaveDetailResponse {
 
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate fromDate;
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate toDate;
     private int noOfDays;
     private String month;

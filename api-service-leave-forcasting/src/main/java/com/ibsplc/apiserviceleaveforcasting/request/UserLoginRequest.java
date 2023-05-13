@@ -6,7 +6,7 @@ public class UserLoginRequest implements Serializable {
 
     private static final long serialVersionUID = 5926468583005150707L;
 
-    private String username;
+    private String employeeId;
     private String password;
 
     public UserLoginRequest()
@@ -14,17 +14,17 @@ public class UserLoginRequest implements Serializable {
 
     }
 
-    public UserLoginRequest(String username, String password) {
-        this.setUsername(username);
+    public UserLoginRequest(String employeeId, String password) {
+        this.setEmployeeId(employeeId);
         this.setPassword(password);
     }
 
-    public String getUsername() {
-        return this.username;
+    public String getEmployeeId() {
+        return this.employeeId;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
     }
 
     public String getPassword() {

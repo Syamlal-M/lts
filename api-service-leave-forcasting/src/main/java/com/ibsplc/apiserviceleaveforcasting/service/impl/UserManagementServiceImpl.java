@@ -90,12 +90,12 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
      */
     @Override
     public EmployeeInfoResponse login(UserLoginRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmployeeId(), request.getPassword()));
         EmployeeInfoResponse.EmployeeInfoResponseBuilder builder = EmployeeInfoResponse.builder();
-        Optional<EmployeeInfoDto> user = employeeInfoRepository.findByEmployeeId(request.getUsername());
+        Optional<EmployeeInfoDto> user = employeeInfoRepository.findByEmployeeId(request.getEmployeeId());
         if (user.isPresent()) {
-            builder.userId(user.get().getEmployeeId());
-            builder.username(user.get().getEmployeeId());
+            builder.empId(user.get().getEmployeeId());
+            builder.employeeName(user.get().getEmployeeName());
             HashMap<Integer, String> role = new HashMap<>();
             List<GrantedAuthority> authorities = new ArrayList<>();
             EmployeeRole employeeRole = user.get().getRole();
@@ -103,7 +103,7 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority(employeeRole.getRoleName());
                 authorities.add(authority);
             builder.role(role);
-            final UserDetails userDetails = new org.springframework.security.core.userdetails.User(request.getUsername(),
+            final UserDetails userDetails = new org.springframework.security.core.userdetails.User(request.getEmployeeId(),
                     passwordEncoder.encode(request.getPassword()), authorities);
             final String token = jwtTokenUtil.generateToken(userDetails);
             builder.token(token);
@@ -125,7 +125,7 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
         List<EmployeeInfoDto> allUserList = employeeInfoRepository.findAll();
         return allUserList.stream().map(employeeInfo -> {
             EmployeeInfoResponse.EmployeeInfoResponseBuilder builder = EmployeeInfoResponse.builder();
-            builder.username(employeeInfo.getEmployeeId());
+            builder.employeeName(employeeInfo.getEmployeeId());
             builder.role(Map.of(employeeInfo.getRole().getRoleId(), employeeInfo.getRole().getRoleName()));
             return builder.build();
         }).collect(Collectors.toList());

@@ -5,35 +5,33 @@ package com.ibsplc.apiserviceleaveforcasting.service.impl;
 
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeLeaveForcastDto;
+import com.ibsplc.apiserviceleaveforcasting.enums.Action;
 import com.ibsplc.apiserviceleaveforcasting.enums.PlanningType;
 import com.ibsplc.apiserviceleaveforcasting.enums.Roles;
+import com.ibsplc.apiserviceleaveforcasting.enums.Status;
 import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeInfoRepository;
 import com.ibsplc.apiserviceleaveforcasting.repository.LeaveForecastRepository;
 import com.ibsplc.apiserviceleaveforcasting.request.LeaveForcastRequest;
+import com.ibsplc.apiserviceleaveforcasting.service.LeaveForecastService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import com.ibsplc.apiserviceleaveforcasting.service.LeaveForecastService;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.ibsplc.apiserviceleaveforcasting.repository.CustomerSpecifications.*;
+import static com.ibsplc.apiserviceleaveforcasting.util.ValidationUtil.validateLeaveForecast;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 /**
@@ -59,38 +57,66 @@ public class LeaveForecastServiceImpl implements LeaveForecastService {
 
 	@Override
 	public ResponseEntity updateLeaves(List<LeaveForcastRequest> forcastRequests, String employeeId) {
-
 		Optional<EmployeeInfoDto> employeeOptional = findEmployeeByUserRole(employeeId);
+		List<EmployeeLeaveForcastDto> leavesInDb = leaveForecastRepository.findAll(hasLeaveForecastByEmployeeId(employeeId));
+		List<LeaveForcastRequest> leavesFromDb = leavesInDb.stream()
+				.map(l -> new LeaveForcastRequest(l.getEmployee().getEmployeeId(), l.getFromDate(), l.getToDate(), PlanningType.getPlanningType(l.getPlanningType()).get(), null))
+				.collect(Collectors.toList());
+		leavesFromDb.addAll(forcastRequests);
+		validateLeaveForecast(leavesFromDb);
 		if(employeeOptional.isPresent()) {
-			List<EmployeeLeaveForcastDto> employeeForecast = forcastRequests.stream().flatMap(forecastRequest -> {
+			deactivateLeave(forcastRequests.stream().filter(leave -> leave.getAction().isPresent() &&  leave.getAction().get().equals(Action.DELETE))
+					.collect(Collectors.toList()), employeeId);
+			List<EmployeeLeaveForcastDto> employeeForecastToCreate = forcastRequests.stream()
+					.filter(leave -> leave.getAction().isEmpty() || leave.getAction().get().equals(Action.INSERT)).flatMap(forecastRequest -> {
 				List<LeaveForcastRequest> separatedForecastDates = breakDatesIfBetweenMonths(forecastRequest);
 				return separatedForecastDates.stream().map(forecast -> {
-					if(forecast.getFromDate().isAfter(LocalDate.now()) && forecast.getToDate().isAfter(LocalDate.now())) {
-						return EmployeeLeaveForcastDto.builder()
-								.fromDate(forecast.getFromDate())
-								.toDate(forecast.getToDate())
-								.employee(employeeOptional.get())
-								.month(forecast.getToDate().getMonth().toString())
-								.year(forecast.getToDate().getYear())
-								.noOfDays((int) DAYS.between(forecast.getFromDate(), forecast.getToDate()) + 1)
-								.planningType(PlanningType.ACTUAL.toString()).build();
+					String planningType;
+					int noOfDays;
+					if(forecast.getFromDate().isBefore(LocalDate.now())) {
+						planningType = PlanningType.ACTUAL.toString();
+						noOfDays = (int) DAYS.between(forecast.getFromDate(), forecast.getToDate()) + 1;
 					} else {
-						return EmployeeLeaveForcastDto.builder()
-								.fromDate(forecast.getFromDate())
-								.employee(employeeOptional.get())
-								.toDate(forecast.getToDate())
-								.month(forecast.getToDate().getMonth().toString())
-								.year(forecast.getToDate().getYear())
-								.noOfDays((int) DAYS.between(forecast.getFromDate(), forecast.getToDate()))
-								.planningType(PlanningType.EXPECTED.toString()).build();
+						if (forecast.getPlanningType().equals(PlanningType.EXPECTED_WITH_LEAVES)) {
+							planningType = PlanningType.EXPECTED_WITH_LEAVES.toString();
+							noOfDays = (int) DAYS.between(forecast.getFromDate(), forecast.getToDate()) + 1;
+						} else {
+							planningType = PlanningType.EXPECTED_NO_LEAVES.toString();
+							noOfDays = 0;
+						}
 					}
+					return EmployeeLeaveForcastDto.builder()
+							.fromDate(forecast.getFromDate())
+							.toDate(forecast.getToDate())
+							.employee(employeeOptional.get())
+							.month(forecast.getToDate().getMonth().toString())
+							.year(forecast.getToDate().getYear())
+							.noOfDays(noOfDays)
+							.modifiedBy(employeeId)
+							.status(Status.ACTIVE.toString())
+							.createdDate(LocalDateTime.now())
+							.updatedDate(LocalDateTime.now())
+							.planningType(planningType).build();
 				});
 			}).collect(Collectors.toList());
-			leaveForecastRepository.saveAll(employeeForecast);
+			leaveForecastRepository.saveAll(employeeForecastToCreate);
 			return ResponseEntity.noContent().build();
 		} else {
 			return ResponseEntity.badRequest().build();
 		}
+	}
+
+	private void deactivateLeave(List<LeaveForcastRequest> leaves, String employeeId) {
+		leaveForecastRepository.saveAll(leaves.stream().flatMap(leave -> {
+			List<EmployeeLeaveForcastDto> leavesToUpdate = leaveForecastRepository.findAll(hasLeaveForecastByFromDate(leave.getFromDate())
+					.and(hasLeaveForecastByToDate(leave.getToDate())).and(hasLeaveForecastByEmployeeId(leave.getEmpId())));
+			return leavesToUpdate.stream().map(leaveToUpdate -> {
+				leaveToUpdate.setStatus(Status.INACTIVE.toString());
+				leaveToUpdate.setModifiedBy(employeeId);
+				leaveToUpdate.setUpdatedDate(LocalDateTime.now());
+				return leaveToUpdate;
+			});
+		}).collect(Collectors.toList()));
 	}
 
 	private List<LeaveForcastRequest> breakDatesIfBetweenMonths(LeaveForcastRequest forecast) {

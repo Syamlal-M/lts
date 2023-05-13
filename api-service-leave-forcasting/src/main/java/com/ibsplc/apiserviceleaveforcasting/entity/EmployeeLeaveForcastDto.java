@@ -13,6 +13,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @author Narjeesh
@@ -35,6 +36,16 @@ public class EmployeeLeaveForcastDto {
 	private String month;
 	private int year;
 	private String planningType;
+
+	private String status;
+
+	private LocalDateTime createdDate;
+
+	private LocalDateTime updatedDate;
+
+	private String modifiedBy;
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private EmployeeInfoDto employee;
+
+
 }
