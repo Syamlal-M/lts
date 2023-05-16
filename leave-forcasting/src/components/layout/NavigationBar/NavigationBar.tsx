@@ -38,7 +38,7 @@ const NavigationBar = (props: NavigationBarProps) => {
         return role;
     };
 
-    const avatarFallback = useMemo(() => getToken('username').split()[0][0], []);
+    const avatarFallback = useMemo(() => getToken('employeeName')?.split()[0][0], []);
 
     const handleLogout = () => {
         setAnchorEl(null);
@@ -99,7 +99,7 @@ const NavigationBar = (props: NavigationBarProps) => {
                                         },
                                     }}
                                     avatar={<Avatar sx={{ height: 50, width: 50 }}>{avatarFallback}</Avatar>}
-                                    title={getToken('username')}
+                                    title={getToken('employeeName')}
                                     subheader={getRole()}
                                     titleTypographyProps={{ noWrap: true }}
                                     subheaderTypographyProps={{ noWrap: true }}

@@ -38,6 +38,7 @@ const PlanningPage = () => {
     const [selectedEmployee, setSelectedEmployee] = useState<EmployeeSearchItem>({} as EmployeeSearchItem);
 
     const [planningData, setPlanningData] = useState<LeavePlanningDataField[]>([]);
+    const [error, setError] = useState("");
 
     const handleEdit = useCallback((params: EmployeeSearchItem) => {
         setSelectedEmployee(params);
@@ -86,7 +87,11 @@ const PlanningPage = () => {
     const updateLeave = useCallback((params: UpdateLeaveQueryParams, leaveList: UpdateLeaveRequest) => {
         PlanningService.updateLeave(params, leaveList)
             .then(response => { getLeaveSummary(); })
-            .catch(error => { console.log(error); })
+            .catch(error => {
+                console.log(error);
+                setError(error.message);
+                setTimeout(() => { setError(""); }, 20000)
+            })
     }, [getLeaveSummary]);
 
     const handleEmployeeSearchFormChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -128,6 +133,8 @@ const PlanningPage = () => {
         setLeaveSummaryFilter(DEFAULT_LEAVE_SUMMARY_FILTER_VALUE);
     }, [isLeaveSubmissionDialogOpen]);
 
+    useEffect(() => { setError("") }, [leaveSummaryFilter]);
+
     return (
         <PageContainer title="LTS | Leave Forecast">
             <Card>
@@ -164,6 +171,7 @@ const PlanningPage = () => {
                 employeeDetails={selectedEmployee}
                 leaveSummary={leaveSummaryList.find(leave => leave.employeeId === selectedEmployee.employeeId)}
                 onLeaveSubmit={handleLeaveUpdate}
+                error={error}
             />
         </PageContainer>
     );

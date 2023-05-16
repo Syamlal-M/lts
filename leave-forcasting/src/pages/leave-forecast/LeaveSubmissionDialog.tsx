@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import MonthList from "data/MonthList";
 import MonthlyLeaveList from "./MonthlyLeaveList";
 import LeaveSummaryFilter from "./LeaveSummaryFilter";
 import { UpdateLeaveRequest } from "types/api/employee/UpdateLeave.types";
 import { EmployeeSearchItem } from "types/api/employee/EmployeeSearch.types";
-import { DUMMY_LEAVES, LeaveDate, LeaveMonth, Leaves } from "types/LeaveSubmissionList.types";
+import { LeaveDate, LeaveMonth, Leaves } from "types/LeaveSubmissionList.types";
 import { LeaveSummaryItem, LeaveSummaryQueryParams } from "types/api/employee/LeaveSummary.types";
 import {
-    Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Icon, IconButton, Typography,
+    Alert, AlertTitle, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Icon, IconButton, Typography,
 } from "components/shared-ui";
 
 interface LeaveSubmissionDialogProps {
@@ -19,16 +19,21 @@ interface LeaveSubmissionDialogProps {
     employeeDetails: EmployeeSearchItem;
     leaveSummary?: LeaveSummaryItem;
     onLeaveSubmit: (leaveList: UpdateLeaveRequest) => void;
+    error: string;
 };
 
 const LeaveSubmissionDialog = (props: LeaveSubmissionDialogProps) => {
     const {
         isOpen, onClose, filter, onFilterChange, onFilterSubmit,
-        employeeDetails, leaveSummary, onLeaveSubmit
+        employeeDetails, leaveSummary, onLeaveSubmit, error,
     } = props;
 
+    const HAVE_PLAN_ERROR_TEXT = "Error! There are leaves already planned."
+    const DEFAULT_DATE_RANGE: LeaveDate = { startDate: { value: '' }, endDate: { value: '' }, isEditable: true };
+    const DEFAULT_MONTHLY_LEAVE_VALUE: LeaveMonth = { isVisible: true, havePlans: { value: "" }, dateList: [] };
+
     const convertToDateFormat = (date: string, format: 'DD-MM-YYYY' | 'YYYY-MM-DD'): string => {
-        if (format == "YYYY-MM-DD") {
+        if (format === "YYYY-MM-DD") {
             const [day, month, year] = date.split("-");
             return `${year}-${month}-${day}`;
         }
@@ -38,46 +43,45 @@ const LeaveSubmissionDialog = (props: LeaveSubmissionDialogProps) => {
         }
     };
 
-    const normalizeLeave = (_leaveSummary: LeaveSummaryItem | undefined): Leaves => {
+    const normalizeLeave = useCallback((_leaveSummary: LeaveSummaryItem | undefined = leaveSummary): Leaves => {
         let _leaves: Leaves = {};
         if (!_leaveSummary) {
             return _leaves;
         }
 
         try {
-            const month: keyof Leaves = _leaveSummary.weeks.map(week => {
-                return week.leaveDates.map(date => (date.month))
-            })[0][0];
-
-            _leaves[month] = {
-                isVisible: true,
-                havePlans: { value: "yes" },
-                dateList: _leaveSummary.weeks.flatMap(week => {
-                    return week.leaveDates.map(date => {
+            _leaveSummary.month.map(monthDetails => {
+                return _leaves[monthDetails.month] = {
+                    isVisible: true,
+                    havePlans: { value: monthDetails.planningType === "EXPECTED_NO_LEAVES" ? "no" : "yes" },
+                    dateList: monthDetails.leaveDates.map(date => {
                         return {
-                            isEditable: new Date(date.fromDate) > new Date(),
-                            startDate: { value: convertToDateFormat(date.fromDate, "DD-MM-YYYY") },
-                            endDate: { value: convertToDateFormat(date.toDate, "DD-MM-YYYY") }
+                            isEditable: new Date(convertToDateFormat(date.fromDate, "YYYY-MM-DD")) > new Date(),
+                            startDate: {
+                                value: date.fromDate,
+                                disabled: new Date(convertToDateFormat(date.fromDate, "YYYY-MM-DD")) < new Date()
+                            },
+                            endDate: {
+                                value: date.toDate,
+                                disabled: new Date(date.toDate) > new Date()
+                            },
                         }
-                    })
-                }),
-            }
+                    }),
+                };
+            });
         } catch (e) {
             _leaves = {};
         }
 
         return _leaves;
-    };
+    }, [leaveSummary]);
     const [leaves, setLeaves] = useState<Leaves>(normalizeLeave(leaveSummary));
-    useEffect(() => { setLeaves(normalizeLeave(leaveSummary)) }, [leaveSummary])
+    const [dbLeaves, setDBLeaves] = useState<Leaves>(normalizeLeave(leaveSummary));
 
-    const HAVE_PLAN_ERROR_TEXT = "Error! There are leaves already planned."
-    const DEFAULT_DATE_RANGE: LeaveDate = { startDate: { value: '' }, endDate: { value: '' }, isEditable: true };
-    const DEFAULT_MONTHLY_LEAVE_VALUE: LeaveMonth = {
-        isVisible: true,
-        havePlans: { value: "" },
-        dateList: [],
-    };
+    useEffect(() => {
+        setLeaves(normalizeLeave(leaveSummary));
+        setDBLeaves(normalizeLeave(leaveSummary));
+    }, [normalizeLeave, leaveSummary]);
 
     const handleMonthVisibilty = (month: string) => {
         setLeaves((prevLeave: any) => (
@@ -128,21 +132,24 @@ const LeaveSubmissionDialog = (props: LeaveSubmissionDialogProps) => {
 
     const handleMonthlyLeaveAddition = () => {
         const month = filter.month || MonthList[new Date().getMonth()].value;
+        const year = filter.year || new Date().getFullYear();
         setLeaves(prevLeave => {
             return { ...prevLeave, [month]: DEFAULT_MONTHLY_LEAVE_VALUE };
         });
-        onFilterChange({ target: { name: "month", value: month } } as React.ChangeEvent<HTMLInputElement>)
+        onFilterChange({ target: { name: "month", value: month } } as React.ChangeEvent<HTMLInputElement>);
+        onFilterChange({ target: { name: "year", value: year } } as React.ChangeEvent<HTMLInputElement>);
     };
 
-    const serializeLeaveList = (leaves: Leaves): UpdateLeaveRequest => {
+    const serializeLeaveList = (leaves: Leaves, action: 'INSERT' | 'DELETE' = 'INSERT'): UpdateLeaveRequest => {
         let leaveList: UpdateLeaveRequest = [];
         Object.values(leaves).map(leaveMonth => {
-            leaveMonth.dateList.map(leaveDate => {
-                leaveList.push({
+            return leaveMonth.dateList.map(leaveDate => {
+                return leaveList.push({
+                    action: action,
                     empId: employeeDetails.employeeId || "",
-                    fromDate: convertToDateFormat(leaveDate.startDate.value, "YYYY-MM-DD"),
-                    planningType: "ACTUAL",
-                    toDate: convertToDateFormat(leaveDate.endDate.value, "YYYY-MM-DD"),
+                    fromDate: leaveDate.startDate.value,
+                    planningType: leaveMonth.havePlans.value === 'yes' ? "EXPECTED_WITH_LEAVES" : "EXPECTED_NO_LEAVES",
+                    toDate: leaveDate.endDate.value,
                 });
             })
         })
@@ -151,8 +158,15 @@ const LeaveSubmissionDialog = (props: LeaveSubmissionDialogProps) => {
 
     const handleLeaveSubmit = () => {
         const leaveList = serializeLeaveList(leaves);
-        onLeaveSubmit(leaveList);
+        const dbLeaveList = serializeLeaveList(dbLeaves, "DELETE");
+        onLeaveSubmit([...dbLeaveList, ...leaveList]);
     };
+
+    const checkIsDisabled = useMemo((): boolean => {
+        const { month, year } = filter;
+        const monthIndex = MonthList.findIndex(mon => mon.value === month);
+        return new Date(`${year}-${monthIndex + 1}-01`) > new Date() || month === '' ? false : true;
+    }, [filter]);
 
     return (
         <Dialog
@@ -189,6 +203,7 @@ const LeaveSubmissionDialog = (props: LeaveSubmissionDialogProps) => {
                                 <Grid container sx={{ minHeight: 300 }} justifyContent="center" alignItems="center" textAlign="center">
                                     <Grid item>
                                         <Button
+                                            disabled={checkIsDisabled}
                                             color="primary"
                                             variant="outlined"
                                             onClick={handleMonthlyLeaveAddition}
@@ -202,6 +217,15 @@ const LeaveSubmissionDialog = (props: LeaveSubmissionDialogProps) => {
                                 </Grid>
                         }
                     </Grid>
+                    {
+                        error &&
+                        <Grid item xs={12}>
+                            <Alert severity="error">
+                                <AlertTitle>Error</AlertTitle>
+                                {error}
+                            </Alert>
+                        </Grid>
+                    }
                 </Grid>
             </DialogContent>
             <DialogActions sx={{ px: 3, py: 2, justifyContent: "center" }}>

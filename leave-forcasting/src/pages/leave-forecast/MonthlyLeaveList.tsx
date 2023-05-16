@@ -82,7 +82,7 @@ const MonthlyLeaveList = (props: MonthlyLeaveListProps) => {
                                                                 <Fragment key={index}>
                                                                     <Grid item xs={leavesDates.isEditable ? 9 : 12} sm={leavesDates.isEditable ? 10 : 12}>
                                                                         <DateRangePicker
-                                                                            disabled={!leavesDates.isEditable}
+                                                                            disabled={{ start: leavesDates.startDate.disabled, end: leavesDates.endDate.disabled }}
                                                                             format={DATE_FORMAT}
                                                                             label={{ start: "Start Date", end: "End Date" }}
                                                                             value={{ start: leavesDates.startDate.value, end: leavesDates.endDate.value }}
