@@ -13,32 +13,32 @@ import {
 } from "components/shared-ui";
 
 interface UserDetails {
-    username: string,
+    employeeId: string,
     password: string,
 };
 
 const DEFAULT_USER_DETAILS: UserDetails = {
-    username: "",
+    employeeId: "",
     password: "",
 }
 
 const SUPER_ADMIN: UserDetails = {
-    username: "A-100",
+    employeeId: "A-100",
     password: "password"
 }
 
 const ADMIN: UserDetails = {
-    username: "A-101",
+    employeeId: "A-101",
     password: "password"
 }
 
 const TEAM_USER: UserDetails = {
-    username: "A-102",
+    employeeId: "A-102",
     password: "password"
 }
 
 const USER: UserDetails = {
-    username: "A-103",
+    employeeId: "A-103",
     password: "password"
 }
 
@@ -104,12 +104,12 @@ const SignInPage = () => {
                                 autoFocus
                                 required
                                 fullWidth
-                                id="username"
+                                id="employeeId"
                                 label="Employee ID"
-                                name="username"
-                                autoComplete="username"
+                                name="employeeId"
+                                autoComplete="employeeId"
                                 margin="normal"
-                                value={userDetails?.username}
+                                value={userDetails?.employeeId}
                                 onChange={handleChange}
                             />
                             <TextField

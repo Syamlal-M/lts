@@ -16,7 +16,18 @@ function isAutheticated(): boolean {
     return Boolean(getToken('token'));
 }
 
-function hasPermission(permission: Permission, permissionList: string[] = getToken('access')): boolean {
+function getPermissionList(): string[] {
+    let permissionList: string[] = [];
+    try {
+        const role = JSON.parse(JSON.stringify(getToken('role')));
+        permissionList = role.permissionsList.map((p: any) => (p.permissionName));
+    } catch (e) {
+        permissionList = [];
+    }
+    return permissionList;
+}
+
+function hasPermission(permission: Permission, permissionList: string[] = getPermissionList()): boolean {
     permissionList = permissionList || [];
     return permissionList.includes(PERMISSIONS[permission]);
 }
