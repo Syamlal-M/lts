@@ -13,21 +13,20 @@ type LeaveDate = {
 
 type LeaveDates = LeaveDate[];
 
-type Week = {
+type Month = {
     dateList: DateList;
     leaveDates: LeaveDates;
     noOfDays: number;
+    planningType: "ACTUAL" | "EXPECTED_WITH_LEAVES" | "EXPECTED_NO_LEAVES";
     startAndEndDate: string;
-    weekNumber: number;
+    month: Months;
 };
-
-type Weeks = Week[];
 
 type LeaveSummaryItem = {
     employeeId: string;
     employeeName: string;
     noOfDays: number;
-    weeks: Weeks;
+    month: Month[];
 };
 
 type LeaveSummaryResponse = LeaveSummaryItem[];

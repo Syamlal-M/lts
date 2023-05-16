@@ -9,7 +9,7 @@ const RANGE = {
 } as const;
 
 type RangeProps = {
-    [key in keyof typeof RANGE as typeof RANGE[key]]: string | undefined;
+    [key in keyof typeof RANGE as typeof RANGE[key]]: string | undefined | boolean;
 };
 
 interface DateRangePickerProps {
@@ -20,7 +20,7 @@ interface DateRangePickerProps {
     maxDate?: any;
     format?: any;
     gridBreakpoints?: RegularBreakpoints;
-    disabled?: boolean;
+    disabled?: RangeProps;
     helperText?: RangeProps;
 };
 
@@ -43,7 +43,7 @@ const DateRangePicker = ({ label, value, onChange, minDate, maxDate, format, gri
             <Grid container spacing={2} alignItems="center">
                 <Grid item {...gridBreakpoints}>
                     <MobileDatePicker
-                        disabled={disabled}
+                        disabled={Boolean(disabled?.start)}
                         format={FORMAT}
                         label={label?.start}
                         value={t(value?.start)}
@@ -62,7 +62,7 @@ const DateRangePicker = ({ label, value, onChange, minDate, maxDate, format, gri
                 </Grid>
                 <Grid item {...gridBreakpoints}>
                     <MobileDatePicker
-                        disabled={disabled}
+                        disabled={Boolean(disabled?.end)}
                         format={FORMAT}
                         label={label?.end}
                         value={t(value?.end)}

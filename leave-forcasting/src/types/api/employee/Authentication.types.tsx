@@ -3,7 +3,7 @@ interface Role {
 }
 
 interface SigninRequest {
-    username: string,
+    employeeId: string,
     password: string,
 }
 
