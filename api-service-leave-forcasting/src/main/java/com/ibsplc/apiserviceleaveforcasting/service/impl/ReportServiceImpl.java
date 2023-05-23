@@ -86,6 +86,7 @@ public class ReportServiceImpl implements ReportService {
                 .fromDate(leaveDays.getFromDate())
                 .toDate(leaveDays.getToDate())
                 .dateList(dateString)
+                .exceptional(leaveDays.isExceptional())
                 .year(leaveDays.getYear())
                 .planningType(leaveDays.getPlanningType()).build();
     }

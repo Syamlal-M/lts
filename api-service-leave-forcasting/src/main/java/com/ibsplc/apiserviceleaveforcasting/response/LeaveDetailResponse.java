@@ -28,6 +28,8 @@ public class LeaveDetailResponse {
     private int year;
     private String planningType;
 
+    private boolean exceptional;
+
     @JsonIgnore
     private List<String> dateList;
 }
