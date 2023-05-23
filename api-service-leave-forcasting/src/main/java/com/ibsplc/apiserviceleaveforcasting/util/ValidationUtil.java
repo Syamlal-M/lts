@@ -7,15 +7,18 @@ package com.ibsplc.apiserviceleaveforcasting.util;
 
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CsvImportException;
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
+import com.ibsplc.apiserviceleaveforcasting.enums.PlanningType;
+import com.ibsplc.apiserviceleaveforcasting.enums.SpanType;
 import com.ibsplc.apiserviceleaveforcasting.request.LeaveForcastRequest;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 /**
  *
@@ -46,11 +49,32 @@ public class ValidationUtil {
 
     public static void validateLeaveForecast(List<LeaveForcastRequest> leaveForecast) {
         List<String> errors = new ArrayList<>();
-        validateOverlappingIncomingDates(leaveForecast, errors);
+        List<LeaveForcastRequest> expectedLeaves = leaveForecast.stream().filter(l -> !(l.getPlanningType() != null && l.getPlanningType().equals(PlanningType.ACTUAL))).collect(Collectors.toList());
+        validateOverlappingIncomingDates(expectedLeaves, errors);
         validateFromAndToDate(leaveForecast, errors);
+        validatePastDates(expectedLeaves, errors);
+        validateHalfDayLeave(expectedLeaves, errors);
         if(!errors.isEmpty()) {
             throw new CustomException("ERRORS: " + String.join(", ", errors));
         }
+    }
+
+    private static void validateHalfDayLeave(List<LeaveForcastRequest> expectedLeaves, List<String> errors) {
+        expectedLeaves.forEach(leave -> {
+            if(DAYS.between(leave.getFromDate(), leave.getToDate()) > 0 && Objects.equals(leave.getSpan(), Optional.of(SpanType.HALF))) {
+                String msg = "Half day can span only 1 day " + leave.getFromDate() + " toDate " + leave.getToDate();
+                errors.add(msg);
+            }
+        });
+    }
+
+    private static void validatePastDates(List<LeaveForcastRequest> leaveForecast, List<String> errors) {
+        leaveForecast.forEach(leave -> {
+            if(leave.getFromDate().isBefore(LocalDate.now()) || leave.getToDate().isBefore(LocalDate.now())) {
+                String msg = "ToDate in past FromDate: " + leave.getFromDate() + " toDate " + leave.getToDate();
+                errors.add(msg);
+            }
+        });
     }
 
     private static void validateFromAndToDate(List<LeaveForcastRequest> leaveForecast, List<String> errors) {

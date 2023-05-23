@@ -4,6 +4,7 @@ import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeLeaveForcastDto;
 import com.ibsplc.apiserviceleaveforcasting.enums.PlanningType;
+import com.ibsplc.apiserviceleaveforcasting.enums.SpanType;
 import com.ibsplc.apiserviceleaveforcasting.enums.Status;
 import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeInfoRepository;
 import com.ibsplc.apiserviceleaveforcasting.repository.LeaveForecastRepository;
@@ -54,7 +55,7 @@ public class ReportServiceImpl implements ReportService {
             List<MonthLeaveSummaryResponse> monthSummary = groupedMonth.entrySet().stream().map((monthName) -> {
                 List<LeaveDetailResponse> leaveDetails = monthName.getValue()
                         .stream().map(ReportServiceImpl::getLeaveDetailResponse).collect(Collectors.toList());
-                int totalNoOfDaysInWeek = leaveDetails.stream().mapToInt(LeaveDetailResponse::getNoOfDays).sum();
+                double totalNoOfDaysInWeek = leaveDetails.stream().mapToDouble(LeaveDetailResponse::getNoOfDays).sum();
                 List<String> datesList  = leaveDetails.stream().flatMap(ld -> ld.getDateList().stream()).collect(Collectors.toList());
                 return MonthLeaveSummaryResponse.builder()
                         .month(monthName.getKey())
@@ -65,26 +66,28 @@ public class ReportServiceImpl implements ReportService {
                         .build();
             }).collect(Collectors.toList());
 
-            int totalLeaves = monthSummary.stream().mapToInt(days -> Math.toIntExact(days.getNoOfDays())).sum();
+            double totalLeaves = monthSummary.stream().mapToDouble(MonthLeaveSummaryResponse::getNoOfDays).sum();
             return EmployeeLeaveReportResponse.builder().employeeId(emp.getKey().getEmployeeId())
                     .employeeName(emp.getKey().getEmployeeName())
                     .month(monthSummary.stream().sorted(Comparator.comparing(MonthLeaveSummaryResponse::getMonth)).collect(Collectors.toList())).noOfDays(totalLeaves).build();
         }).collect(Collectors.toList());
     }
 
-    private static LeaveDetailResponse getLeaveDetailResponse(EmployeeLeaveForcastDto leaveByWeek) {
-        List<String> dateString = Stream.iterate(leaveByWeek.getFromDate(), date -> date.plusDays(1))
-                .limit(ChronoUnit.DAYS.between(leaveByWeek.getFromDate(), leaveByWeek.getToDate()) + 1)
+    private static LeaveDetailResponse getLeaveDetailResponse(EmployeeLeaveForcastDto leaveDays) {
+        List<String> dateString = Stream.iterate(leaveDays.getFromDate(), date -> date.plusDays(1))
+                .limit(ChronoUnit.DAYS.between(leaveDays.getFromDate(), leaveDays.getToDate()) + 1)
                 .map(LocalDate::toString).collect(Collectors.toList());
         ;
         return LeaveDetailResponse.builder()
-                .month(leaveByWeek.getMonth())
-                .noOfDays(leaveByWeek.getNoOfDays())
-                .fromDate(leaveByWeek.getFromDate())
-                .toDate(leaveByWeek.getToDate())
+                .leaveForcastId(leaveDays.getLeaveForecastId())
+                .month(leaveDays.getMonth())
+                .noOfDays(leaveDays.getNoOfDays())
+                .spanType(leaveDays.getNoOfDays() < 1 ? SpanType.HALF : SpanType.FULL)
+                .fromDate(leaveDays.getFromDate())
+                .toDate(leaveDays.getToDate())
                 .dateList(dateString)
-                .year(leaveByWeek.getYear())
-                .planningType(leaveByWeek.getPlanningType()).build();
+                .year(leaveDays.getYear())
+                .planningType(leaveDays.getPlanningType()).build();
     }
 
     private Map<EmployeeInfoDto, List<EmployeeLeaveForcastDto>> getEmployeeLeaveForcastDtos(String month, String year, String organization, String team) {
@@ -100,7 +103,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     private Specification<EmployeeLeaveForcastDto> addToQuery(String value, Specification<EmployeeLeaveForcastDto> valueCondition, Specification<EmployeeLeaveForcastDto> finalQuery) {
-        if(value != null) {
+        if(value != null && !value.isEmpty()) {
             if(finalQuery == null) {
                 return valueCondition;
             } else {
@@ -124,8 +127,8 @@ public class ReportServiceImpl implements ReportService {
                 List<LeaveDetailResponse> leaveDetails = weekNumber.getValue().stream().map(ReportServiceImpl::getLeaveDetailResponse).collect(Collectors.toList());
                 List<LeaveDetailResponse> expectedLeaves = leaveDetails.stream().filter(l ->  l.getPlanningType().equalsIgnoreCase(PlanningType.EXPECTED_WITH_LEAVES.name())).collect(Collectors.toList());
                 List<LeaveDetailResponse> actualLeaves = leaveDetails.stream().filter(l ->  l.getPlanningType().equalsIgnoreCase(PlanningType.ACTUAL.name())).collect(Collectors.toList());
-                int totalExpectedDays = expectedLeaves.stream().mapToInt(LeaveDetailResponse::getNoOfDays).sum();
-                int totalActualDays = actualLeaves.stream().mapToInt(LeaveDetailResponse::getNoOfDays).sum();
+                double totalExpectedDays = expectedLeaves.stream().mapToDouble(LeaveDetailResponse::getNoOfDays).sum();
+                double totalActualDays = actualLeaves.stream().mapToDouble(LeaveDetailResponse::getNoOfDays).sum();
                 // TODO: Handle Company holidays, so the total number would come down
                 int totalWorkingDaysInAWeek = 5;
                 Double expectedRevenue = (totalWorkingDaysInAWeek - totalExpectedDays) * employee.getKey().getBillRate();
@@ -145,8 +148,8 @@ public class ReportServiceImpl implements ReportService {
                         .build();
             }).collect(Collectors.toList());
 
-            int expectedTotalLeaves = weekSummaryList.stream().mapToInt(days -> Math.toIntExact(days.getExpectedNoOfDays())).sum();
-            int actualTotalLeaves = weekSummaryList.stream().mapToInt(days -> Math.toIntExact(days.getExpectedNoOfDays())).sum();
+            double expectedTotalLeaves = weekSummaryList.stream().mapToDouble(WeekRevenueSummaryResponse::getExpectedNoOfDays).sum();
+            double actualTotalLeaves = weekSummaryList.stream().mapToDouble(WeekRevenueSummaryResponse::getExpectedNoOfDays).sum();
             Double expectedTotalRevenue = weekSummaryList.stream().mapToDouble(WeekRevenueSummaryResponse::getExpectedRevenue).sum();
             Double actualTotalRevenue = weekSummaryList.stream().mapToDouble(WeekRevenueSummaryResponse::getExpectedRevenue).sum();
             Double revenueDifference = weekSummaryList.stream().mapToDouble(WeekRevenueSummaryResponse::getRevenueDifference).sum();

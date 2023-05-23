@@ -15,5 +15,5 @@ public class EmployeeLeaveReportResponse {
     private String employeeId;
     private String employeeName;
     private List<MonthLeaveSummaryResponse> month;
-    private int noOfDays;
+    private double noOfDays;
 }

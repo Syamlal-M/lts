@@ -5,10 +5,7 @@ package com.ibsplc.apiserviceleaveforcasting.service.impl;
 
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeLeaveForcastDto;
-import com.ibsplc.apiserviceleaveforcasting.enums.Action;
-import com.ibsplc.apiserviceleaveforcasting.enums.PlanningType;
-import com.ibsplc.apiserviceleaveforcasting.enums.Roles;
-import com.ibsplc.apiserviceleaveforcasting.enums.Status;
+import com.ibsplc.apiserviceleaveforcasting.enums.*;
 import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeInfoRepository;
 import com.ibsplc.apiserviceleaveforcasting.repository.LeaveForecastRepository;
 import com.ibsplc.apiserviceleaveforcasting.request.LeaveForcastRequest;
@@ -25,6 +22,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.*;
@@ -33,6 +31,7 @@ import java.util.stream.Collectors;
 import static com.ibsplc.apiserviceleaveforcasting.repository.CustomerSpecifications.*;
 import static com.ibsplc.apiserviceleaveforcasting.util.ValidationUtil.validateLeaveForecast;
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * @author Narjeesh
@@ -55,37 +54,48 @@ public class LeaveForecastServiceImpl implements LeaveForecastService {
 		return Roles.getPriority(authorities);
 	}
 
+	private void validateInputWithDb(List<LeaveForcastRequest> leavesFromDb, List<LeaveForcastRequest> forcastRequests) {
+		List<LeaveForcastRequest> toDeactivate = forcastRequests.stream().filter(l -> !l.getAction().equals(Action.INSERT)).collect(Collectors.toList());
+		List<LeaveForcastRequest> filterToExcludeDataToBeDeletedFromRequest = leavesFromDb
+				.stream()
+				.filter(leave -> toDeactivate.stream().filter(toU -> toU.getLeaveForcastId().isPresent() && toU.getLeaveForcastId().get() == leave.getLeaveForcastId().get()).findFirst().isEmpty())
+				.collect(Collectors.toList());
+		List<LeaveForcastRequest> leavesToUpdate = forcastRequests
+				.stream()
+				.filter(l -> l.getAction().equals(Action.INSERT) || l.getAction().equals(Action.UPDATE))
+				.collect(Collectors.toList());
+		List<Month> listOfMonthToUpdate = leavesToUpdate
+				.stream()
+				.filter(l -> l.getPlanningType() == PlanningType.EXPECTED_WITH_LEAVES)
+				.map(l -> l.getFromDate().getMonth()).collect(Collectors.toList());
+		List<LeaveForcastRequest> finalList = filterToExcludeDataToBeDeletedFromRequest
+				.stream()
+				.filter(l -> !(listOfMonthToUpdate.contains(l.getFromDate().getMonth()) && l.getPlanningType() == PlanningType.EXPECTED_NO_LEAVES)).collect(Collectors.toList());
+		finalList.addAll(leavesToUpdate);
+		validateLeaveForecast(finalList);
+	}
+
 	@Override
 	public ResponseEntity updateLeaves(List<LeaveForcastRequest> forcastRequests, String employeeId) {
 		Optional<EmployeeInfoDto> employeeOptional = findEmployeeByUserRole(employeeId);
 		List<EmployeeLeaveForcastDto> leavesInDb = leaveForecastRepository.findAll(hasLeaveForecastByEmployeeId(employeeId));
 		List<LeaveForcastRequest> leavesFromDb = leavesInDb.stream()
-				.map(l -> new LeaveForcastRequest(l.getEmployee().getEmployeeId(), l.getFromDate(), l.getToDate(), PlanningType.getPlanningType(l.getPlanningType()).get(), null))
+				.filter(l -> l.getStatus().equalsIgnoreCase("ACTIVE"))
+				.map(l -> new LeaveForcastRequest(Optional.of(l.getLeaveForecastId()), l.getEmployee().getEmployeeId(), l.getFromDate(), l.getToDate(), PlanningType.getPlanningType(l.getPlanningType()).get(), l.isExceptional(),null, null))
 				.collect(Collectors.toList());
-		leavesFromDb.addAll(forcastRequests);
-		validateLeaveForecast(leavesFromDb);
+		validateInputWithDb(leavesFromDb, forcastRequests);
 		if(employeeOptional.isPresent()) {
-			deactivateLeave(forcastRequests.stream().filter(leave -> leave.getAction().isPresent() &&  leave.getAction().get().equals(Action.DELETE))
-					.collect(Collectors.toList()), employeeId);
+			List<EmployeeLeaveForcastDto> deactivateLeave = deactivateLeaveList(forcastRequests, employeeId, leavesInDb);
+
 			List<EmployeeLeaveForcastDto> employeeForecastToCreate = forcastRequests.stream()
-					.filter(leave -> leave.getAction().isEmpty() || leave.getAction().get().equals(Action.INSERT)).flatMap(forecastRequest -> {
+					.filter(leave -> leave.getAction().equals(Action.INSERT) || leave.getAction().equals(Action.UPDATE))
+					.flatMap(forecastRequest -> {
 				List<LeaveForcastRequest> separatedForecastDates = breakDatesIfBetweenMonths(forecastRequest);
 				return separatedForecastDates.stream().map(forecast -> {
-					String planningType;
-					int noOfDays;
-					if(forecast.getFromDate().isBefore(LocalDate.now())) {
-						planningType = PlanningType.ACTUAL.toString();
-						noOfDays = (int) DAYS.between(forecast.getFromDate(), forecast.getToDate()) + 1;
-					} else {
-						if (forecast.getPlanningType().equals(PlanningType.EXPECTED_WITH_LEAVES)) {
-							planningType = PlanningType.EXPECTED_WITH_LEAVES.toString();
-							noOfDays = (int) DAYS.between(forecast.getFromDate(), forecast.getToDate()) + 1;
-						} else {
-							planningType = PlanningType.EXPECTED_NO_LEAVES.toString();
-							noOfDays = 0;
-						}
-					}
+					double noOfDays = forecast.getPlanningType() == PlanningType.EXPECTED_NO_LEAVES ? 0 :
+							Objects.equals(forecast.getSpan(), Optional.of(SpanType.HALF)) ? 0.5 :(int) DAYS.between(forecast.getFromDate(), forecast.getToDate()) + 1;
 					return EmployeeLeaveForcastDto.builder()
+							.exceptional(forecast.isExceptional())
 							.fromDate(forecast.getFromDate())
 							.toDate(forecast.getToDate())
 							.employee(employeeOptional.get())
@@ -96,9 +106,10 @@ public class LeaveForecastServiceImpl implements LeaveForecastService {
 							.status(Status.ACTIVE.toString())
 							.createdDate(LocalDateTime.now())
 							.updatedDate(LocalDateTime.now())
-							.planningType(planningType).build();
+							.planningType(forecast.getPlanningType().toString()).build();
 				});
 			}).collect(Collectors.toList());
+			employeeForecastToCreate.addAll(deactivateLeave);
 			leaveForecastRepository.saveAll(employeeForecastToCreate);
 			return ResponseEntity.noContent().build();
 		} else {
@@ -106,17 +117,43 @@ public class LeaveForecastServiceImpl implements LeaveForecastService {
 		}
 	}
 
-	private void deactivateLeave(List<LeaveForcastRequest> leaves, String employeeId) {
-		leaveForecastRepository.saveAll(leaves.stream().flatMap(leave -> {
-			List<EmployeeLeaveForcastDto> leavesToUpdate = leaveForecastRepository.findAll(hasLeaveForecastByFromDate(leave.getFromDate())
-					.and(hasLeaveForecastByToDate(leave.getToDate())).and(hasLeaveForecastByEmployeeId(leave.getEmpId())));
-			return leavesToUpdate.stream().map(leaveToUpdate -> {
+	private List<EmployeeLeaveForcastDto> deactivateLeaveList(List<LeaveForcastRequest> leaves, String employeeId, List<EmployeeLeaveForcastDto> fromDb) {
+		List<Month> listOfMonthToUpdate = leaves
+				.stream()
+				.filter(leave -> !leave.getAction().equals(Action.DELETE))
+				.map(l -> l.getFromDate().getMonth()).collect(Collectors.toList());
+		/**
+		 * In a Month, employee has leaves or no leaves
+		 * If they have recorded as Expected_NO_LEAVES and then updates to leave
+		 * Expected_NO_LEAVEES records will be deleted the below logic mimic the same
+		 */
+		List<EmployeeLeaveForcastDto> deleteListBasedOnExpectedNoLeaves = fromDb
+				.stream()
+				.filter(l -> listOfMonthToUpdate.contains(l.getFromDate().getMonth()) && l.getPlanningType().equals(PlanningType.EXPECTED_NO_LEAVES.toString()))
+				.map(l -> {
+					l.setStatus(Status.INACTIVE.toString());
+					l.setModifiedBy(employeeId);
+					l.setUpdatedDate(LocalDateTime.now());
+					return l;
+				}).collect(Collectors.toList());
+
+		List<LeaveForcastRequest> listToDeleteFromRequest = leaves
+				.stream()
+				.filter(leave -> !leave.getAction().equals(Action.INSERT))
+				.collect(Collectors.toList());
+
+		List<EmployeeLeaveForcastDto> listToBeDeleted = listToDeleteFromRequest.stream().flatMap(leave -> {
+			List<EmployeeLeaveForcastDto> leavesToUpdate = fromDb.stream()
+					.filter(fromDbRecord -> fromDbRecord.getLeaveForecastId().equals(leave.getLeaveForcastId().orElse(0L)))
+					.collect(Collectors.toList());
+			return leavesToUpdate.stream().peek(leaveToUpdate -> {
 				leaveToUpdate.setStatus(Status.INACTIVE.toString());
 				leaveToUpdate.setModifiedBy(employeeId);
 				leaveToUpdate.setUpdatedDate(LocalDateTime.now());
-				return leaveToUpdate;
 			});
-		}).collect(Collectors.toList()));
+		}).collect(Collectors.toList());
+		listToBeDeleted.addAll(deleteListBasedOnExpectedNoLeaves);
+		return listToBeDeleted;
 	}
 
 	private List<LeaveForcastRequest> breakDatesIfBetweenMonths(LeaveForcastRequest forecast) {

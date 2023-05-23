@@ -16,7 +16,7 @@ public class MonthLeaveSummaryResponse {
     private String month;
     private List<LeaveDetailResponse> leaveDates;
     private String startAndEndDate;
-    private int noOfDays;
+    private double noOfDays;
 
     private String planningType;
 

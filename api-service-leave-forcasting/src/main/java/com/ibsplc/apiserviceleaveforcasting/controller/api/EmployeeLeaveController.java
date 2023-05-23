@@ -4,8 +4,10 @@
  */
 package com.ibsplc.apiserviceleaveforcasting.controller.api;
 
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.BadRequestException;
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
+import com.ibsplc.apiserviceleaveforcasting.enums.Action;
 import com.ibsplc.apiserviceleaveforcasting.request.LeaveForcastRequest;
 import com.ibsplc.apiserviceleaveforcasting.response.EmployeeLeaveReportResponse;
 import com.ibsplc.apiserviceleaveforcasting.response.EmployeeRevenueReportResponse;
@@ -36,17 +38,23 @@ public class EmployeeLeaveController {
     @PutMapping("leaves/{employeeId}")
     public ResponseEntity updateLeaves(@RequestBody List<LeaveForcastRequest> leaveForecast,
                                        @PathVariable String employeeId) {
-        validateLeaveForecast(leaveForecast);
+        if(leaveForecast.stream().anyMatch(l -> l.getAction() == null || l.getPlanningType() == null)) {
+            throw new BadRequestException("Action or planingType is not defined");
+        }
+        validateLeaveForecast(leaveForecast.stream().filter(l -> l.getAction().equals(Action.INSERT) || l.getAction().equals(Action.UPDATE)).collect(Collectors.toList()));
         return leaveForecastService.updateLeaves(leaveForecast, employeeId);
     }
 
     @PutMapping("leaves/bulk")
     public ResponseEntity bulkLeaves(@RequestBody List<LeaveForcastRequest> leaveForecast) {
+        if(leaveForecast.stream().anyMatch(l -> l.getAction() == null || l.getPlanningType() == null)) {
+            throw new BadRequestException("Action or planingType is not defined");
+        }
         Map<String, List<LeaveForcastRequest>> groupedLeaves =
                 leaveForecast.stream().collect(groupingBy(LeaveForcastRequest::getEmpId));
 
         groupedLeaves.forEach((empId, employeeForecast)  -> {
-            validateLeaveForecast(employeeForecast);
+            validateLeaveForecast(employeeForecast.stream().filter(l -> l.getAction().equals(Action.INSERT) || l.getAction().equals(Action.UPDATE)).collect(Collectors.toList()));
             leaveForecastService.updateLeaves(employeeForecast, empId);
                         });
         return ResponseEntity.noContent().build();

@@ -32,7 +32,7 @@ public class EmployeeLeaveForcastDto {
 	private Long leaveForecastId;
 	private LocalDate fromDate;
 	private LocalDate toDate;
-	private int noOfDays;
+	private double noOfDays;
 	private String month;
 	private int year;
 	private String planningType;
@@ -46,6 +46,8 @@ public class EmployeeLeaveForcastDto {
 	private String modifiedBy;
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	private EmployeeInfoDto employee;
+
+	private boolean exceptional;
 
 
 }

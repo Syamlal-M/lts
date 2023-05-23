@@ -16,8 +16,8 @@ public class WeekRevenueSummaryResponse {
     private String startAndEndDate;
     private List<LeaveDetailResponse> expectedDates;
     private List<LeaveDetailResponse> actualDates;
-    private int expectedNoOfDays;
-    private int actualNoOfDays;
+    private double expectedNoOfDays;
+    private double actualNoOfDays;
     private Double expectedRevenue;
     private Double actualRevenue;
     private Double revenueDifference;

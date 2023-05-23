@@ -15,8 +15,8 @@ public class EmployeeRevenueReportResponse {
     private String employeeId;
     private String employeeName;
     private List<WeekRevenueSummaryResponse> weeks;
-    private int expectedNoOfDays;
-    private int actualNoOfDays;
+    private double expectedNoOfDays;
+    private double actualNoOfDays;
     private Double expectedRevenue;
     private Double actualRevenue;
     private Double revenueDifference;
