@@ -4,6 +4,7 @@
  */
 package com.ibsplc.apiserviceleaveforcasting.service.impl;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -83,6 +84,27 @@ public class EmployeeServiceImpl implements EmployeeService {
             writeDataLines(workbook, sheet, employeeViews);
             ServletOutputStream outputStream = response.getOutputStream();
             workbook.write(outputStream);
+        } catch (CSVExceptionWrapper csvException) {
+            throw csvException;
+        } catch (Exception ex) {
+            throw ex;
+        } finally {
+            workbook.close();
+            response.getOutputStream().close();
+        }
+    }
+
+    @Override
+    public void defaultFile(HttpServletResponse response) throws IOException {
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=report.xlsx";
+        response.setHeader(headerKey, headerValue);
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("report");
+        writeHeaderLine(workbook, sheet);
+        try {
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
         } catch (CSVExceptionWrapper csvException) {
             throw csvException;
         } catch (Exception ex) {

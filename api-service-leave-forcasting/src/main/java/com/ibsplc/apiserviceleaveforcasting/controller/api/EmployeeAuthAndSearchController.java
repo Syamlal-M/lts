@@ -96,6 +96,12 @@ public class EmployeeAuthAndSearchController {
         employeeService.exportEmployees(page, limit, name, org, team, location, response);
     }
 
+    @GetMapping("default-file")
+    public void exportEmployees(HttpServletResponse response) throws Exception {
+        response.setContentType("application/octet-stream");
+        employeeService.defaultFile(response);
+    }
+
     @PutMapping("import")
     public BasicResponseView importEmployees(@RequestParam MultipartFile file) throws CSVExceptionWrapper, Exception {
         return employeeService.importEmployees(file);

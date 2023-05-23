@@ -4,6 +4,7 @@
  */
 package com.ibsplc.apiserviceleaveforcasting.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.ibsplc.apiserviceleaveforcasting.request.EmployeeRegistrationRequest;
@@ -34,4 +35,6 @@ public interface EmployeeService {
     List<String> getOrganisation();
 
     void createEmployee(EmployeeRegistrationRequest request) throws Exception;
+
+    void defaultFile(HttpServletResponse response) throws IOException;
 }
