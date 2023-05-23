@@ -51,6 +51,24 @@ const UploadEmployee = () => {
 		setFileName(event.target.files[0]);
 	};
 
+    const handleTemplateDownload = () => {
+        EmployeeService.fetchTemplate()
+        .then((response: any) => response.blob())
+        .then((blob) => {
+          const url = URL.createObjectURL(blob);
+  
+          const link = document.createElement('a');
+          link.href = url;
+            link.download = "template.csv";
+          link.click();
+  
+          URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+          console.error('Error downloading file:', error);
+        });
+      };
+
 	return (
 		<Box sx={{ height: 400, maxWidth: 'calc(100vw - 36px)' }}>
 			<Grid container direction="column" alignItems="start" spacing={2}>
@@ -104,7 +122,7 @@ const UploadEmployee = () => {
                                 fullWidth
                                 id=""
                                 variant="outlined"
-                                onClick={() => { }}
+                                onClick={handleTemplateDownload}
                                 style={{
                                     borderColor: '#0C9486cc',
                                     color: '#47444D',
