@@ -30,8 +30,8 @@ const EmployeeSummary = () => {
 
     const handleDownload = () => {
       EmployeeSummaryService.fetchEmployeeDownload({'org': org, 'team': team })
-      .then((response: { data: BlobPart; }) => {
-        const blob = new Blob([response.data], { type: 'application/octet-stream' });
+      .then((response: any) => {
+        const blob = new Blob([response], { type: 'application/octet-stream' });
         const url = URL.createObjectURL(blob);
 
         const link = document.createElement('a');

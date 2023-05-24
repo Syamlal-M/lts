@@ -9,7 +9,7 @@ const EmployeeService = {
 
     fetchTemplate: async (criteria: Record<string, any> = {}) => {
       let url = getApiUrl("TEMPLATE", criteria);
-      return Api.get(url, criteria);
+      return Api.get(url, {headers: {"Content-Type": 'application/octet-stream'} });
     },
 };
 

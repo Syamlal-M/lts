@@ -53,20 +53,20 @@ const UploadEmployee = () => {
 
     const handleTemplateDownload = () => {
         EmployeeService.fetchTemplate()
-        .then((response: { data: BlobPart; }) => {
-            const blob = new Blob([response.data], { type: 'application/octet-stream' });
-            const url = URL.createObjectURL(blob);
+        .then((response: any) => {
+            const blob = new Blob([response], { type: 'application/octet-stream' });
+          const url = URL.createObjectURL(blob);
   
-            const link = document.createElement('a');
-            link.href = url;
+          const link = document.createElement('a');
+          link.href = url;
             link.download = "template.csv";
-            link.click();
+          link.click();
   
-            URL.revokeObjectURL(url);
-          })
+          URL.revokeObjectURL(url);
+        })
         .catch((error) => {
           console.error('Error downloading file:', error);
-          });
+        });
       };
 
 	return (

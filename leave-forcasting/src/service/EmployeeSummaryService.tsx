@@ -9,7 +9,7 @@ const EmployeeSummaryService = {
 
     fetchEmployeeDownload: (criteria: Record<string, any> = {}) => {
         let url = getApiUrl("GET_EMPLOYEE_INFO_DOWNLOAD", criteria);
-        return Api.get(url, criteria);
+        return Api.get(url, {headers: {"Content-Type": 'application/octet-stream'} });
     }
 };
 
