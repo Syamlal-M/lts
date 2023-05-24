@@ -1,5 +1,4 @@
 import { Box, DataGrid, Grid, TextField, MenuItem, Button } from 'components/shared-ui';
-import { useEffect } from 'react';
 import * as React from 'react';
 import EmployeeSummaryColumnList from 'data/EmployeeSummaryColumnList';
 import EmployeeSummaryService from 'service/EmployeeSummaryService';
@@ -55,6 +54,7 @@ const EmployeeSummary = () => {
             name="org"
             label="Organization"
             variant="outlined"
+            value={org}
             onChange={handleOrgChange}
           >
             {orgList.map((org: KeyValueObject) => (
@@ -71,6 +71,7 @@ const EmployeeSummary = () => {
             name="team"
             label="Team"
             variant="outlined"
+            value={team}
             onChange={handleTeamChange}
           >
             {teamList.map((org: KeyValueObject) => (
