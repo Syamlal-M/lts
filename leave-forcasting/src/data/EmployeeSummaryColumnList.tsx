@@ -1,9 +1,9 @@
 import { GridColDef } from "types/DataGrid";
 
 const EmployeeSummaryColumnList: Array<GridColDef> = [
-        { field: 'empId', headerName: 'ID', sortable: false },
+        { field: 'employeeInfoId', headerName: 'ID', sortable: false },
         { field: 'employeeName', headerName: 'Name', sortable: false },
-        { field: 'expediaFgName', headerName: 'Eg Name', sortable: false },
+        { field: 'nameInClientRecords', headerName: 'Eg Name', sortable: false },
         { field: 'vendorName', headerName: 'Vendor', sortable: false },
         { field: 'jobTitle', headerName: 'Job Title', sortable: false },
         { field: 'org', headerName: 'Org', sortable: false },

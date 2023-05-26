@@ -1,8 +1,7 @@
 import { Box, DataGrid, Grid, TextField, MenuItem, Button } from 'components/shared-ui';
-import { useEffect } from 'react';
 import * as React from 'react';
 import EmployeeSummaryColumnList from 'data/EmployeeSummaryColumnList';
-import EmployeeSummaryService from 'service/EmployeeSummaryService';
+import EmployeeService from 'service/EmployeeInfoService';
 import { useSelectListContext } from 'context/SelectListContext';
 import { KeyValueObject } from "types/KeyValueList";
 
@@ -13,12 +12,11 @@ const EmployeeSummary = () => {
 	const { ORGANIZATIONS: orgList, TEAMS: teamList } = useSelectListContext();
 
 	const fetchEmployeeSummary = () => {
-		EmployeeSummaryService.fetchForecast()
+		EmployeeService.fetchEmployeeSummary({'org': org, 'team': team })
 			.then((response: any) => {
 				setEmpList(response);
-				console.log(response);
 			})
-			.catch((error) => console.log(error));
+			.catch((error: any) => console.log(error));
 	};
 
     const handleOrgChange = (event: any) => {
@@ -27,6 +25,24 @@ const EmployeeSummary = () => {
     const handleTeamChange = (event: any) => {
       setTeam(event.target.value.trim());
     }
+
+    const handleDownload = () => {
+      EmployeeService.fetchEmployeeDownload({'org': org, 'team': team })
+      .then((response: any) => {
+        const blob = new Blob([response], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'employees.csv';
+        link.click();
+
+        URL.revokeObjectURL(url);
+      })
+      .catch((error: any) => {
+        console.error('Error exporting CSV file:', error);
+      });
+    };
 
 	return (
 	 <Grid container spacing={2} alignItems="center">
@@ -37,6 +53,7 @@ const EmployeeSummary = () => {
             name="org"
             label="Organization"
             variant="outlined"
+            value={org}
             onChange={handleOrgChange}
           >
             {orgList.map((org: KeyValueObject) => (
@@ -53,6 +70,7 @@ const EmployeeSummary = () => {
             name="team"
             label="Team"
             variant="outlined"
+            value={team}
             onChange={handleTeamChange}
           >
             {teamList.map((org: KeyValueObject) => (
@@ -77,7 +95,7 @@ const EmployeeSummary = () => {
             fullWidth
             id="download"
             variant="contained"
-            disabled
+            onClick={handleDownload}
           >
             Download
           </Button>

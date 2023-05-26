@@ -1,20 +1,13 @@
-import { useEffect } from 'react';
-import * as React from 'react';
-import EmployeeSummaryColumnList from 'data/EmployeeSummaryColumnList';
-import EmployeeSummaryService from 'service/EmployeeSummaryService';
 import {
 	Box,
 	Button,
-	Card,
-	CardContent,
 	CircularProgress,
-	Grid,
-	Typography
+	Grid
 } from 'components/shared-ui';
 import { Input } from '@mui/material';
 import { useState } from 'react';
 
-import EmployeeService from 'service/EmployeeService';
+import EmployeeService from 'service/EmployeeInfoService';
 
 
 const UploadEmployee = () => {
@@ -50,6 +43,24 @@ const UploadEmployee = () => {
 		event.preventDefault();
 		setFileName(event.target.files[0]);
 	};
+
+    const handleTemplateDownload = () => {
+        EmployeeService.fetchTemplate()
+        .then((response: any) => {
+            const blob = new Blob([response], { type: 'application/octet-stream' });
+          const url = URL.createObjectURL(blob);
+  
+          const link = document.createElement('a');
+          link.href = url;
+            link.download = "template.csv";
+          link.click();
+  
+          URL.revokeObjectURL(url);
+        })
+        .catch((error) => {
+          console.error('Error downloading file:', error);
+        });
+      };
 
 	return (
 		<Box sx={{ height: 400, maxWidth: 'calc(100vw - 36px)' }}>
@@ -104,7 +115,7 @@ const UploadEmployee = () => {
                                 fullWidth
                                 id=""
                                 variant="outlined"
-                                onClick={() => { }}
+                                onClick={handleTemplateDownload}
                                 style={{
                                     borderColor: '#0C9486cc',
                                     color: '#47444D',
