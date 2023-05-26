@@ -1,7 +1,7 @@
 import { Box, DataGrid, Grid, TextField, MenuItem, Button } from 'components/shared-ui';
 import * as React from 'react';
 import EmployeeSummaryColumnList from 'data/EmployeeSummaryColumnList';
-import EmployeeSummaryService from 'service/EmployeeSummaryService';
+import EmployeeService from 'service/EmployeeInfoService';
 import { useSelectListContext } from 'context/SelectListContext';
 import { KeyValueObject } from "types/KeyValueList";
 
@@ -12,10 +12,9 @@ const EmployeeSummary = () => {
 	const { ORGANIZATIONS: orgList, TEAMS: teamList } = useSelectListContext();
 
 	const fetchEmployeeSummary = () => {
-		EmployeeSummaryService.fetchForecast({'org': org, 'team': team })
+		EmployeeService.fetchEmployeeSummary({'org': org, 'team': team })
 			.then((response: any) => {
 				setEmpList(response);
-				console.log(response);
 			})
 			.catch((error: any) => console.log(error));
 	};
@@ -28,7 +27,7 @@ const EmployeeSummary = () => {
     }
 
     const handleDownload = () => {
-      EmployeeSummaryService.fetchEmployeeDownload({'org': org, 'team': team })
+      EmployeeService.fetchEmployeeDownload({'org': org, 'team': team })
       .then((response: any) => {
         const blob = new Blob([response], { type: 'application/octet-stream' });
         const url = URL.createObjectURL(blob);

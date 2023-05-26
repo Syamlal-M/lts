@@ -8,9 +8,19 @@ const EmployeeService = {
     },
 
     fetchTemplate: async (criteria: Record<string, any> = {}) => {
-      let url = getApiUrl("TEMPLATE", criteria);
+      let url = getApiUrl("DOWNLOADTEMPLATE", criteria);
       return Api.get(url, {headers: {"Content-Type": 'application/octet-stream'} });
     },
+
+    fetchEmployeeSummary: (criteria: Record<string, any> = {}) => {
+      let url = getApiUrl("GET_EMPLOYEE_LIST", criteria);
+      return Api.get(url, criteria);
+  },
+
+    fetchEmployeeDownload: (criteria: Record<string, any> = {}) => {
+      let url = getApiUrl("GET_EMPLOYEE_INFO_DOWNLOAD", criteria);
+      return Api.get(url, {headers: {"Content-Type": 'application/octet-stream'} });
+  }
 };
 
 export default EmployeeService;

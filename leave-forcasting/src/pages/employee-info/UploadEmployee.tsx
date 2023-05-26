@@ -7,7 +7,7 @@ import {
 import { Input } from '@mui/material';
 import { useState } from 'react';
 
-import EmployeeService from 'service/EmployeeService';
+import EmployeeService from 'service/EmployeeInfoService';
 
 
 const UploadEmployee = () => {
