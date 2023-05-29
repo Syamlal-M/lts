@@ -18,6 +18,7 @@ import CardActions from "./CardActions";
 import CardContent from "./CardContent";
 import CardHeader from "./CardHeader";
 import CardMedia from "./CardMedia";
+import Checkbox from "./Checkbox";
 import CircularProgress from "./CircularProgress";
 import Container from "./Container";
 import CssBaseline from "./CssBaseline";
@@ -31,6 +32,11 @@ import DialogTitle from "./DialogTitle";
 import Divider from "./Divider";
 import Drawer from "./Drawer";
 import Fab from "./Fab";
+import FormControl from "./FormControl";
+import FormControlLabel from "./FormControlLabel";
+import FormGroup from "./FormGroup";
+import FormHelperText from "./FormHelperText";
+import FormLabel from "./FormLabel";
 import Grid from "./Grid";
 import Hidden from "./Hidden";
 import Icon from "./Icon";
@@ -80,6 +86,7 @@ export {
     CardContent,
     CardHeader,
     CardMedia,
+    Checkbox,
     CircularProgress,
     Container,
     CssBaseline,
@@ -93,6 +100,11 @@ export {
     Divider,
     Drawer,
     Fab,
+    FormControl,
+    FormControlLabel,
+    FormGroup,
+    FormHelperText,
+    FormLabel,
     Grid,
     Hidden,
     Icon,
