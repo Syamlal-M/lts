@@ -1,5 +1,6 @@
 import { RegularBreakpoints } from "@mui/material";
 import MonthList from 'data/MonthList';
+import { LeaveDateSpan } from "./api/employee/Leave.types";
 
 type Months = typeof MonthList[number]['value'];
 
@@ -10,15 +11,25 @@ type LeaveDateProps = {
     format?: string;
     disabled?: boolean;
     gridBreakpoints?: RegularBreakpoints;
+    minDate?: string;
+    maxDate?: string;
 };
 
 type LeaveDate = {
     startDate: LeaveDateProps;
     endDate: LeaveDateProps;
     isEditable: boolean;
+    exceptional: boolean;
+    leaveForcastId?: number;
+    spanType: LeaveDateSpan;
 };
 
-type HavePlans = "" | "yes" | "no";
+enum HAVE_PLANS {
+    EMPTY = "",
+    YES = "yes",
+    NO = "no"
+};
+type HavePlans = `${HAVE_PLANS}`;
 
 type LeaveMonth = {
     isVisible: boolean;
@@ -30,4 +41,6 @@ type Leaves = {
     [key in Months]?: LeaveMonth
 };
 
-export type { HavePlans, Months, LeaveDate, LeaveDateProps, LeaveMonth, Leaves }
+export { HAVE_PLANS };
+
+export type { HavePlans, Months, LeaveDate, LeaveDateProps, LeaveMonth, Leaves };

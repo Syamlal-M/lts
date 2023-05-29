@@ -1,9 +1,14 @@
+import { LeaveDateAction, LeaveDatePlanningType, LeaveDateSpan } from "./Leave.types";
+
 type UpdateLeaveItem = {
+    action: LeaveDateAction;
     empId: string;
+    exceptional: boolean;
     fromDate: string;
-    planningType: "ACTUAL" | "EXPECTED_WITH_LEAVES" | "EXPECTED_NO_LEAVES";
+    leaveForcastId?: number;
+    planningType: LeaveDatePlanningType;
+    span: LeaveDateSpan;
     toDate: string;
-    action: string;
 };
 
 type UpdateLeaveRequest = UpdateLeaveItem[];

@@ -1,12 +1,16 @@
 import { Months } from "types/LeaveSubmissionList.types";
+import { LeaveDatePlanningType, LeaveDateSpan } from "./Leave.types";
 
 type DateList = string[];
 
 type LeaveDate = {
+    exceptional: boolean;
     fromDate: string;
+    leaveForcastId: number;
     month: Months;
     noOfDays: number;
     planningType: string;
+    spanType: LeaveDateSpan;
     toDate: string;
     year: number;
 };
@@ -17,7 +21,7 @@ type Month = {
     dateList: DateList;
     leaveDates: LeaveDates;
     noOfDays: number;
-    planningType: "ACTUAL" | "EXPECTED_WITH_LEAVES" | "EXPECTED_NO_LEAVES";
+    planningType: LeaveDatePlanningType;
     startAndEndDate: string;
     month: Months;
 };
