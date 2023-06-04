@@ -9,7 +9,7 @@ const EmployeeService = {
 
     fetchTemplate: async (criteria: Record<string, any> = {}) => {
       let url = getApiUrl("DOWNLOADTEMPLATE", criteria);
-      return Api.get(url, {headers: {"Content-Type": 'application/octet-stream'} });
+      return Api.get(url, {headers: {"Content-Type": 'application/octet-stream'} , responseType: 'blob' });
     },
 
     fetchEmployeeSummary: (criteria: Record<string, any> = {}) => {
@@ -19,7 +19,7 @@ const EmployeeService = {
 
     fetchEmployeeDownload: (criteria: Record<string, any> = {}) => {
       let url = getApiUrl("DOWNLOAD_EMPLOYEE_INFO", criteria);
-      return Api.get(url, {headers: {"Content-Type": 'application/octet-stream'} });
+      return Api.get(url, {headers: {"Content-Type": 'application/octet-stream'}, responseType: 'blob' });
   }
 };
 

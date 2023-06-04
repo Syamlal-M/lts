@@ -34,7 +34,7 @@ const EmployeeSummary = () => {
 
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'employees.csv';
+        link.download = 'employees.xlsx';
         link.click();
 
         URL.revokeObjectURL(url);
