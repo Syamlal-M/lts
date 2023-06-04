@@ -41,14 +41,14 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
     @Autowired
     RolesRepository rolesRepository;
 
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+//    @Autowired
+//    private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+//    @Autowired
+//    private AuthenticationManager authenticationManager;
 
     /**
      * User registration
@@ -57,7 +57,7 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
     public void createEmployeeAuth(EmployeeRegistrationRequest request) {
         EmployeeInfoDto user = new EmployeeInfoDto();
         user.setEmployeeId(request.getEmployeeId());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPassword(request.getPassword());
         user.setEmailId(request.getEmailId());
         EmployeeRole role = null;
         if(request.getRole() != null && !request.getRole().isEmpty()) {
@@ -93,7 +93,7 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
      */
     @Override
     public EmployeeResponse login(UserLoginRequest request) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmployeeId(), request.getPassword()));
+//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmployeeId(), request.getPassword()));
         Optional<EmployeeInfoDto> employee = employeeInfoRepository.findByEmployeeId(request.getEmployeeId());
         if (employee.isPresent()) {
             HashMap<Integer, String> role = new HashMap<>();
@@ -103,7 +103,7 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority(employeeRole.getRoleName());
                 authorities.add(authority);
             final UserDetails userDetails = new org.springframework.security.core.userdetails.User(request.getEmployeeId(),
-                    passwordEncoder.encode(request.getPassword()), authorities);
+                   request.getPassword(), authorities);
             final String token = jwtTokenUtil.generateToken(userDetails);
             EmployeeResponse  response = EmployeeMapper.map(employee.get(), Roles.getRole(employee.get().getRole().getRoleName()).get());
             response.setToken(Optional.of(token));

@@ -49,7 +49,12 @@ public class ReportServiceImpl implements ReportService {
         Map<EmployeeInfoDto, List<EmployeeLeaveForcastDto>> queryResult = getEmployeeLeaveForcastDtos(month, year, organization, team);
 
         return queryResult.entrySet().stream().map(emp -> {
-            Map<String, List<EmployeeLeaveForcastDto>> groupedMonth = emp.getValue()
+            Map<String, List<EmployeeLeaveForcastDto>> groupedYear = emp.getValue()
+                    .stream().collect(groupingBy(l -> Integer.toString(l.getFromDate().getYear())));
+
+            List<YearLeaveSummaryResponse> yearData = groupedYear.entrySet().stream().map((yearWise) -> {
+
+            Map<String, List<EmployeeLeaveForcastDto>> groupedMonth = yearWise.getValue()
                     .stream().collect(groupingBy(l -> l.getFromDate().getMonth().toString()));
 
             List<MonthLeaveSummaryResponse> monthSummary = groupedMonth.entrySet().stream().map((monthName) -> {
@@ -57,19 +62,26 @@ public class ReportServiceImpl implements ReportService {
                         .stream().map(ReportServiceImpl::getLeaveDetailResponse).collect(Collectors.toList());
                 double totalNoOfDaysInWeek = leaveDetails.stream().mapToDouble(LeaveDetailResponse::getNoOfDays).sum();
                 List<String> datesList  = leaveDetails.stream().flatMap(ld -> ld.getDateList().stream()).collect(Collectors.toList());
+                String planningType = monthName.getValue().stream().findFirst().get().getPlanningType();
                 return MonthLeaveSummaryResponse.builder()
                         .month(monthName.getKey())
-                        .leaveDates(leaveDetails)
-                        .planningType(monthName.getValue().stream().findFirst().get().getPlanningType())
+                        .leaveDates(Objects.equals(planningType, PlanningType.EXPECTED_NO_LEAVES.toString()) ? Collections.emptyList(): leaveDetails)
+                        .planningType(planningType)
                         .noOfDays(totalNoOfDaysInWeek)
-                        .dateList(datesList)
+                        .dateList(Objects.equals(planningType, PlanningType.EXPECTED_NO_LEAVES.toString()) ? Collections.emptyList(): datesList)
                         .build();
             }).collect(Collectors.toList());
+                return YearLeaveSummaryResponse.builder()
+                        .year(yearWise.getKey())
+                        .month(monthSummary)
+                        .noOfDays(monthSummary.stream().mapToDouble(MonthLeaveSummaryResponse::getNoOfDays).sum()).build();
+            }).collect(Collectors.toList());
 
-            double totalLeaves = monthSummary.stream().mapToDouble(MonthLeaveSummaryResponse::getNoOfDays).sum();
+            double totalLeaves = yearData.stream().mapToDouble(YearLeaveSummaryResponse::getNoOfDays).sum();
             return EmployeeLeaveReportResponse.builder().employeeId(emp.getKey().getEmployeeId())
                     .employeeName(emp.getKey().getEmployeeName())
-                    .month(monthSummary.stream().sorted(Comparator.comparing(MonthLeaveSummaryResponse::getMonth)).collect(Collectors.toList())).noOfDays(totalLeaves).build();
+                    .year(yearData)
+                    .noOfDays(totalLeaves).build();
         }).collect(Collectors.toList());
     }
 
@@ -77,7 +89,7 @@ public class ReportServiceImpl implements ReportService {
         List<String> dateString = Stream.iterate(leaveDays.getFromDate(), date -> date.plusDays(1))
                 .limit(ChronoUnit.DAYS.between(leaveDays.getFromDate(), leaveDays.getToDate()) + 1)
                 .map(LocalDate::toString).collect(Collectors.toList());
-        ;
+
         return LeaveDetailResponse.builder()
                 .leaveForcastId(leaveDays.getLeaveForecastId())
                 .month(leaveDays.getMonth())
