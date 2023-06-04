@@ -52,7 +52,7 @@ const UploadEmployee = () => {
   
           const link = document.createElement('a');
           link.href = url;
-            link.download = "template.csv";
+            link.download = "template.xlsx";
           link.click();
   
           URL.revokeObjectURL(url);
