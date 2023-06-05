@@ -57,6 +57,7 @@ import MenuList from "./MenuList";
 import Paper from "./Paper";
 import Popover from "./Popover";
 import Popper from "./Popper";
+import Skeleton from "./Skeleton";
 import Switch from "./Switch";
 import TextField from "./TextField";
 import ToggleButton from "./ToggleButton";
@@ -125,6 +126,7 @@ export {
     Paper,
     Popover,
     Popper,
+    Skeleton,
     Switch,
     TextField,
     ToggleButton,
