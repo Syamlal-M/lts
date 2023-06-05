@@ -22,9 +22,10 @@ interface DateRangePickerProps {
     gridBreakpoints?: RegularBreakpoints;
     disabled?: RangeProps;
     helperText?: RangeProps;
+    size?: "small" | "medium"
 };
 
-const DateRangePicker = ({ label, value, onChange, minDate, maxDate, format, gridBreakpoints, disabled, helperText }: DateRangePickerProps) => {
+const DateRangePicker = ({ label, value, onChange, minDate, maxDate, format, gridBreakpoints, disabled, helperText, size }: DateRangePickerProps) => {
     const DEFAULT_FORMAT = "DD/MM/YYYY";
     const FORMAT = format || DEFAULT_FORMAT;
 
@@ -52,6 +53,7 @@ const DateRangePicker = ({ label, value, onChange, minDate, maxDate, format, gri
                         onChange={(value) => { handleChange("start", value) }}
                         slotProps={{
                             textField: {
+                                size: size ? size : 'medium',
                                 fullWidth: true,
                                 error: helperText?.start ? true : false,
                                 inputProps: { readOnly: true },
@@ -71,6 +73,7 @@ const DateRangePicker = ({ label, value, onChange, minDate, maxDate, format, gri
                         maxDate={MAX_DATE}
                         slotProps={{
                             textField: {
+                                size: size ? size : 'medium',
                                 fullWidth: true,
                                 error: helperText?.end ? true : false,
                                 inputProps: { readOnly: true },
