@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { useDebounce, useToggle } from "usehooks-ts";
-import MonthList from "data/MonthList";
 import { PageContainer } from "components/layout";
 import PlanningService from "service/PlanningService";
 import EmployeeSearchFilter from "./EmployeeSearchFilter";
@@ -24,7 +23,7 @@ const DEFAULT_EMPLOYEE_SEARCH_FILTER_VALUE: EmployeeSearchQueryParams = {
 const DEFAULT_LEAVE_SUMMARY_FILTER_VALUE: LeaveSummaryQueryParams = {
     org: "",
     team: "",
-    month: `${MonthList[new Date().getMonth()].value}`,
+    month: '',
     year: `${new Date().getFullYear()}`,
 };
 
@@ -120,10 +119,6 @@ const PlanningPage = () => {
         const params = { employeeId: selectedEmployee?.employeeId };
         updateLeave(params, leaveList);
     }
-
-    useEffect(() => {
-        getEmployees();
-    }, [getEmployees]);
 
     useEffect(() => {
         getLeaveSummary();
