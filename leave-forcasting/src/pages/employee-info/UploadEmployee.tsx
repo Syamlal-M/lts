@@ -11,16 +11,16 @@ import EmployeeService from 'service/EmployeeInfoService';
 
 
 const UploadEmployee = () => {
-	const [fileName, setFileName] = useState('');
+	const [file, setFile] = useState<File>();
 	const [uploadProgress, setUploadProgress] = useState(false);
 
-	const fetchEmployee = () => {
-		EmployeeService.fetchEmployee({ 'file': fileName, redirect: 'follow' })
+	const fetchEmployee = (file: FormData) => {
+		EmployeeService.fetchEmployee(file)
 			.then((response) => {
 				if (response) {
-					// setUploadSuccess(true);
+                    alert('File uploaded');
 				} else {
-					// setUploadSuccess(false);
+					console.error("Error uploading file:", Error);
 				}
 				setUploadProgress(false);
 			})
@@ -34,14 +34,17 @@ const UploadEmployee = () => {
 	const handleSubmit = async (e: any) => {
 		setUploadProgress(true);
 		e.preventDefault();
-		fetchEmployee();
+        const uploadFile = new Blob([file || ''], { type: 'multipart/form-data' });
+        const formData = new FormData();
+        formData.append("file", uploadFile, file?.name);
+		fetchEmployee(formData);
 
 	};
 
 	const handleFileChange = (event: any) => {
 
 		event.preventDefault();
-		setFileName(event.target.files[0]);
+		setFile(event.target.files[0]);
 	};
 
     const handleTemplateDownload = () => {
@@ -87,13 +90,12 @@ const UploadEmployee = () => {
                                                 type="file"
                                                 name="file"
                                                 onChange={handleFileChange}
-                                            // accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
                                             />
                                         </Grid>
                                         <Grid item>
                                             <Button
                                                 variant="contained"
-                                                disabled={!fileName}
+                                                disabled={!file}
                                                 className="upload-btn"
                                                 type="submit"
                                             >
