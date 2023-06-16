@@ -30,11 +30,14 @@ const NavigationBar = (props: NavigationBarProps) => {
         }
     };
 
-
     const getRole = (): string => {
         let role = '';
-        role = `${Object.values(JSON.parse(JSON.stringify(getToken('role'))))[0]}`;
-        role = capitalize(role.split('_').join(" "));
+        try {
+            role = `${Object.values(JSON.parse(JSON.stringify(getToken('role'))))[0]}`;
+            role = capitalize(role.split('_').join(" "));
+        } catch (error: any) {
+            role = '';
+        }
         return role;
     };
 

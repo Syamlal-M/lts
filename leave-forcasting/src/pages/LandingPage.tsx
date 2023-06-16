@@ -1,13 +1,22 @@
 import { PageContainer } from "components/layout";
-import { Link, Typography, Card, CardContent, CardActions, AppBar, Toolbar, Grid } from "components/shared-ui";
 import { getRouteUrl } from "utils/AccessPointUtils";
+import { useThemeContext } from "context/ThemeContext";
+import {
+    Link, Typography, Card, CardContent, CardActions,
+    AppBar, Toolbar, Grid, IconButton, Icon
+} from "components/shared-ui";
+import COLOR from "styles/Color";
 
 const LandingPage = () => {
+    const { isDarkMode, toggleTheme } = useThemeContext();
     return (
         <>
             <AppBar position="static">
                 <Toolbar>
                     <Typography variant="h5">Revenue Management System</Typography>
+                    <IconButton onClick={toggleTheme} sx={{ ml: "auto", color: COLOR.common.white }}>
+                        <Icon>{isDarkMode ? 'brightness_4' : 'brightness_7'}</Icon>
+                    </IconButton>
                 </Toolbar>
             </AppBar>
             <PageContainer title="Revenue Management System">

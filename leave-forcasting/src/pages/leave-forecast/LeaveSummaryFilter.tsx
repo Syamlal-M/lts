@@ -14,7 +14,7 @@ const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
 
     return (
         <Grid container spacing={2} alignItems="center">
-            {/* <Grid item xs={12} sm={4} md={3} lg={2}>
+            <Grid item xs={12} sm={4} md={3} lg={2}>
                 <TextField
                     select
                     fullWidth
@@ -47,8 +47,8 @@ const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
                         </MenuItem>
                     ))}
                 </TextField>
-            </Grid> */}
-            <Grid item xs={12} sm={6}>
+            </Grid>
+            <Grid item xs={12} sm={4} md={3} lg={2}>
                 <TextField
                     select
                     fullWidth
@@ -65,7 +65,7 @@ const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
                     ))}
                 </TextField>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4} md={3} lg={2}>
                 <TextField
                     select
                     fullWidth
@@ -82,7 +82,7 @@ const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
                     ))}
                 </TextField>
             </Grid>
-            {/* <Grid item xs={12} sm={4} md={3} lg={2}>
+            <Grid item xs={12} sm={4} md={3} lg={2}>
                 <Button
                     fullWidth
                     type="submit"
@@ -91,7 +91,7 @@ const LeaveSummaryFilter = ({ filter, onChange, onSubmit }: Filter) => {
                 >
                     Search
                 </Button>
-            </Grid> */}
+            </Grid>
         </Grid>
     );
 };

@@ -104,7 +104,6 @@ const LeftHandNavigation = (props: LeftSideNavigationProps) => {
                             >
                                 <ListItemIcon>
                                     <Icon>brightness_4</Icon>
-                                    <Icon></Icon>
                                 </ListItemIcon>
                                 <ListItemText>Dark Mode</ListItemText>
                             </ListItemButton>

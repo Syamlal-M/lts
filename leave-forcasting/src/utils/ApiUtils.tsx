@@ -8,12 +8,12 @@ function getApiBaseUrl(): string {
 }
 
 function getDefaultApiHeaders(): Record<string, string> {
-    const token = getToken('token');
+    const token = getToken('accessToken');
     return token ? { "Authorization": token } : {}
 }
 
 function isAutheticated(): boolean {
-    return Boolean(getToken('token'));
+    return Boolean(getToken('accessToken'));
 }
 
 function getPermissionList(): string[] {

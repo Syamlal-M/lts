@@ -2,11 +2,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToggle } from "usehooks-ts";
 import { SigninRequest } from "types/api/employee/Authentication.types";
+import AuthenticationService from "service/AuthenticationService";
 import { resetToken, setToken } from "utils/CookieUtils";
+import { useAuthContext } from "context/AuthContext";
 import { getRouteUrl } from "utils/AccessPointUtils";
 import { PageContainer } from "components/layout";
 import { isAutheticated } from "utils/ApiUtils";
-import AuthenticationService from "service/AuthenticationService";
 import {
     Box, Button, Grid, Icon,
     IconButton, TextField, Typography
@@ -43,6 +44,7 @@ const USER: UserDetails = {
 }
 
 const SignInPage = () => {
+    const { onLogin } = useAuthContext();
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useToggle(false);
     const [userDetails, setUserDetails] = useState<UserDetails>(DEFAULT_USER_DETAILS)
@@ -83,6 +85,11 @@ const SignInPage = () => {
 
     const handleTestUserAuth = (user: UserDetails): void => {
         handleSignIn(user);
+    };
+
+    const handleSSOAuth = async () => {
+        await onLogin();
+        redirectToBasePage();
     };
 
     return (
@@ -193,8 +200,27 @@ const SignInPage = () => {
                             Sign-in as Super Admin
                         </Button>
                     </Grid>
+                    <Grid item xs={12}>
+                        <Typography variant="subtitle2">-- OR --</Typography>
+                    </Grid>
+                    <Grid item>
+                        <Button
+                            fullWidth
+                            type="button"
+                            size="large"
+                            variant="contained"
+                            color="primary"
+                            onClick={handleSSOAuth}
+                            startIcon={
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="24px" height="24px" fill="#fff">
+                                    <path d="M 5 4 C 4.448 4 4 4.447 4 5 L 4 24 L 24 24 L 24 4 L 5 4 z M 26 4 L 26 24 L 46 24 L 46 5 C 46 4.447 45.552 4 45 4 L 26 4 z M 4 26 L 4 45 C 4 45.553 4.448 46 5 46 L 24 46 L 24 26 L 4 26 z M 26 26 L 26 46 L 45 46 C 45.552 46 46 45.553 46 45 L 46 26 L 26 26 z" />
+                                </svg>
+                            }
+                        >
+                            Company Single Sign-in
+                        </Button>
+                    </Grid>
                 </Grid>
-
             </Box>
         </PageContainer>
     );
