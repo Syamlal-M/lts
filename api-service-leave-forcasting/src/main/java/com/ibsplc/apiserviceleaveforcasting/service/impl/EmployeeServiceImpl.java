@@ -5,6 +5,7 @@
 package com.ibsplc.apiserviceleaveforcasting.service.impl;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,7 @@ import com.ibsplc.apiserviceleaveforcasting.response.EmployeeRoleResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -122,7 +124,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         font.setBold(true);
         font.setFontHeight(16);
         style.setFont(font);
-        List<String> headers = List.of("SNo", "EmpId", "EmployeeName", "ExpediaFgName", "VendorName", "JobTitle",
+        List<String> headers = List.of("SNo", "EmpId", "EmailId", "EmployeeName", "ExpediaFgName", "VendorName", "JobTitle",
                 "HM", "BillRate", "Country", "City", "SOW", "Org", "Team", "Billability", "Remarks");
         int index = 0;
         for (String header : headers) {
@@ -198,7 +200,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     EmployeeRegistrationRequest employeeForm = new EmployeeRegistrationRequest(row);
                     employeeFormList.add(employeeForm);
                     employeeFormMap.put(employeeForm.getEmployeeId(), employeeForm);
-                    employeeIdList.add(row.getCell(0).toString());
+                    employeeIdList.add(row.getCell(1).toString());
                 }
             }
             if (!employeeFormList.isEmpty()) {
@@ -282,6 +284,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     emp.setEmployeeId(empForm.getEmployeeId());
                 }
                 emp.setEmployeeName(empForm.getEmployeeName());
+                emp.setEmailId(empForm.getEmailId());
                 emp.setNameInClientRecords(empForm.getExpediaFgName());
                 emp.setVendorName(empForm.getVendorName());
                 emp.setJobTitle(JobTitleDto.builder().jobTitle(empForm.getJobTitle()).build());
@@ -294,6 +297,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                 emp.setTeam(TeamDto.builder().teamName(empForm.getTeam()).build());
                 emp.setBillability(empForm.getBillability());
                 emp.setRemarks(empForm.getRemarks());
+                emp.setUpdated(LocalDateTime.now());
+                emp.setCreated(LocalDateTime.now());
                 saveUpdateEmployeeList.add(emp);
             }
 

@@ -46,20 +46,21 @@ public class EmployeeRegistrationRequest {
     private String remarks;
 
     public EmployeeRegistrationRequest(XSSFRow row){
-        this.employeeId = row.getCell(0) != null ? row.getCell(0).toString().trim() : null;
-        this.employeeName = row.getCell(1) != null ? row.getCell(1).toString().trim() : null;
-        this.expediaFgName = row.getCell(2) != null ? row.getCell(2).toString().trim() : null;
-        this.vendorName = row.getCell(3) != null ? row.getCell(3).toString().trim() : null;
-        this.jobTitle = row.getCell(4) != null ? row.getCell(4).toString().trim() : null;
-        this.hm = row.getCell(5) != null ? row.getCell(5).toString().trim() : null;
-        this.billRate = row.getCell(6) != null ? Double.valueOf(row.getCell(6).toString().trim()) : null;
-        this.country = row.getCell(7) != null ? row.getCell(7).toString().trim() : null;
-        this.city = row.getCell(8) != null ? row.getCell(8).toString().trim() : null;
-        this.sow = row.getCell(9) != null ? row.getCell(9).toString().trim() : null;
-        this.org = row.getCell(10) != null ? row.getCell(10).toString().trim() : null;
-        this.team =  row.getCell(11) != null ? row.getCell(11).toString().trim() : null;
-        this.billability = row.getCell(12) != null ? row.getCell(12).toString().trim() : null;
-        this.remarks = row.getCell(13) != null ? row.getCell(13).toString().trim() : null;
+        this.employeeId = row.getCell(1) != null ? row.getCell(1).toString().trim() : null;
+        this.emailId = row.getCell(2) != null ? row.getCell(2).toString().trim() : null;
+        this.employeeName = row.getCell(3) != null ? row.getCell(3).toString().trim() : null;
+        this.expediaFgName = row.getCell(4) != null ? row.getCell(4).toString().trim() : null;
+        this.vendorName = row.getCell(5) != null ? row.getCell(5).toString().trim() : null;
+        this.jobTitle = row.getCell(6) != null ? row.getCell(6).toString().trim() : null;
+        this.hm = row.getCell(7) != null ? row.getCell(7).toString().trim() : null;
+        this.billRate = row.getCell(8) != null ? Double.valueOf(row.getCell(8).toString().trim()) : null;
+        this.country = row.getCell(9) != null ? row.getCell(9).toString().trim() : null;
+        this.city = row.getCell(10) != null ? row.getCell(10).toString().trim() : null;
+        this.sow = row.getCell(11) != null ? row.getCell(11).toString().trim() : null;
+        this.org = row.getCell(12) != null ? row.getCell(12).toString().trim() : null;
+        this.team =  row.getCell(13) != null ? row.getCell(13).toString().trim() : null;
+        this.billability = row.getCell(14) != null ? row.getCell(14).toString().trim() : null;
+        this.remarks = row.getCell(15) != null ? row.getCell(15).toString().trim() : null;
     }
 
 }
