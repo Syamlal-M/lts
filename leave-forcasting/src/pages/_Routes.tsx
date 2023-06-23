@@ -1,12 +1,13 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LandingPage from './LandingPage';
+import SignInPage from './SignInPage';
+import ReportsPage from './ReportsPage';
+import PageNotFound from './PageNotFound';
+import SettingsPage from './settings/page';
+import PlanningPage from './leave-forecast/page';
+import { getRouteUrl } from 'utils/AccessPointUtils';
 import { DashboardTemplate } from 'components/layout';
 import DashboardPage from './employee-info/DashboadPage';
-import LandingPage from './LandingPage';
-import PlanningPage from './leave-forecast/page';
-import ReportsPage from './ReportsPage';
-import SettingsPage from './settings/page';
-import SignInPage from './SignInPage';
-import { getRouteUrl } from 'utils/AccessPointUtils';
 import { SelectListProvider } from 'context/SelectListContext';
 import PrivateRouteGuard from 'components/hoc/PrivateRouteGuard';
 import ProtectedRouteGuard from 'components/hoc/ProtectedRouteGuard';
@@ -41,6 +42,7 @@ const PageRoutes = () => {
                             hasPermission="EMPLOYEE_MANAGEMENT"
                             children={<SettingsPage />} />} />
                 </Route>
+                <Route path="*" element={<PageNotFound />} />
             </Routes>
         </BrowserRouter>
     )
