@@ -1,16 +1,14 @@
 import {
-    DialogContent as MuiDialogContent,
-    DialogContentProps as MuiDialogContentProps
+  DialogContent as MuiDialogContent,
+  DialogContentProps as MuiDialogContentProps
 } from "@mui/material";
 
 type DialogContentProps = MuiDialogContentProps;
 
 const DialogContent = (props: DialogContentProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiDialogContent {...rest} />
-    );
-}
+  return <MuiDialogContent {...rest} />;
+};
 
 export { DialogContent };

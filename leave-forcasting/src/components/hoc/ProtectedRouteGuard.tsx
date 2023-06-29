@@ -1,46 +1,41 @@
 import { Navigate } from "react-router-dom";
 import { getRouteUrl } from "utils/AccessPointUtils";
 import { hasPermission as checkPermission } from "utils/ApiUtils";
-import { ProtectedRouteGuardPermission, ProtectedRouteGuardProps, ProtectedRouteProps } from "types/Route";
+import {
+  ProtectedRouteGuardPermission,
+  ProtectedRouteGuardProps,
+  ProtectedRouteProps
+} from "types/Route";
 
-const ProtectedRoute = ({
-    hasPermission,
-    redirectPath,
-    children
-}: ProtectedRouteProps) => {
+const ProtectedRoute = ({ hasPermission, redirectPath, children }: ProtectedRouteProps) => {
+  if (!hasPermission) {
+    return <Navigate to={redirectPath} />;
+  }
 
-    if (!hasPermission) {
-        return <Navigate to={redirectPath} />
-    }
-
-    return (
-        <>{children}</>
-    );
+  return <>{children}</>;
 };
 
 const ProtectedRouteGuard = ({
-    hasPermission,
-    redirectPath,
-    children
+  hasPermission,
+  redirectPath,
+  children
 }: ProtectedRouteGuardProps) => {
+  const validatePermission = (permission: ProtectedRouteGuardPermission): boolean => {
+    switch (typeof permission) {
+      case "boolean":
+        return permission;
+      case "string":
+        return checkPermission(permission);
+    }
+  };
 
-    const validatePermission = (permission: ProtectedRouteGuardPermission): boolean => {
-        switch (typeof permission) {
-            case "boolean":
-                return permission;
-            case "string":
-                return checkPermission(permission);
-        };
-    };
-
-    return (
-        <ProtectedRoute
-            hasPermission={validatePermission(hasPermission)}
-            redirectPath={redirectPath === undefined ? getRouteUrl("SIGN_IN") : redirectPath}
-        >
-            <>{children}</>
-        </ProtectedRoute>
-    );
-}
+  return (
+    <ProtectedRoute
+      hasPermission={validatePermission(hasPermission)}
+      redirectPath={redirectPath === undefined ? getRouteUrl("SIGN_IN") : redirectPath}>
+      <>{children}</>
+    </ProtectedRoute>
+  );
+};
 
 export default ProtectedRouteGuard;

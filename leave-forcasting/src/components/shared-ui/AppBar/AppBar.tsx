@@ -1,16 +1,11 @@
-import {
-    AppBar as MuiAppBar,
-    AppBarProps as MuiAppBarProps
-} from "@mui/material";
+import { AppBar as MuiAppBar, AppBarProps as MuiAppBarProps } from "@mui/material";
 
 type AppBarProps = MuiAppBarProps;
 
 const AppBar = (props: AppBarProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiAppBar {...rest} />
-    );
-}
+  return <MuiAppBar {...rest} />;
+};
 
 export { AppBar };

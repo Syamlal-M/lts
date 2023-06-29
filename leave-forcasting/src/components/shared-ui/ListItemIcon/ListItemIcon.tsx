@@ -1,15 +1,13 @@
 import {
-    ListItemIcon as MuiListItemIcon,
-    ListItemIconProps as MuiListItemIconProps
+  ListItemIcon as MuiListItemIcon,
+  ListItemIconProps as MuiListItemIconProps
 } from "@mui/material";
 
 type ListItemIconProps = MuiListItemIconProps;
 
 const ListItemIcon = (props: ListItemIconProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiListItemIcon {...rest} />
-    );
-}
+  return <MuiListItemIcon {...rest} />;
+};
 export { ListItemIcon };

@@ -1,16 +1,11 @@
-import {
-    AlertTitle as MuiAlertTitle,
-    AlertTitleProps as MuiAlertTitleProps
-} from "@mui/material";
+import { AlertTitle as MuiAlertTitle, AlertTitleProps as MuiAlertTitleProps } from "@mui/material";
 
 type AlertTitleProps = MuiAlertTitleProps;
 
 const AlertTitle = (props: AlertTitleProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiAlertTitle {...rest} />
-    );
-}
+  return <MuiAlertTitle {...rest} />;
+};
 
 export { AlertTitle };

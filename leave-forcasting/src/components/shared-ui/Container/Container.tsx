@@ -1,16 +1,11 @@
-import {
-    Container as MuiContainer,
-    ContainerProps as MuiContainerProps
-} from "@mui/material";
+import { Container as MuiContainer, ContainerProps as MuiContainerProps } from "@mui/material";
 
 type ContainerProps = MuiContainerProps;
 
 const Container = (props: ContainerProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiContainer {...rest} />
-    );
-}
+  return <MuiContainer {...rest} />;
+};
 
 export { Container };

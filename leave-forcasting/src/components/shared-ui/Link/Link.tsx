@@ -1,15 +1,10 @@
-import {
-    Link as MuiLink,
-    LinkProps as MuiLinkProps
-} from "@mui/material";
+import { Link as MuiLink, LinkProps as MuiLinkProps } from "@mui/material";
 
 type LinkProps = MuiLinkProps;
 
 const Link = (props: LinkProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiLink {...rest} />
-    );
-}
+  return <MuiLink {...rest} />;
+};
 export { Link };

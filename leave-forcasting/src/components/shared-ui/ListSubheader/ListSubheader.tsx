@@ -1,15 +1,13 @@
 import {
-    ListSubheader as MuiListSubheader,
-    ListSubheaderProps as MuiListSubheaderProps
+  ListSubheader as MuiListSubheader,
+  ListSubheaderProps as MuiListSubheaderProps
 } from "@mui/material";
 
 type ListSubheaderProps = MuiListSubheaderProps;
 
 const ListSubheader = (props: ListSubheaderProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiListSubheader {...rest} />
-    );
-}
+  return <MuiListSubheader {...rest} />;
+};
 export { ListSubheader };

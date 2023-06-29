@@ -1,15 +1,13 @@
 import {
-    ListItemAvatar as MuiListItemAvatar,
-    ListItemAvatarProps as MuiListItemAvatarProps
+  ListItemAvatar as MuiListItemAvatar,
+  ListItemAvatarProps as MuiListItemAvatarProps
 } from "@mui/material";
 
 type ListItemAvatarProps = MuiListItemAvatarProps;
 
 const ListItemAvatar = (props: ListItemAvatarProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiListItemAvatar {...rest} />
-    );
-}
+  return <MuiListItemAvatar {...rest} />;
+};
 export { ListItemAvatar };

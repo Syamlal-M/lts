@@ -1,16 +1,11 @@
-import {
-    Fab as MuiFab,
-    FabProps as MuiFabProps
-} from "@mui/material";
+import { Fab as MuiFab, FabProps as MuiFabProps } from "@mui/material";
 
 type FabProps = MuiFabProps;
 
 const Fab = (props: FabProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiFab {...rest} />
-    );
-}
+  return <MuiFab {...rest} />;
+};
 
 export { Fab };

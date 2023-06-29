@@ -1,16 +1,11 @@
-import {
-    Avatar as MuiAvatar,
-    AvatarProps as MuiAvatarProps
-} from "@mui/material";
+import { Avatar as MuiAvatar, AvatarProps as MuiAvatarProps } from "@mui/material";
 
 type AvatarProps = MuiAvatarProps;
 
 const Avatar = (props: AvatarProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiAvatar {...rest} />
-    );
-}
+  return <MuiAvatar {...rest} />;
+};
 
 export { Avatar };

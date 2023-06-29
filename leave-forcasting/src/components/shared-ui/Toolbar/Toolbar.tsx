@@ -1,15 +1,10 @@
-import {
-    Toolbar as MuiToolbar,
-    ToolbarProps as MuiToolbarProps
-} from "@mui/material";
+import { Toolbar as MuiToolbar, ToolbarProps as MuiToolbarProps } from "@mui/material";
 
 type ToolbarProps = MuiToolbarProps;
 
 const Toolbar = (props: ToolbarProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiToolbar {...rest} />
-    );
-}
+  return <MuiToolbar {...rest} />;
+};
 export { Toolbar };

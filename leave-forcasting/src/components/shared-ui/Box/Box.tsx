@@ -1,16 +1,11 @@
-import {
-    Box as MuiBox,
-    BoxProps as MuiBoxProps
-} from "@mui/material";
+import { Box as MuiBox, BoxProps as MuiBoxProps } from "@mui/material";
 
 type BoxProps = MuiBoxProps;
 
 const Box = (props: BoxProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiBox {...rest} />
-    );
-}
+  return <MuiBox {...rest} />;
+};
 
 export { Box };

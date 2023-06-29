@@ -1,16 +1,11 @@
-import {
-    FormGroup as MuiFormGroup,
-    FormGroupProps as MuiFormGroupProps
-} from "@mui/material";
+import { FormGroup as MuiFormGroup, FormGroupProps as MuiFormGroupProps } from "@mui/material";
 
 type FormGroupProps = MuiFormGroupProps;
 
 const FormGroup = (props: FormGroupProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiFormGroup {...rest} />
-    );
-}
+  return <MuiFormGroup {...rest} />;
+};
 
 export { FormGroup };

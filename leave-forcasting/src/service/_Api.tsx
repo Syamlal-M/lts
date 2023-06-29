@@ -1,4 +1,4 @@
-import ApiClient from "lib/axios/ApiClient";
+import ApiClient from "../lib/axios/ApiClient";
 import HeaderMiddleware from "middleware/HeaderMiddleware";
 import LoggerMiddleware from "middleware/LoggerMiddleware";
 import ResponseStatusMiddleware from "middleware/ResponseStatusMiddleware";

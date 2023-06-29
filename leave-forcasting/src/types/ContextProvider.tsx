@@ -1,3 +1,3 @@
 export type ContextProvider = {
-    children: React.ReactNode
-}
+  children: React.ReactNode;
+};

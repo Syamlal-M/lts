@@ -1,16 +1,11 @@
-import {
-    FormLabel as MuiFormLabel,
-    FormLabelProps as MuiFormLabelProps
-} from "@mui/material";
+import { FormLabel as MuiFormLabel, FormLabelProps as MuiFormLabelProps } from "@mui/material";
 
 type FormLabelProps = MuiFormLabelProps;
 
 const FormLabel = (props: FormLabelProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiFormLabel {...rest} />
-    );
-}
+  return <MuiFormLabel {...rest} />;
+};
 
 export { FormLabel };

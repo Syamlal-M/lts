@@ -1,16 +1,11 @@
-import {
-    Popper as MuiPopper,
-    PopperProps as MuiPopperProps
-} from "@mui/material";
+import { Popper as MuiPopper, PopperProps as MuiPopperProps } from "@mui/material";
 
 type PopperProps = MuiPopperProps;
 
 const Popper = (props: PopperProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiPopper {...rest} />
-    );
-}
+  return <MuiPopper {...rest} />;
+};
 
 export { Popper };

@@ -1,16 +1,11 @@
-import {
-    Badge as MuiBadge,
-    BadgeProps as MuiBadgeProps
-} from "@mui/material";
+import { Badge as MuiBadge, BadgeProps as MuiBadgeProps } from "@mui/material";
 
 type BadgeProps = MuiBadgeProps;
 
 const Badge = (props: BadgeProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiBadge {...rest} />
-    );
-}
+  return <MuiBadge {...rest} />;
+};
 
 export { Badge };

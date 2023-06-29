@@ -1,18 +1,18 @@
 interface Role {
-    [key: string]: string;
+  [key: string]: string;
 }
 
 interface SigninRequest {
-    employeeId: string,
-    password: string,
+  employeeId: string;
+  password: string;
 }
 
 interface SigninResponse {
-    username: string;
-    userId: string;
-    token: string;
-    role: Role;
-    access: string[];
+  username: string;
+  userId: string;
+  token: string;
+  role: Role;
+  access: string[];
 }
 
 export type { SigninRequest, SigninResponse };

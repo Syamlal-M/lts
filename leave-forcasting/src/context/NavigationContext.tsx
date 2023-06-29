@@ -5,26 +5,24 @@ import { useToggle } from "usehooks-ts";
 type NavigationProviderProps = ContextProvider;
 
 type NavigationContextProps = {
-    isNavDrawerOpened: boolean,
-    toggleNavDrawerOpened: () => void,
-    setNavDrawerOpened: React.Dispatch<React.SetStateAction<boolean>>
-}
+  isNavDrawerOpened: boolean;
+  toggleNavDrawerOpened: () => void;
+  setNavDrawerOpened: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 const NavigationContext = createContext<NavigationContextProps>({} as NavigationContextProps);
 
 const NavigationProvider = ({ children }: NavigationProviderProps) => {
-    const [isNavDrawerOpened, toggleNavDrawerOpened, setNavDrawerOpened] = useToggle(false);
+  const [isNavDrawerOpened, toggleNavDrawerOpened, setNavDrawerOpened] = useToggle(false);
 
-    const value = {
-        isNavDrawerOpened,
-        toggleNavDrawerOpened,
-        setNavDrawerOpened
-    };
+  const value = {
+    isNavDrawerOpened,
+    toggleNavDrawerOpened,
+    setNavDrawerOpened
+  };
 
-    return (
-        <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>
-    );
-}
+  return <NavigationContext.Provider value={value}>{children}</NavigationContext.Provider>;
+};
 
 const useNavigationContext = () => useContext(NavigationContext);
 

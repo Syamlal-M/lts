@@ -1,16 +1,14 @@
 import {
-    DialogTitle as MuiDialogTitle,
-    DialogTitleProps as MuiDialogTitleProps
+  DialogTitle as MuiDialogTitle,
+  DialogTitleProps as MuiDialogTitleProps
 } from "@mui/material";
 
 type DialogTitleProps = MuiDialogTitleProps;
 
 const DialogTitle = (props: DialogTitleProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiDialogTitle {...rest} />
-    );
-}
+  return <MuiDialogTitle {...rest} />;
+};
 
 export { DialogTitle };

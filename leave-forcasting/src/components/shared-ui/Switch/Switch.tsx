@@ -1,16 +1,11 @@
-import {
-    Switch as MuiSwitch,
-    SwitchProps as MuiSwitchProps
-} from "@mui/material";
+import { Switch as MuiSwitch, SwitchProps as MuiSwitchProps } from "@mui/material";
 
 type SwitchProps = MuiSwitchProps;
 
 const Switch = (props: SwitchProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiSwitch {...rest} />
-    );
-}
+  return <MuiSwitch {...rest} />;
+};
 
 export { Switch };

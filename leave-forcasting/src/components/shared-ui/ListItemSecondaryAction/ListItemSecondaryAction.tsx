@@ -1,15 +1,13 @@
 import {
-    ListItemSecondaryAction as MuiListItemSecondaryAction,
-    ListItemSecondaryActionProps as MuiListItemSecondaryActionProps
+  ListItemSecondaryAction as MuiListItemSecondaryAction,
+  ListItemSecondaryActionProps as MuiListItemSecondaryActionProps
 } from "@mui/material";
 
 type ListItemSecondaryActionProps = MuiListItemSecondaryActionProps;
 
 const ListItemSecondaryAction = (props: ListItemSecondaryActionProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiListItemSecondaryAction {...rest} />
-    );
-}
+  return <MuiListItemSecondaryAction {...rest} />;
+};
 export { ListItemSecondaryAction };

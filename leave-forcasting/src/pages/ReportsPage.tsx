@@ -1,20 +1,25 @@
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid } from "@mui/x-data-grid";
 import { PageContainer } from "components/layout";
 import {
-  Box, Button, Card, CardContent, Grid, MenuItem, TextField,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  MenuItem,
+  TextField,
   Typography
 } from "components/shared-ui";
 import { KeyValueObject } from "types/KeyValueList";
 import LeaveForecastReportColumnList from "data/LeaveForecastReportColumnList";
 
 import MonthList from "data/MonthList";
-import * as React from 'react';
+import * as React from "react";
 import ReportService from "service/ReportService";
 import { LeaveForecastInfo } from "types/LeaveForecastInfo";
-import { useSelectListContext } from 'context/SelectListContext';
+import { useSelectListContext } from "context/SelectListContext";
 
 const ReportsPage = () => {
-
   const { ORGANIZATIONS: orgList, TEAMS: teamList } = useSelectListContext();
   const [leaveForecast, setLeaveForecast] = React.useState<any>();
   const [processedLeaveForcastData, setProcessedLeaveForcastData] = React.useState<any>([]);
@@ -25,70 +30,69 @@ const ReportsPage = () => {
   const [month, setMonth] = React.useState(MonthList[new Date().getMonth() + 1].value);
 
   const getLeaveDates = (weekLeave: any) => {
-    return weekLeave?.noOfDays === 1 ? weekLeave?.leaveDates[0].fromDate : (weekLeave?.leaveDates[0].fromDate + ' to ' + weekLeave?.leaveDates[0].toDate)
-  }
+    return weekLeave?.noOfDays === 1
+      ? weekLeave?.leaveDates[0].fromDate
+      : weekLeave?.leaveDates[0].fromDate + " to " + weekLeave?.leaveDates[0].toDate;
+  };
 
   const processDataForTableView = React.useCallback((): any => {
-    let tempLeaveForcastData: Array<any> = [];
+    const tempLeaveForcastData: Array<any> = [];
     if (leaveForecast?.length > 0) {
       for (const lf of leaveForecast) {
-        let leaveForcastObject: LeaveForecastInfo = {
-          id: lf['employeeId'],
-          employeeId: lf['employeeId'],
-          employeeName: lf['employeeName'],
-          organizationName: lf['organizationName'],
-          teamName: lf['teamName'],
-          week_1: lf['weeks'][0]?.noOfDays,
-          week_1_leaveDates: getLeaveDates(lf['weeks'][0]),
-          week_2: lf['weeks'][1]?.noOfDays,
-          week_2_leaveDates: getLeaveDates(lf['weeks'][1]),
-          week_3: lf['weeks'][2]?.noOfDays,
-          week_3_leaveDates: getLeaveDates(lf['weeks'][2]),
-          week_4: lf['weeks'][3]?.noOfDays,
-          week_4_leaveDates: getLeaveDates(lf['weeks'][3]),
-          week_5: lf['weeks'][4]?.noOfDays,
-          week_5_leaveDates: getLeaveDates(lf['weeks'][4]),
+        const leaveForcastObject: LeaveForecastInfo = {
+          id: lf["employeeId"],
+          employeeId: lf["employeeId"],
+          employeeName: lf["employeeName"],
+          organizationName: lf["organizationName"],
+          teamName: lf["teamName"],
+          week_1: lf["weeks"][0]?.noOfDays,
+          week_1_leaveDates: getLeaveDates(lf["weeks"][0]),
+          week_2: lf["weeks"][1]?.noOfDays,
+          week_2_leaveDates: getLeaveDates(lf["weeks"][1]),
+          week_3: lf["weeks"][2]?.noOfDays,
+          week_3_leaveDates: getLeaveDates(lf["weeks"][2]),
+          week_4: lf["weeks"][3]?.noOfDays,
+          week_4_leaveDates: getLeaveDates(lf["weeks"][3]),
+          week_5: lf["weeks"][4]?.noOfDays,
+          week_5_leaveDates: getLeaveDates(lf["weeks"][4])
         };
         tempLeaveForcastData.push(leaveForcastObject);
       }
       setProcessedLeaveForcastData(tempLeaveForcastData);
-
     }
   }, [leaveForecast]);
 
   const fetchLeaveForcastReport = () => {
-    ReportService.fetchForecast({ 'month': month, 'year': year, 'org': org, 'team': team })
-      .then(response => {
+    ReportService.fetchForecast({ month: month, year: year, org: org, team: team })
+      .then((response) => {
         setLeaveForecast(response);
       })
-      .catch(error => console.log(error))
-  }
+      .catch((error) => console.log(error));
+  };
 
   const onMonthChange = (event: any) => {
-    let selectedMonth = event.target.value
+    const selectedMonth = event.target.value;
     setMonth(selectedMonth);
   };
 
   const handleOrgChange = (event: any) => {
     setOrg(event.target.value.trim());
-  }
+  };
   const handleTeamChange = (event: any) => {
     setTeam(event.target.value.trim());
-  }
+  };
 
   const viewReport = () => {
     fetchLeaveForcastReport();
-  }
+  };
 
   React.useEffect(() => {
-    if (typeof leaveForecast?.length !== 'undefined') {
+    if (typeof leaveForecast?.length !== "undefined") {
       processDataForTableView();
-
     }
-  }, [leaveForecast, processDataForTableView])
+  }, [leaveForecast, processDataForTableView]);
 
   return (
-
     <PageContainer title="LTS | Reports">
       <Card>
         <CardContent>
@@ -105,8 +109,7 @@ const ReportsPage = () => {
                 name="org"
                 label="Organization"
                 variant="outlined"
-                onChange={handleOrgChange}
-              >
+                onChange={handleOrgChange}>
                 {orgList.map((org: KeyValueObject) => (
                   <MenuItem key={org.value} value={org.value}>
                     {org.label}
@@ -121,8 +124,7 @@ const ReportsPage = () => {
                 name="team"
                 label="Team"
                 variant="outlined"
-                onChange={handleTeamChange}
-              >
+                onChange={handleTeamChange}>
                 {teamList.map((org: KeyValueObject) => (
                   <MenuItem key={org.value} value={org.value}>
                     {org.label}
@@ -131,13 +133,7 @@ const ReportsPage = () => {
               </TextField>
             </Grid>
             <Grid item xs={12} sm={4} md={4} lg={2}>
-              <TextField
-                fullWidth
-                id="month"
-                select
-                label="Month"
-                onChange={onMonthChange}
-              >
+              <TextField fullWidth id="month" select label="Month" onChange={onMonthChange}>
                 {MonthList.map((month) => (
                   <MenuItem key={month.value} value={month.value}>
                     {month.label}
@@ -146,23 +142,12 @@ const ReportsPage = () => {
               </TextField>
             </Grid>
             <Grid item xs={12} sm={4} md={4} lg={2}>
-              <Button
-                fullWidth
-                id="view"
-                variant="contained"
-                onClick={viewReport}
-              >
+              <Button fullWidth id="view" variant="contained" onClick={viewReport}>
                 View
               </Button>
             </Grid>
             <Grid item xs={12} sm={4} md={4} lg={2}>
-              <Button
-                fullWidth
-                id="download"
-                variant="contained"
-                onClick={viewReport}
-                disabled
-              >
+              <Button fullWidth id="download" variant="contained" onClick={viewReport} disabled>
                 Download
               </Button>
             </Grid>
@@ -175,9 +160,9 @@ const ReportsPage = () => {
                   initialState={{
                     pagination: {
                       paginationModel: {
-                        pageSize: 5,
-                      },
-                    },
+                        pageSize: 5
+                      }
+                    }
                   }}
                 />
               </Box>
@@ -185,7 +170,8 @@ const ReportsPage = () => {
           </Grid>
         </CardContent>
       </Card>
-    </PageContainer>)
+    </PageContainer>
+  );
 };
 
 export default ReportsPage;

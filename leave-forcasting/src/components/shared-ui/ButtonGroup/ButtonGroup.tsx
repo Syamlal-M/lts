@@ -1,16 +1,14 @@
 import {
-    ButtonGroup as MuiButtonGroup,
-    ButtonGroupProps as MuiButtonGroupProps
+  ButtonGroup as MuiButtonGroup,
+  ButtonGroupProps as MuiButtonGroupProps
 } from "@mui/material";
 
 type ButtonGroupProps = MuiButtonGroupProps;
 
 const ButtonGroup = (props: ButtonGroupProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiButtonGroup {...rest} />
-    );
-}
+  return <MuiButtonGroup {...rest} />;
+};
 
 export { ButtonGroup };

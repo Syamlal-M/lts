@@ -4,7 +4,7 @@ import { ThemeProvider } from "context/ThemeContext";
 import { AuthProvider } from "context/AuthContext";
 import { CssBaseline } from "components/shared-ui";
 import PageRoutes from "pages/_Routes";
-import 'App.css';
+import "App.css";
 
 function App() {
   return (

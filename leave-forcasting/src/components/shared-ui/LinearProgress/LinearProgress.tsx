@@ -1,16 +1,14 @@
 import {
-    LinearProgress as MuiLinearProgress,
-    LinearProgressProps as MuiLinearProgressProps
+  LinearProgress as MuiLinearProgress,
+  LinearProgressProps as MuiLinearProgressProps
 } from "@mui/material";
 
 type LinearProgressProps = MuiLinearProgressProps;
 
 const LinearProgress = (props: LinearProgressProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiLinearProgress {...rest} />
-    );
-}
+  return <MuiLinearProgress {...rest} />;
+};
 
 export { LinearProgress };

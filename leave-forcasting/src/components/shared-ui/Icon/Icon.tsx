@@ -1,16 +1,11 @@
-import {
-    Icon as MuiIcon,
-    IconProps as MuiIconProps
-} from "@mui/material";
+import { Icon as MuiIcon, IconProps as MuiIconProps } from "@mui/material";
 
 type IconProps = MuiIconProps;
 
 const Icon = (props: IconProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiIcon {...rest} />
-    );
-}
+  return <MuiIcon {...rest} />;
+};
 
 export { Icon };

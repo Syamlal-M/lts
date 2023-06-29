@@ -1,16 +1,14 @@
 import {
-    AccordionDetails as MuiAccordionDetails,
-    AccordionDetailsProps as MuiAccordionDetailsProps
+  AccordionDetails as MuiAccordionDetails,
+  AccordionDetailsProps as MuiAccordionDetailsProps
 } from "@mui/material";
 
 type AccordionDetailsProps = MuiAccordionDetailsProps;
 
 const AccordionDetails = (props: AccordionDetailsProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiAccordionDetails {...rest} />
-    );
-}
+  return <MuiAccordionDetails {...rest} />;
+};
 
 export { AccordionDetails };

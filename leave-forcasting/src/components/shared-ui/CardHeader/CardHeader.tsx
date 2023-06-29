@@ -1,16 +1,11 @@
-import {
-    CardHeader as MuiCardHeader,
-    CardHeaderProps as MuiCardHeaderProps
-} from "@mui/material";
+import { CardHeader as MuiCardHeader, CardHeaderProps as MuiCardHeaderProps } from "@mui/material";
 
 type CardHeaderProps = MuiCardHeaderProps;
 
 const CardHeader = (props: CardHeaderProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiCardHeader {...rest} />
-    );
-}
+  return <MuiCardHeader {...rest} />;
+};
 
 export { CardHeader };

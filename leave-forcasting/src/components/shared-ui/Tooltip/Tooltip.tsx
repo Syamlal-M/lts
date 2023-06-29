@@ -1,16 +1,10 @@
-import {
-    Tooltip as MuiTooltip,
-    TooltipProps as MuiTooltipProps
-} from "@mui/material";
-
+import { Tooltip as MuiTooltip, TooltipProps as MuiTooltipProps } from "@mui/material";
 
 type TooltipProps = MuiTooltipProps;
 
 const Tooltip = (props: TooltipProps) => {
-    const { ...rest } = props;
+  const { ...rest } = props;
 
-    return (
-        <MuiTooltip {...rest} />
-    );
-}
+  return <MuiTooltip {...rest} />;
+};
 export { Tooltip };
