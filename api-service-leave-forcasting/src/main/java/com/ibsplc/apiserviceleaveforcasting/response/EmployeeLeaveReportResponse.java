@@ -14,6 +14,7 @@ public class EmployeeLeaveReportResponse {
 
     private String employeeId;
     private String employeeName;
+    private String emailId;
     private List<YearLeaveSummaryResponse> year;
     private double noOfDays;
 }

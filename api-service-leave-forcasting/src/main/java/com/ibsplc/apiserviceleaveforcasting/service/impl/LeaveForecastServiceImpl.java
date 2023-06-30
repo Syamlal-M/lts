@@ -49,9 +49,8 @@ public class LeaveForecastServiceImpl implements LeaveForecastService {
 
 
 	private Optional<Roles> getPriorityRole() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		List<String> authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-		return Roles.getPriority(authorities);
+		EmployeeInfoDto emp = (EmployeeInfoDto) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()).getAttribute("employeeDetails", RequestAttributes.SCOPE_REQUEST);
+		return Roles.getPriority(List.of(emp.getRole().getRoleName()));
 	}
 
 	private void validateInputWithDb(List<LeaveForcastRequest> leavesFromDb, List<LeaveForcastRequest> forcastRequests) {

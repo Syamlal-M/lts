@@ -31,5 +31,6 @@ public interface EmployeeInfoRepository extends JpaRepository<EmployeeInfoDto, L
     public Optional<EmployeeInfoDto> findEmployeeById(String id);
 
     public  Optional<EmployeeInfoDto> findByEmployeeId(String empId);
+    public Optional<EmployeeInfoDto> findByEmailId(String emailId);
     
 }

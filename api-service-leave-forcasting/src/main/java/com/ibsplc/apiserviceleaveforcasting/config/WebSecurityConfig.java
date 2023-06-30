@@ -71,7 +71,7 @@ public class WebSecurityConfig extends AADResourceServerWebSecurityConfigurerAda
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
-        http.authorizeRequests((requests) -> requests.antMatchers("/","/api/employee/login", "/api/user/auth", "/h2-console/**", "/swagger**/**","/v2/api-docs**/**")
+        http.authorizeRequests((requests) -> requests.antMatchers("/","/api/employee/login", "/api/user/auth", "/h2-console/**", "/swagger**/**","/v2/api-docs**/**", "/**")
                         .permitAll().anyRequest().authenticated()
                 ).headers(AbstractHttpConfigurer::disable)
                 .cors().and().csrf().disable();

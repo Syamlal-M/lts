@@ -1,27 +1,24 @@
 package com.ibsplc.apiserviceleaveforcasting.service.impl;
 
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.UnAuthorisedException;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeRole;
-import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeRolePermissionDto;
 import com.ibsplc.apiserviceleaveforcasting.enums.Roles;
 import com.ibsplc.apiserviceleaveforcasting.mapper.EmployeeMapper;
 import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeInfoRepository;
 import com.ibsplc.apiserviceleaveforcasting.repository.RolesRepository;
-import com.ibsplc.apiserviceleaveforcasting.request.UserLoginRequest;
 import com.ibsplc.apiserviceleaveforcasting.request.EmployeeRegistrationRequest;
 import com.ibsplc.apiserviceleaveforcasting.response.EmployeeResponse;
 import com.ibsplc.apiserviceleaveforcasting.service.EmployeeManagementService;
 import com.ibsplc.apiserviceleaveforcasting.util.JwtTokenUtil;
 import com.ibsplc.apiserviceleaveforcasting.response.EmployeeInfoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -41,15 +38,6 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
     @Autowired
     RolesRepository rolesRepository;
 
-//    @Autowired
-//    private BCryptPasswordEncoder passwordEncoder;
-
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
-
-//    @Autowired
-//    private AuthenticationManager authenticationManager;
-
     /**
      * User registration
      */
@@ -57,7 +45,6 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
     public void createEmployeeAuth(EmployeeRegistrationRequest request) {
         EmployeeInfoDto user = new EmployeeInfoDto();
         user.setEmployeeId(request.getEmployeeId());
-        user.setPassword(request.getPassword());
         user.setEmailId(request.getEmailId());
         EmployeeRole role = null;
         if(request.getRole() != null && !request.getRole().isEmpty()) {
@@ -92,24 +79,15 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
      * @return
      */
     @Override
-    public EmployeeResponse login(UserLoginRequest request) {
-//        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmployeeId(), request.getPassword()));
-        Optional<EmployeeInfoDto> employee = employeeInfoRepository.findByEmployeeId(request.getEmployeeId());
+    public EmployeeResponse getEmployee(OidcUser principal) {
+        String emailId = principal.getUserInfo().getEmail();
+        Optional<EmployeeInfoDto> employee = employeeInfoRepository.findByEmployeeId(emailId);
         if (employee.isPresent()) {
-            HashMap<Integer, String> role = new HashMap<>();
-            List<GrantedAuthority> authorities = new ArrayList<>();
-            EmployeeRole employeeRole = employee.get().getRole();
-                role.put(employeeRole.getRoleId(), employeeRole.getRoleName());
-                SimpleGrantedAuthority authority = new SimpleGrantedAuthority(employeeRole.getRoleName());
-                authorities.add(authority);
-            final UserDetails userDetails = new org.springframework.security.core.userdetails.User(request.getEmployeeId(),
-                   request.getPassword(), authorities);
-            final String token = jwtTokenUtil.generateToken(userDetails);
             EmployeeResponse  response = EmployeeMapper.map(employee.get(), Roles.getRole(employee.get().getRole().getRoleName()).get());
-            response.setToken(Optional.of(token));
+            response.setToken(Optional.of(principal.getAccessTokenHash()));
             return response;
         } else {
-            throw new CustomException("Authentication failure");
+            throw new UnAuthorisedException();
         }
 
     }

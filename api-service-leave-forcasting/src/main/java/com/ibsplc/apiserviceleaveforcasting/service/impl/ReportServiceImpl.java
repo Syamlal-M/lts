@@ -6,20 +6,30 @@ import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeLeaveForcastDto;
 import com.ibsplc.apiserviceleaveforcasting.enums.PlanningType;
 import com.ibsplc.apiserviceleaveforcasting.enums.SpanType;
 import com.ibsplc.apiserviceleaveforcasting.enums.Status;
+import com.ibsplc.apiserviceleaveforcasting.model.DateWithMonth;
 import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeInfoRepository;
 import com.ibsplc.apiserviceleaveforcasting.repository.LeaveForecastRepository;
 import com.ibsplc.apiserviceleaveforcasting.response.*;
 import com.ibsplc.apiserviceleaveforcasting.service.ReportService;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.WeekFields;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -80,6 +90,7 @@ public class ReportServiceImpl implements ReportService {
             double totalLeaves = yearData.stream().mapToDouble(YearLeaveSummaryResponse::getNoOfDays).sum();
             return EmployeeLeaveReportResponse.builder().employeeId(emp.getKey().getEmployeeId())
                     .employeeName(emp.getKey().getEmployeeName())
+                    .emailId(emp.getKey().getEmailId())
                     .year(yearData)
                     .noOfDays(totalLeaves).build();
         }).collect(Collectors.toList());
@@ -174,5 +185,109 @@ public class ReportServiceImpl implements ReportService {
                     .weeks(weekSummaryList.stream().sorted(Comparator.comparing(WeekRevenueSummaryResponse::getWeekNumber)).collect(Collectors.toList()))
                     .expectedNoOfDays(expectedTotalLeaves).build();
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public void exportLeaveSummary(String month, String year, String org, String team, HttpServletResponse response) throws IOException {
+        List<EmployeeLeaveReportResponse> leaveReport = fetchLeaveSummary(month, year, org, team);
+        LocalDate startDate = LocalDate.parse("2023-01-21");
+        List<DateWithMonth> startAndEnd = Stream.iterate(LocalDate.parse("2023-01-21"), date -> date.plusMonths(1))
+                .limit(ChronoUnit.MONTHS.between(startDate, LocalDate.now().plusMonths(6)) + 1)
+                .map(localDa -> DateWithMonth.builder().month(localDa.getMonth().name()).year(localDa.getYear()).build())
+                .collect(Collectors.toList());
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        try {
+            workbook = new XSSFWorkbook();
+            XSSFSheet sheet = workbook.createSheet("report");
+            writeHeaderLine(workbook, sheet, startAndEnd);
+            writeDataLines(workbook, sheet, leaveReport, startAndEnd);
+            ServletOutputStream outputStream = response.getOutputStream();
+            workbook.write(outputStream);
+        } finally {
+            workbook.close();
+            response.getOutputStream().close();
+        }
+    }
+
+    private void writeDataLines(XSSFWorkbook workbook, XSSFSheet sheet, List<EmployeeLeaveReportResponse> leaveReport, List<DateWithMonth> startAndEnd) {
+        AtomicInteger rowNumber = new AtomicInteger(1);
+        AtomicInteger employeeCount = new AtomicInteger(1);
+        leaveReport.forEach(employee -> {
+            Row row = sheet.createRow(rowNumber.get());
+            AtomicInteger columnCount = new AtomicInteger();
+            createCell(row, columnCount.getAndIncrement(), Integer.toString(employeeCount.get()), null, sheet);
+            createCell(row, columnCount.getAndIncrement(), employee.getEmployeeId(), null, sheet);
+            createCell(row, columnCount.getAndIncrement(), employee.getEmailId(), null, sheet);
+            createCell(row, columnCount.getAndIncrement(), employee.getEmployeeName(), null, sheet);
+            AtomicBoolean commentSet = new AtomicBoolean(false);
+            startAndEnd.forEach(monthAndYear -> {
+                Optional<MonthLeaveSummaryResponse> month = filterByMonth(employee, monthAndYear);
+                    if(month.isPresent()) {
+                        Cell cell = createCell(row, columnCount.getAndIncrement(), Double.valueOf(month.get().getNoOfDays()).toString(), null, sheet);
+                        MonthLeaveSummaryResponse monthValue = month.get();
+                        String dates = monthValue.getDateList().stream().reduce((s, s1) -> s +",").get();
+                        if(!commentSet.get()) {
+                            commentSet.set(true);
+                            addComment(sheet, cell, dates);
+                        }
+                    } else {
+                        createCell(row, columnCount.getAndIncrement(), "0", null, sheet);
+                    }
+            });
+            employeeCount.getAndIncrement();
+            rowNumber.getAndIncrement();
+        });
+    }
+
+    private Optional<MonthLeaveSummaryResponse> filterByMonth(EmployeeLeaveReportResponse employee, DateWithMonth monthAndYear) {
+        return employee.getYear().stream().filter(year -> year.getYear().equalsIgnoreCase(Integer.toString(monthAndYear.getYear())))
+                .findFirst()
+                .stream().map(YearLeaveSummaryResponse::getMonth)
+                .flatMap(Collection::stream)
+                .filter(m -> m.getMonth().equalsIgnoreCase(monthAndYear.getMonth()))
+                .findFirst();
+    }
+
+    private void writeHeaderLine(XSSFWorkbook workbook, XSSFSheet sheet, List<DateWithMonth> startAndEnd) {
+        Row row = sheet.createRow(0);
+        CellStyle style = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(true);
+        font.setFontHeight(16);
+        style.setFont(font);
+        List<String> datesHeader = startAndEnd.stream()
+                .map(date -> (date.getMonth().length() > 3 ? date.getMonth().substring(0, 3) : date.getMonth()) + "-" + date.getYear())
+                .collect(Collectors.toList());
+        List<String> headers = new ArrayList<>(List.of("SNo", "EmpId", "EmailId", "EmployeeName"));
+        headers.addAll(datesHeader);
+        int index = 0;
+        for (String header : headers) {
+            createCell(row, index, header, style, sheet);
+            index++;
+        }
+    }
+
+    private Cell createCell(Row row, int columnCount, Object value, CellStyle style, XSSFSheet sheet) {
+        sheet.autoSizeColumn(columnCount);
+        Cell cell = row.createCell(columnCount);
+        if (value instanceof Integer) {
+            cell.setCellValue((Integer) value);
+        } else if (value instanceof Boolean) {
+            cell.setCellValue((Boolean) value);
+        } else {
+            cell.setCellValue((String) value);
+        }
+        if (style != null) cell.setCellStyle(style);
+        return cell;
+    }
+
+    private void addComment(XSSFSheet sheet, Cell cell, String comment) {
+        Drawing<?> drawing = cell.getSheet().createDrawingPatriarch();
+        CreationHelper factory = sheet.getWorkbook().getCreationHelper();
+        ClientAnchor anchor = factory.createClientAnchor();
+        Comment comment1 = drawing.createCellComment(anchor);
+        RichTextString str1 = factory.createRichTextString(comment);
+        comment1.setString(str1);
+        cell.setCellComment(comment1);
     }
 }

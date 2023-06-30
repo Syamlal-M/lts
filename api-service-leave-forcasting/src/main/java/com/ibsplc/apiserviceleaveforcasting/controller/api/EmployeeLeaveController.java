@@ -18,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -71,6 +73,20 @@ public class EmployeeLeaveController {
             e.printStackTrace();
             throw new CustomException(e.getMessage());
         }
+    }
+
+
+    @GetMapping("leave/export")
+    public void exportEmployees(@RequestParam(required = false) String month,
+                                @RequestParam(required = false) String year,
+                                @RequestParam(required = false) String org,
+                                @RequestParam(required = false) String team,
+                                HttpServletResponse response) throws Exception {
+        response.setContentType("application/octet-stream");
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=leavereport-%s.xlsx", LocalDateTime.now());
+        response.setHeader(headerKey, headerValue);
+        reportService.exportLeaveSummary(month, year, org, team, response);
     }
 
     @GetMapping("revenue")

@@ -66,16 +66,17 @@ public class StartupInit {
             rolesRepository.save(EmployeeRole.builder().roleName(role.name()).permissionsList(permission).build());
         });
 
-        createEmployee("A-100", "SUPER_ADMIN");
-        createEmployee("A-101", "ADMIN");
-        createEmployee("A-102", "TEAM_USER");
-        createEmployee("A-103", "USER");
+        createEmployee("A-100", "SUPER_ADMIN", "abilash@abilashcveeegmail.onmicrosoft.com");
+        createEmployee("A-101", "ADMIN", "A-101@gmail.com");
+        createEmployee("A-102", "TEAM_USER", "A-102@gmail.com");
+        createEmployee("A-103", "USER", "A-103@gmail.com");
     }
 
-    private void createEmployee(String employeeId, String role) {
+    private void createEmployee(String employeeId, String role, String email) {
         service.createEmployeeAuth(EmployeeRegistrationRequest.builder()
-                .employeeId(employeeId).emailId(String.format("%s@gmail.com", employeeId))
-                .password("password").role(role).build());
+                .employeeId(employeeId)
+                .emailId(email)
+                .role(role).build());
         EmployeeInfoDto emp = employeeRepository.findByEmployeeId(employeeId).get();
         emp.setEmployeeId(employeeId);
         emp.setEmployeeName(String.format("%s-EmployeeName", employeeId));

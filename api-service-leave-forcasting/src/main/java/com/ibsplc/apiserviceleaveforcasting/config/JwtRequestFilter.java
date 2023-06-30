@@ -1,14 +1,18 @@
 package com.ibsplc.apiserviceleaveforcasting.config;
 
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.UnAuthorisedException;
+import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
+import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeInfoRepository;
 import com.ibsplc.apiserviceleaveforcasting.util.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
@@ -32,6 +36,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
+    @Autowired
+    EmployeeInfoRepository employeeInfoRepository;
+
     List<String> ALLOW_URLS = Arrays.asList("/api/employee/login", "h2-console", "api-docs", "/swagger", "/api/employee/auth");
 
     @Override
@@ -43,49 +50,37 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         MDC.put("trace_id", uuid);
         String username = null;
         String jwtToken = null;
-        if (ALLOW_URLS.stream().anyMatch(allowUrl -> request.getRequestURI().contains(allowUrl))) {
-            try {
-                chain.doFilter(request, response);
-            } finally {
-                MDC.clear();
-            }
-        } else {
-            logger.info("Request URI method=" + request.getMethod());
-            logger.info("Request URI uri=" + request.getRequestURI() +
-                    "queryString=" + request.getQueryString() + " method=" + request.getMethod());
-            if (requestTokenHeader != null && !requestTokenHeader.isEmpty()) {
-                jwtToken = requestTokenHeader.replace("Bearer", "").trim();
-                try {
-                    username = jwtTokenUtil.getUsernameFromToken(requestTokenHeader);
-                } catch (IllegalArgumentException e) {
-                    logger.warn("Unable to get JWT Token");
-                } catch (Exception e) {
-                    logger.warn("JWT Token has expired");
-                }
-            } else {
-                logger.warn("JWT Token does not begin with Bearer String");
-            }
+        logger.info("Request URI method=" + request.getMethod());
+        logger.info("Request URI uri=" + request.getRequestURI() +
+                "queryString=" + request.getQueryString() + " method=" + request.getMethod());
 
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-                if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
-
-                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.getAuthorities());
-                    usernamePasswordAuthenticationToken
-                            .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                }
+            if (authentication.getPrincipal() instanceof OidcUser) {
+                OidcUser principal = ((OidcUser) authentication.getPrincipal());
+                String email = principal.getUserInfo().getEmail();
+                Optional<EmployeeInfoDto> employee = employeeInfoRepository.findByEmailId(email);
+                Objects.requireNonNull(RequestContextHolder.getRequestAttributes()).setAttribute("employeeDetails", employee.get(), RequestAttributes.SCOPE_REQUEST);
             }
-            try {
-                chain.doFilter(request, response);
-            } finally {
-                MDC.clear();
-                RequestContextHolder.resetRequestAttributes();
-            }
+        Optional<EmployeeInfoDto> employee = employeeInfoRepository.findByEmailId("abilash@abilashcveeegmail.onmicrosoft.com");
+        Objects.requireNonNull(RequestContextHolder.getRequestAttributes()).setAttribute("employeeDetails", employee.get(), RequestAttributes.SCOPE_REQUEST);
+//            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+//
+//            if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
+//
+//                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+//                        userDetails, null, userDetails.getAuthorities());
+//                usernamePasswordAuthenticationToken
+//                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+//            }
+        try {
+            chain.doFilter(request, response);
+        } finally {
+            MDC.clear();
+            RequestContextHolder.resetRequestAttributes();
         }
+//        }
     }
 
 }
