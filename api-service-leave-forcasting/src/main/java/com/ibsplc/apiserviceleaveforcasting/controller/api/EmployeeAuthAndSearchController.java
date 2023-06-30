@@ -73,7 +73,7 @@ public class EmployeeAuthAndSearchController {
     }
 
     @GetMapping("")
-    public ResponseEntity<EmployeeResponse> getEmployee(@RequestBody UserLoginRequest request, @AuthenticationPrincipal OidcUser principal) throws Exception {
+    public ResponseEntity<EmployeeResponse> getEmployee(@AuthenticationPrincipal OidcUser principal) throws Exception {
         try {
             return ResponseEntity.ok(employeeManagementService.getEmployee(principal));
         } catch (CustomException e) {
