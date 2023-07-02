@@ -63,11 +63,29 @@ const ReportsPage = () => {
   }, [leaveForecast]);
 
   const fetchLeaveForcastReport = () => {
-    ReportService.fetchForecast({ month: month, year: year, org: org, team: team })
+    ReportService.fetchReport({ month: month, year: year, org: org, team: team })
       .then((response) => {
         setLeaveForecast(response);
       })
       .catch((error) => console.log(error));
+  };
+
+  const handleDownload = () => {
+    ReportService.fetchDownloadReport({ org: org, team: team, month: month })
+      .then((response: any) => {
+        const blob = new Blob([response], { type: "application/octet-stream" });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "leave-report.xlsx";
+        link.click();
+
+        URL.revokeObjectURL(url);
+      })
+      .catch((error: any) => {
+        console.error("Error exporting CSV file:", error);
+      });
   };
 
   const onMonthChange = (event: any) => {
@@ -147,7 +165,7 @@ const ReportsPage = () => {
               </Button>
             </Grid>
             <Grid item xs={12} sm={4} md={4} lg={2}>
-              <Button fullWidth id="download" variant="contained" onClick={viewReport} disabled>
+              <Button fullWidth id="download" variant="contained" onClick={handleDownload}>
                 Download
               </Button>
             </Grid>
