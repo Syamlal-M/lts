@@ -7,7 +7,7 @@ const ReportService = {
     return Api.get(url, criteria);
   },
 
-    fetchDownloadReport: (criteria: Record<string, any> = {}) => {
+  fetchDownloadReport: (criteria: Record<string, any> = {}) => {
     const url = getApiUrl("DOWNLOAD_REPORT", criteria);
     return Api.get(url, { responseType: "blob" });
   }
