@@ -4,6 +4,7 @@ const API_ENDPOINTS = {
   GET_EMPLOYEE_LIST:
     "api/employee/search?org={:org}&team={:team}&location={:location}&name={:name}&page={:page}&limit={:limit}",
   DOWNLOAD_EMPLOYEE_INFO: "api/employee/export?org={:org}&team={:team}",
+  DOWNLOAD_REPORT: "/api/employee/leave/export?org={:org}&team={:team}&month={:month}",
   PUT_EMPLOYEE: "api/employee/import?file",
   GET_ORGANIZATION_LIST: "api/employee/organisation",
   GET_LOCATION_LIST: "api/employee/roles",
