@@ -29,7 +29,7 @@ const PageRoutes = () => {
           <Route
             path={getRouteUrl("PLANNING")}
             element={
-              <ProtectedRouteGuard hasPermission="LEAVE_FORCAST">
+              <ProtectedRouteGuard hasPermission={true}>
                 <PlanningPage />
               </ProtectedRouteGuard>
             }
@@ -37,7 +37,7 @@ const PageRoutes = () => {
           <Route
             path={getRouteUrl("EMPLOYEE_INFO")}
             element={
-              <ProtectedRouteGuard hasPermission="EMPLOYEE_SUMMARY">
+              <ProtectedRouteGuard hasPermission={true}>
                 <DashboardPage />
               </ProtectedRouteGuard>
             }
@@ -45,7 +45,7 @@ const PageRoutes = () => {
           <Route
             path={getRouteUrl("REPORTS")}
             element={
-              <ProtectedRouteGuard hasPermission="LEAVE_REPORT">
+              <ProtectedRouteGuard hasPermission={true}>
                 <ReportsPage />
               </ProtectedRouteGuard>
             }
@@ -53,7 +53,7 @@ const PageRoutes = () => {
           <Route
             path={getRouteUrl("SETTINGS")}
             element={
-              <ProtectedRouteGuard hasPermission="EMPLOYEE_MANAGEMENT">
+              <ProtectedRouteGuard hasPermission={true}>
                 <SettingsPage />
               </ProtectedRouteGuard>
             }
