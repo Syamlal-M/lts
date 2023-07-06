@@ -1,5 +1,6 @@
 const API_ENDPOINTS = {
   LOGIN: "api/employee/login",
+  GET_SIGNEDIN_USER_DETAILS: "/api/employee",
   GET_REPORT: "api/employee/leave-summary?org={:org}&team={:team}&month={:month}&year={:year}",
   GET_EMPLOYEE_LIST:
     "api/employee/search?org={:org}&team={:team}&location={:location}&name={:name}&page={:page}&limit={:limit}",

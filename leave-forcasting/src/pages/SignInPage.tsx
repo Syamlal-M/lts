@@ -85,7 +85,17 @@ const SignInPage = () => {
 
   const handleSSOAuth = async () => {
     await onLogin();
-    redirectToBasePage();
+    AuthenticationService.getSignedInEmployeeDetails()
+      .then((response) => {
+        console.log({ response });
+        setToken(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        redirectToBasePage();
+      });
   };
 
   return (
