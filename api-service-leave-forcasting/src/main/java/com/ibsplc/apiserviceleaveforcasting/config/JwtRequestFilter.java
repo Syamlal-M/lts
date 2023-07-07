@@ -1,5 +1,6 @@
 package com.ibsplc.apiserviceleaveforcasting.config;
 
+import com.azure.spring.aad.AADOAuth2AuthenticatedPrincipal;
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.UnAuthorisedException;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
 import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeInfoRepository;
@@ -56,14 +57,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            if (authentication.getPrincipal() instanceof OidcUser) {
-                OidcUser principal = ((OidcUser) authentication.getPrincipal());
-                String email = principal.getUserInfo().getEmail();
+            if (authentication.getPrincipal() instanceof AADOAuth2AuthenticatedPrincipal) {
+                AADOAuth2AuthenticatedPrincipal principal = ((AADOAuth2AuthenticatedPrincipal) authentication.getPrincipal());
+                String email = (String) principal.getClaim("preferred_username");
                 Optional<EmployeeInfoDto> employee = employeeInfoRepository.findByEmailId(email);
                 Objects.requireNonNull(RequestContextHolder.getRequestAttributes()).setAttribute("employeeDetails", employee.get(), RequestAttributes.SCOPE_REQUEST);
             }
-        Optional<EmployeeInfoDto> employee = employeeInfoRepository.findByEmailId("abilash@abilashcveeegmail.onmicrosoft.com");
-        Objects.requireNonNull(RequestContextHolder.getRequestAttributes()).setAttribute("employeeDetails", employee.get(), RequestAttributes.SCOPE_REQUEST);
 //            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 //
 //            if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {

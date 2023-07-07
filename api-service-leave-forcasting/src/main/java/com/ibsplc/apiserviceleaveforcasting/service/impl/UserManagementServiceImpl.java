@@ -1,5 +1,6 @@
 package com.ibsplc.apiserviceleaveforcasting.service.impl;
 
+import com.azure.spring.aad.AADOAuth2AuthenticatedPrincipal;
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.UnAuthorisedException;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
@@ -14,12 +15,16 @@ import com.ibsplc.apiserviceleaveforcasting.service.EmployeeManagementService;
 import com.ibsplc.apiserviceleaveforcasting.util.JwtTokenUtil;
 import com.ibsplc.apiserviceleaveforcasting.response.EmployeeInfoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,12 +84,10 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
      * @return
      */
     @Override
-    public EmployeeResponse getEmployee(OidcUser principal) {
-        String emailId = principal.getUserInfo().getEmail();
-        Optional<EmployeeInfoDto> employee = employeeInfoRepository.findByEmployeeId(emailId);
-        if (employee.isPresent()) {
-            EmployeeResponse  response = EmployeeMapper.map(employee.get(), Roles.getRole(employee.get().getRole().getRoleName()).get());
-            response.setToken(Optional.of(principal.getAccessTokenHash()));
+    public EmployeeResponse getEmployee() {
+        EmployeeInfoDto employee = (EmployeeInfoDto) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()).getAttribute("employeeDetails", RequestAttributes.SCOPE_REQUEST);
+        if (employee != null) {
+            EmployeeResponse  response = EmployeeMapper.map(employee, Roles.getRole(employee.getRole().getRoleName()).get());
             return response;
         } else {
             throw new UnAuthorisedException();

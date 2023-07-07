@@ -15,7 +15,7 @@ public interface EmployeeManagementService {
 
     public void updateRole(String employeeId, String role);
 
-    public EmployeeResponse getEmployee(OidcUser principal);
+    public EmployeeResponse getEmployee();
 
     public List<EmployeeInfoResponse> fetchAllUsers();
 
