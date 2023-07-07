@@ -7,6 +7,7 @@ import AlertTitle from "./AlertTitle";
 import AppBar from "./AppBar";
 import Avatar from "./Avatar";
 import AvatarGroup from "./AvatarGroup";
+import Backdrop from "./Backdrop";
 import Badge from "./Badge";
 import Box from "./Box";
 import Button from "./Button";
@@ -76,6 +77,7 @@ export {
   AppBar,
   Avatar,
   AvatarGroup,
+  Backdrop,
   Badge,
   Box,
   Button,
