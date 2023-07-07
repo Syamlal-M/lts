@@ -1,14 +1,25 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToggle } from "usehooks-ts";
-import { SigninRequest } from "types/api/employee/Authentication.types";
-import AuthenticationService from "service/AuthenticationService";
-import { resetToken, setToken } from "utils/CookieUtils";
+import {
+  Backdrop,
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  Icon,
+  IconButton,
+  TextField,
+  Typography
+} from "components/shared-ui";
+import COLOR from "styles/Color";
+import { isAutheticated } from "utils/ApiUtils";
+import { PageContainer } from "components/layout";
 import { useAuthContext } from "context/AuthContext";
 import { getRouteUrl } from "utils/AccessPointUtils";
-import { PageContainer } from "components/layout";
-import { isAutheticated } from "utils/ApiUtils";
-import { Box, Button, Grid, Icon, IconButton, TextField, Typography } from "components/shared-ui";
+import { resetToken, setToken } from "utils/CookieUtils";
+import AuthenticationService from "service/AuthenticationService";
+import { SigninRequest } from "types/api/employee/Authentication.types";
 
 interface UserDetails {
   employeeId: string;
@@ -20,29 +31,10 @@ const DEFAULT_USER_DETAILS: UserDetails = {
   password: ""
 };
 
-const SUPER_ADMIN: UserDetails = {
-  employeeId: "A-100",
-  password: "password"
-};
-
-const ADMIN: UserDetails = {
-  employeeId: "A-101",
-  password: "password"
-};
-
-const TEAM_USER: UserDetails = {
-  employeeId: "A-102",
-  password: "password"
-};
-
-const USER: UserDetails = {
-  employeeId: "A-103",
-  password: "password"
-};
-
 const SignInPage = () => {
-  const { onLogin } = useAuthContext();
   const navigate = useNavigate();
+  const { onLogin } = useAuthContext();
+  const [isLoading, toggleIsLoading] = useToggle(false);
   const [showPassword, setShowPassword] = useToggle(false);
   const [userDetails, setUserDetails] = useState<UserDetails>(DEFAULT_USER_DETAILS);
 
@@ -79,27 +71,29 @@ const SignInPage = () => {
     handleSignIn(userDetails);
   };
 
-  const handleTestUserAuth = (user: UserDetails): void => {
-    handleSignIn(user);
-  };
-
   const handleSSOAuth = async () => {
+    toggleIsLoading();
     await onLogin();
     AuthenticationService.getSignedInEmployeeDetails()
       .then((response) => {
-        console.log({ response });
         setToken(response);
+        redirectToBasePage();
       })
       .catch((error) => {
         console.log(error);
       })
       .finally(() => {
-        redirectToBasePage();
+        toggleIsLoading();
       });
   };
 
   return (
     <PageContainer title="Sign-in">
+      <Backdrop
+        open={isLoading}
+        sx={{ color: COLOR.common.white, zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Box
         sx={{
           display: "grid",
@@ -162,53 +156,6 @@ const SignInPage = () => {
               size="large"
               variant="contained"
               color="warning"
-              onClick={() => handleTestUserAuth(USER)}>
-              Sign-in as User
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              fullWidth
-              type="button"
-              size="large"
-              variant="contained"
-              color="warning"
-              onClick={() => handleTestUserAuth(TEAM_USER)}>
-              Sign-in as Team User
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              fullWidth
-              type="button"
-              size="large"
-              variant="contained"
-              color="warning"
-              onClick={() => handleTestUserAuth(ADMIN)}>
-              Sign-in as Admin
-            </Button>
-          </Grid>
-          <Grid item>
-            <Button
-              fullWidth
-              type="button"
-              size="large"
-              variant="contained"
-              color="warning"
-              onClick={() => handleTestUserAuth(SUPER_ADMIN)}>
-              Sign-in as Super Admin
-            </Button>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="subtitle2">-- OR --</Typography>
-          </Grid>
-          <Grid item>
-            <Button
-              fullWidth
-              type="button"
-              size="large"
-              variant="contained"
-              color="primary"
               onClick={handleSSOAuth}
               startIcon={
                 <svg

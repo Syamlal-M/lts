@@ -77,7 +77,7 @@ const LeftHandNavigation = (props: LeftSideNavigationProps) => {
           }>
           {navigationList.map(
             (item) =>
-              !hasPermission(item.permission) && (
+              hasPermission(item.permission) && (
                 <ListItem key={item.id}>
                   <ListItemButton
                     onClick={() => onNavLinkClick(item.urlPath)}
