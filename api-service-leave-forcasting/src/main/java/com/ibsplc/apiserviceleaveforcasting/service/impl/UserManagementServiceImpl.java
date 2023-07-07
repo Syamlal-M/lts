@@ -87,8 +87,7 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
     public EmployeeResponse getEmployee() {
         EmployeeInfoDto employee = (EmployeeInfoDto) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()).getAttribute("employeeDetails", RequestAttributes.SCOPE_REQUEST);
         if (employee != null) {
-            EmployeeResponse  response = EmployeeMapper.map(employee, Roles.getRole(employee.getRole().getRoleName()).get());
-            return response;
+            return EmployeeMapper.map(employee, Roles.getRole(employee.getRole().getRoleName()).get());
         } else {
             throw new UnAuthorisedException();
         }
