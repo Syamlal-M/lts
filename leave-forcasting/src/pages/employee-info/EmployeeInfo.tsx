@@ -32,9 +32,22 @@ const EmployeeSummary = () => {
         const blob = new Blob([response], { type: "application/octet-stream" });
         const url = URL.createObjectURL(blob);
 
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString("en-us", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric"
+        });
+        const formattedTime = now.toLocaleTimeString("en-us", {
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+
+        const filename = `employees_${formattedDate}_${formattedTime}.xlsx`;
+
         const link = document.createElement("a");
         link.href = url;
-        link.download = "employees.xlsx";
+        link.download = filename;
         link.click();
 
         URL.revokeObjectURL(url);
