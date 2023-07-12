@@ -20,8 +20,8 @@ const AuthProvider = ({ children, type = "popup" }: AuthProviderProps) => {
     const handleLoginPopup = () => {
       return instance
         .loginPopup({
-          scopes: ["api://ad3d6578-abae-4bc7-8ba3-3ad971f2571d/Testing"],
-          redirectUri: "/redirect"
+          scopes: ["api://bf9c573e-98f4-4948-9785-f8bd97cc42c0/IBSRevenueManagementSystemFrontEnd"],
+          redirectUri: "/"
         })
         .then((response: any) => {
           const { accessToken, tokenType } = response;

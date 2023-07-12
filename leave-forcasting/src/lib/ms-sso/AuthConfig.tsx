@@ -5,9 +5,9 @@ import { LogLevel } from "@azure/msal-browser";
  * For a full list of MSAL.js configuration parameters, visit:
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md
  */
-const APPLICATION_ID = "1034a6a7-ec4b-484c-8878-75d09eaed450";
+const APPLICATION_ID = "eca188b4-fd63-4202-a1f7-3e06b57a876b";
 // const APPLICATION_ID = "bb1975f5-780c-4ca9-8cf8-d0dc1a710417";
-const TENANT_ID = "c398cdc1-0d6b-4a3c-9b8e-eaca5efe7b99";
+const TENANT_ID = "4fb49922-20aa-49cd-b53a-e7eedbd903b0";
 
 const msalConfig = {
   auth: {

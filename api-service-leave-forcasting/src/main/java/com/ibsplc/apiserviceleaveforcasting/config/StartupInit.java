@@ -66,7 +66,7 @@ public class StartupInit {
             rolesRepository.save(EmployeeRole.builder().roleName(role.name()).permissionsList(permission).build());
         });
 
-        createEmployee("A-100", "SUPER_ADMIN", "abilash@abilashcveeegmail.onmicrosoft.com");
+        createEmployee("A-100", "SUPER_ADMIN", "A-9369@ibsplc.com");
         createEmployee("A-101", "ADMIN", "A-101@gmail.com");
         createEmployee("A-102", "TEAM_USER", "A-102@gmail.com");
         createEmployee("A-103", "USER", "A-103@gmail.com");
