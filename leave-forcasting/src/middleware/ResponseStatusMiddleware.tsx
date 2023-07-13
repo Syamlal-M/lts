@@ -1,5 +1,5 @@
 import { AxiosInstance, AxiosResponse, AxiosError } from "axios";
-import { getRouteUrl } from "utils/AccessPointUtils";
+import { getApiUrl, getRouteUrl } from "utils/AccessPointUtils";
 import { resetToken } from "utils/CookieUtils";
 
 function ResponseStatusMiddleware(axiosClient: AxiosInstance): void {
@@ -19,6 +19,9 @@ function ResponseStatusMiddleware(axiosClient: AxiosInstance): void {
         // Handle not found responses here
       } else if (error.response && error.response.status === 500) {
         // Handle server error responses here
+        if (error.config?.url === getApiUrl("GET_SIGNEDIN_USER_DETAILS")) {
+          resetToken();
+        }
       } else {
         // Handle other error responses here
       }
