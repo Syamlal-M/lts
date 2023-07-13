@@ -81,6 +81,7 @@ const SignInPage = () => {
       })
       .catch((error) => {
         console.log(error);
+        alert(`Login failed ${JSON.stringify(error)}`);
       })
       .finally(() => {
         toggleIsLoading();
