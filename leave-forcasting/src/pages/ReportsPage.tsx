@@ -45,16 +45,16 @@ const ReportsPage = () => {
           employeeName: lf["employeeName"],
           organizationName: lf["organizationName"],
           teamName: lf["teamName"],
-          week_1: lf["weeks"][0]?.noOfDays,
-          week_1_leaveDates: getLeaveDates(lf["weeks"][0]),
-          week_2: lf["weeks"][1]?.noOfDays,
-          week_2_leaveDates: getLeaveDates(lf["weeks"][1]),
-          week_3: lf["weeks"][2]?.noOfDays,
-          week_3_leaveDates: getLeaveDates(lf["weeks"][2]),
-          week_4: lf["weeks"][3]?.noOfDays,
-          week_4_leaveDates: getLeaveDates(lf["weeks"][3]),
-          week_5: lf["weeks"][4]?.noOfDays,
-          week_5_leaveDates: getLeaveDates(lf["weeks"][4])
+          week_1: lf["weeks"] ? lf["weeks"][0]?.noOfDays : undefined,
+          week_1_leaveDates: lf["weeks"] ? getLeaveDates(lf["weeks"][0]) : undefined,
+          week_2: lf["weeks"] ? lf["weeks"][1]?.noOfDays : undefined,
+          week_2_leaveDates: lf["weeks"] ? getLeaveDates(lf["weeks"][1]) : undefined,
+          week_3: lf["weeks"] ? lf["weeks"][2]?.noOfDays : undefined,
+          week_3_leaveDates: lf["weeks"] ? getLeaveDates(lf["weeks"][2]) : undefined,
+          week_4: lf["weeks"] ? lf["weeks"][3]?.noOfDays : undefined,
+          week_4_leaveDates: lf["weeks"] ? getLeaveDates(lf["weeks"][3]) : undefined,
+          week_5: lf["weeks"] ? lf["weeks"][4]?.noOfDays : undefined,
+          week_5_leaveDates: lf["weeks"] ? getLeaveDates(lf["weeks"][4]) : undefined
         };
         tempLeaveForcastData.push(leaveForcastObject);
       }
