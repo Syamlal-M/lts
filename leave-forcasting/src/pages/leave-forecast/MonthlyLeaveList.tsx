@@ -81,10 +81,10 @@ const MonthlyLeaveList = (props: MonthlyLeaveListProps) => {
                     select
                     fullWidth
                     label="Have any plans?"
-                    value={monthDetails.havePlans.value}
+                    value={monthDetails?.havePlans.value}
                     onChange={(event) => onPlanChange(event, month)}
-                    helperText={monthDetails.havePlans.helperText}
-                    error={Boolean(monthDetails.havePlans.helperText)}>
+                    helperText={monthDetails?.havePlans.helperText}
+                    error={Boolean(monthDetails?.havePlans.helperText)}>
                     {havePlanList.map((item) => (
                       <MenuItem key={item.value} value={item.value}>
                         {item.label}
@@ -94,9 +94,9 @@ const MonthlyLeaveList = (props: MonthlyLeaveListProps) => {
                 </Grid>
                 <Grid item xs={12} md={10}>
                   <Grid container spacing={2} alignItems="center">
-                    {monthDetails.dateList.length > 0 ? (
+                    {(monthDetails?.dateList.length || 0) > 0 ? (
                       <>
-                        {monthDetails.dateList.map((leavesDates, index: number) => (
+                        {monthDetails?.dateList.map((leavesDates, index: number) => (
                           <Grid item xs={12} key={index}>
                             <Grid container spacing={2} alignItems="center">
                               <Grid
@@ -159,16 +159,16 @@ const MonthlyLeaveList = (props: MonthlyLeaveListProps) => {
                             </Grid>
                           </Grid>
                         ))}
-                        {!monthDetails.dateList.some((leaveDates) => leaveDates.isEditable) && (
+                        {!monthDetails?.dateList.some((leaveDates) => leaveDates.isEditable) && (
                           <Grid item xs={12}>
                             <Grid container spacing={2} alignItems="center">
                               <Grid item xs={12}>
                                 <Button
-                                  disabled={!(monthDetails.havePlans.value === "yes")}
+                                  disabled={!(monthDetails?.havePlans.value === HAVE_PLANS.YES)}
                                   color="primary"
                                   variant="outlined"
                                   onClick={() =>
-                                    onLeaveAddition(month, monthDetails.dateList.length)
+                                    onLeaveAddition(month, monthDetails?.dateList.length || 0)
                                   }
                                   sx={{
                                     height: "120px",
@@ -186,12 +186,12 @@ const MonthlyLeaveList = (props: MonthlyLeaveListProps) => {
                       </>
                     ) : (
                       <>
-                        {monthDetails.havePlans.value === "yes" ? (
+                        {monthDetails?.havePlans.value === HAVE_PLANS.YES ? (
                           <Grid item xs={12}>
                             <Grid container spacing={2} alignItems="center">
                               <Grid item xs={12}>
                                 <Button
-                                  disabled={!(monthDetails.havePlans.value === "yes")}
+                                  disabled={!(monthDetails.havePlans.value === HAVE_PLANS.YES)}
                                   color="primary"
                                   variant="outlined"
                                   onClick={() => onLeaveAddition(month, 0)}

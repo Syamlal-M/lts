@@ -1,22 +1,10 @@
-import { KeyValueList } from "types/KeyValueList";
+import { KeyValueObject } from "types/KeyValueList";
 
-const YearList: KeyValueList = [
-  {
-    label: "2022",
-    value: "2022"
-  },
-  {
-    label: "2023",
-    value: "2023"
-  },
-  {
-    label: "2024",
-    value: "2024"
-  },
-  {
-    label: "2025",
-    value: "2025"
-  }
-];
+const startYear = 2020;
+const endYear = 2030;
+const YearList = Array.from(Array(endYear - startYear + 1).keys(), (num) => ({
+  label: `${num + startYear}`,
+  value: `${num + startYear}`
+})) as ReadonlyArray<KeyValueObject>;
 
 export default YearList;

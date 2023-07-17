@@ -1,4 +1,4 @@
-import { Months } from "types/LeaveSubmissionList.types";
+import { Months, Years } from "types/LeaveSubmissionList.types";
 import { LeaveDatePlanningType, LeaveDateSpan } from "./Leave.types";
 
 type DateList = string[];
@@ -12,7 +12,7 @@ type LeaveDate = {
   planningType: string;
   spanType: LeaveDateSpan;
   toDate: string;
-  year: number;
+  year: Years;
 };
 
 type LeaveDates = LeaveDate[];
@@ -26,20 +26,27 @@ type Month = {
   month: Months;
 };
 
+type Year = {
+  year: Years;
+  noOfDays: number;
+  month: Month[];
+};
+
 type LeaveSummaryItem = {
+  emailId: string;
   employeeId: string;
   employeeName: string;
   noOfDays: number;
-  month: Month[];
+  year: Year[];
 };
 
 type LeaveSummaryResponse = LeaveSummaryItem[];
 
 type LeaveSummaryQueryParams = {
-  month: string;
+  month: `${Months}` | "";
   org: string;
   team: string;
-  year: string;
+  year: `${Years}` | "";
 };
 
 export type { LeaveSummaryQueryParams, LeaveSummaryResponse, LeaveSummaryItem };

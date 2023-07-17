@@ -1,7 +1,9 @@
 import { RegularBreakpoints } from "@mui/material";
 import MonthList from "data/MonthList";
+import YearList from "data/YearList";
 
 type Months = (typeof MonthList)[number]["value"];
+type Years = (typeof YearList)[number]["value"];
 
 type LeaveDateProps = {
   label?: string;
@@ -20,6 +22,7 @@ type SpanType = {
 };
 
 type LeaveDate = {
+  isDirty: boolean;
   startDate: LeaveDateProps;
   endDate: LeaveDateProps;
   isEditable: boolean;
@@ -36,15 +39,18 @@ enum HAVE_PLANS {
 type HavePlans = `${HAVE_PLANS}`;
 
 type LeaveMonth = {
+  isDirty: boolean;
+  year: Years;
+  month: Months;
   isVisible: boolean;
   havePlans: { label?: string; value: HavePlans; helperText?: string };
   dateList: LeaveDate[];
 };
 
 type Leaves = {
-  [key in Months]?: LeaveMonth;
+  [key in `${Months} ${Years}`]?: LeaveMonth;
 };
 
 export { HAVE_PLANS };
 
-export type { HavePlans, Months, LeaveDate, LeaveDateProps, LeaveMonth, Leaves };
+export type { HavePlans, Months, Years, LeaveDate, LeaveDateProps, LeaveMonth, Leaves };

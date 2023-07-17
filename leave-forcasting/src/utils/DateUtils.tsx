@@ -1,3 +1,5 @@
+import MonthList from "data/MonthList";
+
 const convertToDateFormat = (date: string, format: "DD-MM-YYYY" | "YYYY-MM-DD"): string => {
   if (format === "YYYY-MM-DD") {
     const [day, month, year] = date.split("-");
@@ -23,4 +25,17 @@ const getFirstAndLastDates = (month: string, year: string) => {
   return [formatDate(firstDate), formatDate(lastDate)];
 };
 
-export { convertToDateFormat, getFirstAndLastDates };
+function getNextMonthAndYear(monthYear: string) {
+  const months = MonthList.map((month) => month.value);
+  const [currentMonth, currentYear] = monthYear.split(" ");
+
+  const currentMonthIndex = months.findIndex(
+    (month) => month.toUpperCase() === currentMonth.toUpperCase()
+  );
+  const nextMonthIndex = (currentMonthIndex + 1) % 12;
+  const nextYear = nextMonthIndex === 0 ? parseInt(currentYear) + 1 : currentYear;
+
+  return `${months[nextMonthIndex]} ${nextYear}`;
+}
+
+export { convertToDateFormat, getFirstAndLastDates, getNextMonthAndYear };
