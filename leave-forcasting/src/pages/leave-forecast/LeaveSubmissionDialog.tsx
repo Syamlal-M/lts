@@ -373,12 +373,16 @@ const LeaveSubmissionDialog = ({
 
   const handleLeaveSubmit = () => {
     const leaveList = serializeLeaveList(leaves);
-    submitLeaves(leaveSummary.employeeId, leaveList);
-    console.log({ leaveList });
+    submitLeaves(employeeDetails.employeeId, leaveList);
+  };
+
+  const handleDialogClose = (event: any, reason: string) => {
+    if (reason === "backdropClick") return;
+    onClose();
   };
 
   return (
-    <Dialog scroll="body" fullWidth maxWidth="lg" open={isOpen} onClose={onClose}>
+    <Dialog scroll="body" fullWidth maxWidth="lg" open={isOpen} onClose={handleDialogClose}>
       <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         Leave Plans
         <IconButton onClick={onClose}>
