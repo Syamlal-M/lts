@@ -49,5 +49,7 @@ public class EmployeeLeaveForcastDto {
 
 	private boolean exceptional;
 
+	private String reason;
+
 
 }

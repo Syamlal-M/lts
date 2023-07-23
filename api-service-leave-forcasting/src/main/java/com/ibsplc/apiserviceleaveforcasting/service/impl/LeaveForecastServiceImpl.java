@@ -6,15 +6,13 @@ package com.ibsplc.apiserviceleaveforcasting.service.impl;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeLeaveForcastDto;
 import com.ibsplc.apiserviceleaveforcasting.enums.*;
+import com.ibsplc.apiserviceleaveforcasting.mapper.LeaveForecastMapper;
 import com.ibsplc.apiserviceleaveforcasting.repository.EmployeeInfoRepository;
 import com.ibsplc.apiserviceleaveforcasting.repository.LeaveForecastRepository;
 import com.ibsplc.apiserviceleaveforcasting.request.LeaveForcastRequest;
 import com.ibsplc.apiserviceleaveforcasting.service.LeaveForecastService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -30,7 +28,6 @@ import java.util.stream.Collectors;
 
 import static com.ibsplc.apiserviceleaveforcasting.repository.CustomerSpecifications.*;
 import static com.ibsplc.apiserviceleaveforcasting.util.ValidationUtil.validateLeaveForecast;
-import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.groupingBy;
 
 /**
@@ -74,49 +71,46 @@ public class LeaveForecastServiceImpl implements LeaveForecastService {
 		validateLeaveForecast(finalList);
 	}
 
+	private List<LeaveForcastRequest> getActiveAndMapToLeaveForecastRequest(List<EmployeeLeaveForcastDto> leavesInDb) {
+		return leavesInDb.stream()
+				.filter(l -> l.getStatus().equalsIgnoreCase("ACTIVE"))
+				.map(l -> LeaveForcastRequest.builder()
+						.leaveForcastId(Optional.of(l.getLeaveForecastId()))
+						.empId(l.getEmployee().getEmployeeId())
+						.planningType(PlanningType.getPlanningType(l.getPlanningType()).get())
+						.fromDate(l.getFromDate())
+						.toDate(l.getToDate())
+						.exceptional(l.isExceptional()).build())
+				.collect(Collectors.toList());
+	}
+
 	@Override
-	public ResponseEntity updateLeaves(List<LeaveForcastRequest> forcastRequests, String employeeId) {
+	public ResponseEntity updateLeaves(List<LeaveForcastRequest> forecastRequests, String employeeId) {
 		Optional<EmployeeInfoDto> employeeOptional = findEmployeeByUserRole(employeeId);
 		List<EmployeeLeaveForcastDto> leavesInDb = leaveForecastRepository.findAll(hasLeaveForecastByEmployeeId(employeeId));
-		List<LeaveForcastRequest> leavesFromDb = leavesInDb.stream()
-				.filter(l -> l.getStatus().equalsIgnoreCase("ACTIVE"))
-				.map(l -> new LeaveForcastRequest(Optional.of(l.getLeaveForecastId()), l.getEmployee().getEmployeeId(), l.getFromDate(), l.getToDate(), PlanningType.getPlanningType(l.getPlanningType()).get(), l.isExceptional(),null, null))
-				.collect(Collectors.toList());
-		validateInputWithDb(leavesFromDb, forcastRequests);
-		if(employeeOptional.isPresent()) {
-			List<EmployeeLeaveForcastDto> deactivateLeave = deactivateLeaveList(forcastRequests, employeeId, leavesInDb);
 
-			List<EmployeeLeaveForcastDto> employeeForecastToCreate = forcastRequests.stream()
+		List<LeaveForcastRequest> leavesFromDb = getActiveAndMapToLeaveForecastRequest(leavesInDb);
+		validateInputWithDb(leavesFromDb, forecastRequests);
+		if(employeeOptional.isPresent()) {
+			List<EmployeeLeaveForcastDto> leavesToBeDeactivated = getDeactivateLeaveList(forecastRequests, employeeId, leavesInDb);
+			List<EmployeeLeaveForcastDto> forecastToCreateOrUpdate = forecastRequests.stream()
 					.filter(leave -> leave.getAction().equals(Action.INSERT) || leave.getAction().equals(Action.UPDATE))
 					.flatMap(forecastRequest -> {
 				List<LeaveForcastRequest> separatedForecastDates = breakDatesIfBetweenMonths(forecastRequest);
-				return separatedForecastDates.stream().map(forecast -> {
-					double noOfDays = forecast.getPlanningType() == PlanningType.EXPECTED_NO_LEAVES ? 0 :
-							Objects.equals(forecast.getSpan(), Optional.of(SpanType.HALF)) ? 0.5 :(int) DAYS.between(forecast.getFromDate(), forecast.getToDate()) + 1;
-					return EmployeeLeaveForcastDto.builder()
-							.exceptional(forecast.isExceptional())
-							.fromDate(forecast.getFromDate())
-							.toDate(forecast.getToDate())
-							.employee(employeeOptional.get())
-							.month(forecast.getToDate().getMonth().toString())
-							.year(forecast.getToDate().getYear())
-							.noOfDays(noOfDays)
-							.modifiedBy(employeeId)
-							.status(Status.ACTIVE.toString())
-							.createdDate(LocalDateTime.now())
-							.updatedDate(LocalDateTime.now())
-							.planningType(forecast.getPlanningType().toString()).build();
-				});
+				return separatedForecastDates.stream().map(forecast -> LeaveForecastMapper.mapToEmployeeLeaveForcastDto(forecast, employeeOptional.get(), employeeId));
 			}).collect(Collectors.toList());
-			employeeForecastToCreate.addAll(deactivateLeave);
-			leaveForecastRepository.saveAll(employeeForecastToCreate);
-			return ResponseEntity.noContent().build();
+			forecastToCreateOrUpdate.addAll(leavesToBeDeactivated);
+			leaveForecastRepository.saveAll(forecastToCreateOrUpdate);
+			List<EmployeeLeaveForcastDto> updatedLeaves = leaveForecastRepository.findAll(hasLeaveForecastByEmployeeId(employeeId));
+			Map<EmployeeInfoDto, List<EmployeeLeaveForcastDto>> employeeMap =
+					updatedLeaves.stream().collect(groupingBy(EmployeeLeaveForcastDto::getEmployee));
+			return ResponseEntity.ok(employeeMap.entrySet().stream().map(LeaveForecastMapper::map).collect(Collectors.toList()));
 		} else {
 			return ResponseEntity.badRequest().build();
 		}
 	}
 
-	private List<EmployeeLeaveForcastDto> deactivateLeaveList(List<LeaveForcastRequest> leaves, String employeeId, List<EmployeeLeaveForcastDto> fromDb) {
+	private List<EmployeeLeaveForcastDto> getDeactivateLeaveList(List<LeaveForcastRequest> leaves, String employeeId, List<EmployeeLeaveForcastDto> fromDb) {
 		List<Month> listOfMonthToUpdate = leaves
 				.stream()
 				.filter(leave -> !leave.getAction().equals(Action.DELETE))
@@ -167,18 +161,19 @@ public class LeaveForecastServiceImpl implements LeaveForecastService {
 				} else {
 					toDate = fromDate.withDayOfMonth(fromDate.getMonth().length(fromDate.isLeapYear()));
 				}
-				breakLeavesBetweenWeeks(leaveForeCast, fromDate, toDate, forecast.getPlanningType());
+				breakLeavesBetweenWeeks(leaveForeCast, fromDate, toDate, forecast.getPlanningType(), forecast);
 				fromDate = toDate.plusDays(1);
 			}
 			return leaveForeCast;
 		} else {
 			List<LeaveForcastRequest> leaveForeCast = new ArrayList<>();
-			breakLeavesBetweenWeeks(leaveForeCast, forecast.getFromDate(), forecast.getToDate(), forecast.getPlanningType());
+			breakLeavesBetweenWeeks(leaveForeCast, forecast.getFromDate(), forecast.getToDate(), forecast.getPlanningType(), forecast);
 			return leaveForeCast;
 		}
 	}
 
-	private void breakLeavesBetweenWeeks(List<LeaveForcastRequest> leaveForeCast, LocalDate fromDate, LocalDate toDate, PlanningType planningType) {
+	private void breakLeavesBetweenWeeks(List<LeaveForcastRequest> leaveForeCast, LocalDate fromDate, LocalDate toDate,
+										 PlanningType planningType, LeaveForcastRequest forecast) {
 		int fromDateWeekNumber = fromDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
 		int toDateWeekNumber = toDate.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear());
 		if(fromDateWeekNumber != toDateWeekNumber) {
@@ -190,6 +185,9 @@ public class LeaveForecastServiceImpl implements LeaveForecastService {
 							.fromDate(fromDate)
 							.toDate(toDate.isAfter(fromDate.with(DayOfWeek.FRIDAY)) ? fromDate.with(DayOfWeek.FRIDAY) : toDate)
 							.planningType(planningType)
+							.exceptional(forecast.isExceptional())
+							.span(forecast.getSpan())
+							.reason(forecast.getReason())
 							.build());
 					fromDate = fromDate.with(DayOfWeek.FRIDAY).plusDays(3);
 				}
@@ -199,12 +197,18 @@ public class LeaveForecastServiceImpl implements LeaveForecastService {
 					.fromDate(fromDate)
 					.toDate(fromDate.with(DayOfWeek.FRIDAY))
 					.planningType(planningType)
+					.exceptional(forecast.isExceptional())
+					.span(forecast.getSpan())
+					.reason(forecast.getReason())
 					.build());
 		} else {
 			leaveForeCast.add(LeaveForcastRequest.builder()
 					.fromDate(fromDate)
 					.toDate(toDate)
 					.planningType(planningType)
+					.exceptional(forecast.isExceptional())
+					.span(forecast.getSpan())
+					.reason(forecast.getReason())
 					.build());
 		}
 

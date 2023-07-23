@@ -46,11 +46,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
-        final String requestTokenHeader = request.getHeader("Authorization");
         String uuid = UUID.randomUUID().toString();
         MDC.put("trace_id", uuid);
-        String username = null;
-        String jwtToken = null;
         logger.info("Request URI method=" + request.getMethod());
         logger.info("Request URI uri=" + request.getRequestURI() +
                 "queryString=" + request.getQueryString() + " method=" + request.getMethod());
@@ -63,16 +60,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 Optional<EmployeeInfoDto> employee = employeeInfoRepository.findByEmailId(email);
                 Objects.requireNonNull(RequestContextHolder.getRequestAttributes()).setAttribute("employeeDetails", employee.get(), RequestAttributes.SCOPE_REQUEST);
             }
-//            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-//
-//            if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
-//
-//                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-//                        userDetails, null, userDetails.getAuthorities());
-//                usernamePasswordAuthenticationToken
-//                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-//            }
         try {
             chain.doFilter(request, response);
         } finally {

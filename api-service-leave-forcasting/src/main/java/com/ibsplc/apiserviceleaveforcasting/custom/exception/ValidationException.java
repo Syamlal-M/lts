@@ -9,15 +9,16 @@ package com.ibsplc.apiserviceleaveforcasting.custom.exception;
  *
  * @author jithin123
  */
-public class CustomException extends RuntimeException{
+public class ValidationException extends RuntimeException {
     private String message;
-    public CustomException(){}
-    public CustomException(String message){
+    public ValidationException(){}
+    public ValidationException(String message){
         super(message);
         this.message = message;
     }
 
-    
-    
-    
+
+    public ValidationException(String message, Exception e) {
+        super(message, e);
+    }
 }

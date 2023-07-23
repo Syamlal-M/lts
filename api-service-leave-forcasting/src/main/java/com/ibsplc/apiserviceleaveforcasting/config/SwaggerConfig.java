@@ -51,7 +51,7 @@ public class SwaggerConfig {
 
         return SecurityContext.builder()
                 .securityReferences(Collections.singletonList(SecurityReference.builder()
-                        .reference("AuthorizationKey")
+                        .reference("Authorization")
                         .scopes(authScopes).build()))
                 .build();
     }

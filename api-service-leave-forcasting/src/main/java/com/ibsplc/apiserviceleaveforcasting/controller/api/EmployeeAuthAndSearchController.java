@@ -1,9 +1,8 @@
 package com.ibsplc.apiserviceleaveforcasting.controller.api;
 
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CSVExceptionWrapper;
-import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.InternalServerException;
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.UnAuthorisedException;
-import com.ibsplc.apiserviceleaveforcasting.request.UserLoginRequest;
 import com.ibsplc.apiserviceleaveforcasting.request.EmployeeRegistrationRequest;
 import com.ibsplc.apiserviceleaveforcasting.response.EmployeeResponse;
 import com.ibsplc.apiserviceleaveforcasting.service.EmployeeService;
@@ -11,8 +10,6 @@ import com.ibsplc.apiserviceleaveforcasting.service.EmployeeManagementService;
 import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,30 +27,24 @@ public class EmployeeAuthAndSearchController {
     private EmployeeService employeeService;
 
     @PostMapping("/auth")
-    public ResponseEntity createEmployeeAuth(@RequestBody EmployeeRegistrationRequest request) throws CustomException, Exception {
+    public ResponseEntity createEmployeeAuth(@RequestBody EmployeeRegistrationRequest request) throws InternalServerException, Exception {
         try {
             employeeManagementService.createEmployeeAuth(request);
             return ResponseEntity.accepted().build();
-        } catch (CustomException e) {
-            e.printStackTrace();
-            throw new CustomException(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("Exception Occurred in registerUser:: " + e.getMessage());
+            throw new InternalServerException(e.getMessage());
         }
     }
 
     @PostMapping("")
-    public ResponseEntity createEmployee(@RequestBody EmployeeRegistrationRequest request) throws CustomException, Exception {
+    public ResponseEntity createEmployee(@RequestBody EmployeeRegistrationRequest request) throws InternalServerException, Exception {
         try {
             employeeService.createEmployee(request);
             return ResponseEntity.accepted().build();
-        } catch (CustomException e) {
-            e.printStackTrace();
-            throw new CustomException(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
-            throw new Exception("Exception Occurred in registerUser:: " + e.getMessage());
+            throw new InternalServerException(e.getMessage());
         }
     }
 
@@ -62,12 +53,8 @@ public class EmployeeAuthAndSearchController {
         try {
             employeeManagementService.updateRole(employeeId, roleName);
             return ResponseEntity.accepted().build();
-        } catch (CustomException e) {
-            e.printStackTrace();
-            throw new CustomException(e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception("Exception Occurred in assignRole :: " + e.getMessage());
+            throw new InternalServerException(e.getMessage(), e);
         }
 
     }
@@ -76,12 +63,8 @@ public class EmployeeAuthAndSearchController {
     public ResponseEntity<EmployeeResponse> getEmployee() throws Exception {
         try {
             return ResponseEntity.ok(employeeManagementService.getEmployee());
-        } catch (CustomException e) {
-            e.printStackTrace();
-            throw new CustomException(e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new UnAuthorisedException();
+            throw new InternalServerException(e.getMessage());
         }
     }
 

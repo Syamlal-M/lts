@@ -29,6 +29,7 @@ public class LeaveDetailResponse {
     private String planningType;
 
     private boolean exceptional;
+    private String reason;
 
     @JsonIgnore
     private List<String> dateList;

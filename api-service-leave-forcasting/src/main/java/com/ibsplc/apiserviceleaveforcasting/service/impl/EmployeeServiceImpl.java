@@ -19,7 +19,6 @@ import com.ibsplc.apiserviceleaveforcasting.response.EmployeeRoleResponse;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -30,9 +29,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -40,7 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CSVExceptionWrapper;
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CsvImportException;
-import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.InternalServerException;
 import com.ibsplc.apiserviceleaveforcasting.service.EmployeeService;
 import com.ibsplc.apiserviceleaveforcasting.util.ValidationUtil;
 import com.ibsplc.apiserviceleaveforcasting.view.BasicResponseView;
@@ -178,12 +174,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public BasicResponseView importEmployees(MultipartFile file) throws CSVExceptionWrapper, Exception {
         if (file.getSize() > (10 * 1024 * 1024)) {
-            throw new CustomException("file size exceeded more than 10MB");
+            throw new InternalServerException("file size exceeded more than 10MB");
         }
 
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
         if (!extension.equalsIgnoreCase("xlsx")) {
-            throw new CustomException("File type not supported. Supported type is xlsx");
+            throw new InternalServerException("File type not supported. Supported type is xlsx");
         }
 
         boolean isUploadCompleted = false;

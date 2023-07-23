@@ -6,7 +6,8 @@
 package com.ibsplc.apiserviceleaveforcasting.util;
 
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.CsvImportException;
-import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.InternalServerException;
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.ValidationException;
 import com.ibsplc.apiserviceleaveforcasting.enums.PlanningType;
 import com.ibsplc.apiserviceleaveforcasting.enums.SpanType;
 import com.ibsplc.apiserviceleaveforcasting.request.LeaveForcastRequest;
@@ -55,7 +56,7 @@ public class ValidationUtil {
         validatePastDates(expectedLeaves, errors);
         validateHalfDayLeave(expectedLeaves, errors);
         if(!errors.isEmpty()) {
-            throw new CustomException("ERRORS: " + String.join(", ", errors));
+            throw new ValidationException("ERRORS: " + String.join(", ", errors));
         }
     }
 
@@ -92,7 +93,7 @@ public class ValidationUtil {
             for(int innerIndex = 1; innerIndex < leaveForecast.size() && outerIndex != innerIndex; innerIndex ++) {
                 LeaveForcastRequest leaveRequest1 = leaveForecast.get(innerIndex);
                 if ((leaveRequest1.getFromDate().isBefore(leaveRequest.getToDate()) || leaveRequest1.getFromDate().isEqual(leaveRequest.getToDate())) &&
-                        (leaveRequest.getToDate().isEqual(leaveRequest.getFromDate()) || leaveRequest.getToDate().isAfter(leaveRequest.getFromDate()))) {
+                        (leaveRequest1.getToDate().isEqual(leaveRequest.getFromDate()) || leaveRequest1.getToDate().isAfter(leaveRequest.getFromDate()))) {
                     String fromDate = leaveRequest.getFromDate().toString();
                     String toDate = leaveRequest.getToDate().toString();
                     String fromDate1 = leaveRequest1.getFromDate().toString();

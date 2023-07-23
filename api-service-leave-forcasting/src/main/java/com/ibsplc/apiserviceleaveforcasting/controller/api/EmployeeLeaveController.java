@@ -5,8 +5,7 @@
 package com.ibsplc.apiserviceleaveforcasting.controller.api;
 
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.BadRequestException;
-import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
-import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.InternalServerException;
 import com.ibsplc.apiserviceleaveforcasting.enums.Action;
 import com.ibsplc.apiserviceleaveforcasting.request.LeaveForcastRequest;
 import com.ibsplc.apiserviceleaveforcasting.response.EmployeeLeaveReportResponse;
@@ -14,7 +13,6 @@ import com.ibsplc.apiserviceleaveforcasting.response.EmployeeRevenueReportRespon
 import com.ibsplc.apiserviceleaveforcasting.service.LeaveForecastService;
 import com.ibsplc.apiserviceleaveforcasting.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,12 +64,22 @@ public class EmployeeLeaveController {
     public List<EmployeeLeaveReportResponse> fetchLeaveForecastSummary(@RequestParam(required = false) String month,
                                                                        @RequestParam(required = false) String year,
                                                                        @RequestParam(required = false) String org,
-                                                                       @RequestParam(required = false) String team) throws CustomException, Exception {
+                                                                       @RequestParam(required = false) String team) throws InternalServerException, Exception {
         try {
             return reportService.fetchLeaveSummary(month, year, org, team);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new CustomException(e.getMessage());
+            throw new InternalServerException(e.getMessage());
+        }
+    }
+
+    @GetMapping("leave-summary/{employeeId}")
+    public List<EmployeeLeaveReportResponse> fetchLeaveForecastSummaryForEmployee(@PathVariable String employeeId) throws InternalServerException, Exception {
+        try {
+            return reportService.fetchLeaveForecastSummaryForEmployee(employeeId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new InternalServerException(e.getMessage());
         }
     }
 
@@ -93,12 +101,12 @@ public class EmployeeLeaveController {
     public List<EmployeeRevenueReportResponse> getEmployeeRevenue(@RequestParam(required = false) String month,
                                                                   @RequestParam(required = false) String year,
                                                                   @RequestParam(required = false) String org,
-                                                                  @RequestParam(required = false) String team) throws CustomException, Exception {
+                                                                  @RequestParam(required = false) String team) throws InternalServerException, Exception {
         try {
             return reportService.fetchRevenueSummary(month, year, org, team);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new CustomException("Exception occurred in API :: " + e.getMessage());
+            throw new InternalServerException("Exception occurred in API :: " + e.getMessage());
         }
     }
 }

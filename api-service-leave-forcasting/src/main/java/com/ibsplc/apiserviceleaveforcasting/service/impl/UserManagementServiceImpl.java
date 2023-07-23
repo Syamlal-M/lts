@@ -1,7 +1,7 @@
 package com.ibsplc.apiserviceleaveforcasting.service.impl;
 
-import com.azure.spring.aad.AADOAuth2AuthenticatedPrincipal;
-import com.ibsplc.apiserviceleaveforcasting.custom.exception.CustomException;
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.BadRequestException;
+import com.ibsplc.apiserviceleaveforcasting.custom.exception.InternalServerException;
 import com.ibsplc.apiserviceleaveforcasting.custom.exception.UnAuthorisedException;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeInfoDto;
 import com.ibsplc.apiserviceleaveforcasting.entity.EmployeeRole;
@@ -12,16 +12,8 @@ import com.ibsplc.apiserviceleaveforcasting.repository.RolesRepository;
 import com.ibsplc.apiserviceleaveforcasting.request.EmployeeRegistrationRequest;
 import com.ibsplc.apiserviceleaveforcasting.response.EmployeeResponse;
 import com.ibsplc.apiserviceleaveforcasting.service.EmployeeManagementService;
-import com.ibsplc.apiserviceleaveforcasting.util.JwtTokenUtil;
 import com.ibsplc.apiserviceleaveforcasting.response.EmployeeInfoResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -67,11 +59,11 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
     @Override
     public void updateRole(String employeeId, String role) {
         if(Roles.getRole(role).isEmpty()) {
-            throw new CustomException("No Valid Roles found");
+            throw new BadRequestException("No Valid Roles found");
         };
         Optional<EmployeeInfoDto> employee = employeeInfoRepository.findEmployeeById(employeeId);
         if (employee.isEmpty()) {
-            throw new CustomException("Employee details not found for given Employee id");
+            throw new BadRequestException("Employee details not found for given Employee id");
         }
         EmployeeInfoDto employeeInfoDto = employee.get();
         Optional<EmployeeRole> currentRole = rolesRepository.findByRoleName(role);
@@ -89,7 +81,7 @@ public class UserManagementServiceImpl implements EmployeeManagementService {
         if (employee != null) {
             return EmployeeMapper.map(employee, Roles.getRole(employee.getRole().getRoleName()).get());
         } else {
-            throw new UnAuthorisedException();
+            throw new UnAuthorisedException("User not found");
         }
 
     }

@@ -31,4 +31,5 @@ public class LeaveForcastRequest {
     private boolean exceptional;
     private Optional<SpanType> span;
     private Action action;
+    private String reason;
 }
