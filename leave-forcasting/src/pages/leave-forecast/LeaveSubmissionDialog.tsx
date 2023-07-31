@@ -255,6 +255,14 @@ const LeaveSubmissionDialog = ({
     }));
   };
 
+  const hanldeMonthRemoval = (month: string) => {
+    setLeaves((prevLeaves) => {
+      const newLeaves = { ...prevLeaves };
+      delete newLeaves[month as `${Months} ${Years}`];
+      return newLeaves;
+    });
+  };
+
   const handlePlanChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     month: string
@@ -423,6 +431,7 @@ const LeaveSubmissionDialog = ({
               <MonthlyLeaveList
                 leaves={leaves}
                 onMonthVisibiltyChange={handleMonthVisibilty}
+                onMonthRemoval={hanldeMonthRemoval}
                 onPlanChange={handlePlanChange}
                 onLeaveDateChange={handleLeaveDateChange}
                 onLeaveAddition={handleLeaveAddition}

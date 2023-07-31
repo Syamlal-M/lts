@@ -136,9 +136,9 @@ const PlanningPage = () => {
             />
             <Grid item xs={12}>
               {isPlanningDataLoading ? (
-                <DataGridTableSkeleton />
+                <DataGridTableSkeleton noOfRows={6} />
               ) : (
-                <Box sx={{ height: 520, maxWidth: "calc(100vw - 80px)" }}>
+                <Box sx={{ height: 371, maxWidth: "calc(100vw - 64px)" }}>
                   <DataGrid
                     disableColumnFilter
                     disableColumnMenu
@@ -147,6 +147,14 @@ const PlanningPage = () => {
                     rows={planningData}
                     getRowId={(row) => row.employeeId}
                     columns={LeavePlanningColumnList}
+                    pageSizeOptions={[5, 10, 25]}
+                    initialState={{
+                      pagination: {
+                        paginationModel: {
+                          pageSize: 5
+                        }
+                      }
+                    }}
                   />
                 </Box>
               )}

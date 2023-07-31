@@ -21,6 +21,7 @@ import {
 interface MonthlyLeaveListProps {
   leaves: Leaves;
   onMonthVisibiltyChange: (month: string) => void;
+  onMonthRemoval: (month: string) => void;
   onPlanChange: (event: any, month: string) => void;
   onLeaveDateChange: (month: string, value: any, index: number) => void;
   onLeaveAddition: (month: string, index: number) => void;
@@ -38,6 +39,7 @@ const MonthlyLeaveList = (props: MonthlyLeaveListProps) => {
   const {
     leaves,
     onMonthVisibiltyChange,
+    onMonthRemoval,
     onPlanChange,
     onLeaveDateChange,
     onLeaveAddition,
@@ -47,6 +49,11 @@ const MonthlyLeaveList = (props: MonthlyLeaveListProps) => {
 
   const DATE_FORMAT = "DD-MM-YYYY";
   const havePlanList = useMemo(() => HAVE_PLAN_SELECT_LIST, []);
+
+  const handleMonthRemoval = (event: any, month: string) => {
+    event.stopPropagation();
+    onMonthRemoval(month);
+  };
 
   return (
     <Grid container spacing={2}>
@@ -63,6 +70,15 @@ const MonthlyLeaveList = (props: MonthlyLeaveListProps) => {
                 </IconButton>
               }
               sx={{
+                ".MuiAccordionSummary-content": {
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginY: 0,
+                  ".MuiIconButton-root": {
+                    color: COLOR.common.white
+                  }
+                },
                 backgroundColor: COLOR.primary.main,
                 color: COLOR.common.white,
                 ".MuiAccordionSummary-expandIconWrapper": {
@@ -72,6 +88,12 @@ const MonthlyLeaveList = (props: MonthlyLeaveListProps) => {
                 }
               }}>
               <Typography>{month}</Typography>
+              {monthDetails?.havePlans.value === HAVE_PLANS.EMPTY &&
+                monthDetails.dateList.length === 0 && (
+                  <IconButton onClick={(e) => handleMonthRemoval(e, month)}>
+                    <Icon>close</Icon>
+                  </IconButton>
+                )}
             </AccordionSummary>
             <AccordionDetails sx={{ pt: 2 }}>
               <Grid container spacing={2} minHeight={136}>

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./LandingPage";
 import SignInPage from "./SignInPage";
 import ReportsPage from "./ReportsPage";
@@ -14,7 +14,7 @@ import ProtectedRouteGuard from "components/hoc/ProtectedRouteGuard";
 
 const PageRoutes = () => {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
         <Route path={getRouteUrl("ROOT")} element={<LandingPage />} />
         <Route path={getRouteUrl("SIGN_IN")} element={<SignInPage />} />
@@ -61,7 +61,7 @@ const PageRoutes = () => {
         </Route>
         <Route path="*" element={<PageNotFound />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 };
 

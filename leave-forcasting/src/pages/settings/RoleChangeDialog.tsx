@@ -12,13 +12,19 @@ import {
   ListItemText,
   Icon,
   IconButton,
-  Avatar
+  Avatar,
+  Backdrop,
+  CircularProgress,
+  Alert
 } from "components/shared-ui";
 
 export interface RoleChangeDialogProps {
   isOpen: boolean;
   selectedValue: any;
-  onClose: (selectedValue: any, value: string) => void;
+  onClose: () => void;
+  onSubmit: (selectedValue: any, value: string) => void;
+  errorMessage?: string;
+  isLoading?: boolean;
 }
 
 function RoleChangeDialog(props: RoleChangeDialogProps) {
@@ -28,14 +34,14 @@ function RoleChangeDialog(props: RoleChangeDialogProps) {
     label: capitalize(role.value.split("_").join(" "))
   }));
 
-  const { onClose, selectedValue, isOpen } = props;
+  const { onClose, onSubmit, selectedValue, isOpen, isLoading, errorMessage } = props;
 
   const closeDialog = () => {
-    onClose(selectedValue, "");
+    onClose();
   };
 
   const listItemClick = (value: string) => {
-    onClose(selectedValue, value);
+    onSubmit(selectedValue, value);
   };
 
   return (
@@ -47,6 +53,12 @@ function RoleChangeDialog(props: RoleChangeDialogProps) {
         </IconButton>
       </DialogTitle>
       <DialogContent dividers>
+        <Backdrop
+          open={isLoading || false}
+          sx={{ color: COLOR.common.white, zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
         <List sx={{ pt: 0 }}>
           {userRoles.map((userRole) => (
             <ListItem disableGutters key={userRole.value}>

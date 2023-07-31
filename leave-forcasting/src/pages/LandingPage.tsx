@@ -35,7 +35,7 @@ const LandingPage = () => {
                 <Typography variant="h4">Leave Tracker System</Typography>
               </CardContent>
               <CardActions sx={{ p: 2 }}>
-                <Link href={getRouteUrl("PLANNING")}>Go to Leave Tracker System</Link>
+                <Link href={`#${getRouteUrl("PLANNING")}`}>Go to Leave Tracker System</Link>
               </CardActions>
             </Card>
           </Grid>
