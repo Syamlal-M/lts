@@ -7,7 +7,7 @@ import SettingsPage from "./settings/page";
 import PlanningPage from "./leave-forecast/page";
 import { getRouteUrl } from "utils/AccessPointUtils";
 import { DashboardTemplate } from "components/layout";
-import DashboardPage from "./employee-info/DashboadPage";
+import EmployeeInfoPage from "./employee-info/page";
 import { SelectListProvider } from "context/SelectListContext";
 import PrivateRouteGuard from "components/hoc/PrivateRouteGuard";
 import ProtectedRouteGuard from "components/hoc/ProtectedRouteGuard";
@@ -38,7 +38,7 @@ const PageRoutes = () => {
             path={getRouteUrl("EMPLOYEE_INFO")}
             element={
               <ProtectedRouteGuard hasPermission="EMPLOYEE_SUMMARY">
-                <DashboardPage />
+                <EmployeeInfoPage />
               </ProtectedRouteGuard>
             }
           />

@@ -1,22 +1,46 @@
-import { Box, DataGrid, Grid, TextField, MenuItem, Button } from "components/shared-ui";
-import * as React from "react";
-import EmployeeSummaryColumnList from "data/EmployeeSummaryColumnList";
+import {
+  Box,
+  DataGrid,
+  Grid,
+  TextField,
+  MenuItem,
+  Button,
+  CircularProgress,
+  Alert
+} from "components/shared-ui";
+import { useState } from "react";
+import { KeyValueObject } from "types/KeyValueList";
 import EmployeeService from "service/EmployeeInfoService";
 import { useSelectListContext } from "context/SelectListContext";
-import { KeyValueObject } from "types/KeyValueList";
+import EmployeeSummaryColumnList from "data/EmployeeSummaryColumnList";
+import DataGridTableSkeleton from "components/common/DataGridTableSkeleton";
 
 const EmployeeSummary = () => {
-  const [org, setOrg] = React.useState("");
-  const [team, setTeam] = React.useState("");
-  const [empList, setEmpList] = React.useState<any[]>([]);
+  const [org, setOrg] = useState("");
+  const [team, setTeam] = useState("");
+  const [empList, setEmpList] = useState<any[]>([]);
   const { ORGANIZATIONS: orgList, TEAMS: teamList } = useSelectListContext();
 
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadingError, setDownloadingError] = useState("");
+  const [isEmployeeDetailsLoading, setEmployeeDetailsLoading] = useState(false);
+  const [employeeDetailsError, setEmployeeDetailsError] = useState("");
+
   const fetchEmployeeSummary = () => {
+    setEmployeeDetailsLoading(true);
     EmployeeService.fetchEmployeeSummary({ org: org, team: team })
       .then((response: any) => {
         setEmpList(response);
       })
-      .catch((error: any) => console.log(error));
+      .catch((error: any) => {
+        setEmployeeDetailsError(
+          error.message || "Oops! Something went wrong while fetching employee details."
+        );
+        console.log(error);
+      })
+      .finally(() => {
+        setEmployeeDetailsLoading(false);
+      });
   };
 
   const handleOrgChange = (event: any) => {
@@ -27,6 +51,7 @@ const EmployeeSummary = () => {
   };
 
   const handleDownload = () => {
+    setIsDownloading(true);
     EmployeeService.fetchEmployeeDownload({ org: org, team: team })
       .then((response: any) => {
         const blob = new Blob([response], { type: "application/octet-stream" });
@@ -51,14 +76,41 @@ const EmployeeSummary = () => {
         link.click();
 
         URL.revokeObjectURL(url);
+        setDownloadingError("");
       })
       .catch((error: any) => {
+        setDownloadingError("Oops! Something went wrong while downloading the file.");
         console.error("Error exporting CSV file:", error);
+      })
+      .finally(() => {
+        setIsDownloading(false);
       });
   };
 
   return (
     <Grid container spacing={2} alignItems="center">
+      {employeeDetailsError && (
+        <Grid item xs={12}>
+          <Alert
+            severity="error"
+            onClose={() => {
+              setEmployeeDetailsError("");
+            }}>
+            {employeeDetailsError}
+          </Alert>
+        </Grid>
+      )}
+      {downloadingError && (
+        <Grid item xs={12}>
+          <Alert
+            severity="error"
+            onClose={() => {
+              setDownloadingError("");
+            }}>
+            {downloadingError}
+          </Alert>
+        </Grid>
+      )}
       <Grid item xs={12} sm={4} md={4} lg={2}>
         <TextField
           select
@@ -97,27 +149,37 @@ const EmployeeSummary = () => {
         </Button>
       </Grid>
       <Grid item xs={12} sm={4} md={4} lg={2}>
-        <Button fullWidth id="download" variant="contained" onClick={handleDownload}>
+        <Button
+          fullWidth
+          id="download"
+          variant="contained"
+          onClick={handleDownload}
+          disabled={isDownloading}
+          startIcon={isDownloading ? <CircularProgress size={20} color="inherit" /> : null}>
           Download
         </Button>
       </Grid>
       <Grid item xs={12}>
-        <Box sx={{ height: 400, maxWidth: "calc(100vw - 36px)" }}>
-          <DataGrid
-            rows={empList}
-            columns={EmployeeSummaryColumnList}
-            getRowId={(row) => row.employeeId}
-            disableColumnMenu
-            initialState={{
-              pagination: {
-                paginationModel: {
-                  pageSize: 5
+        {isEmployeeDetailsLoading ? (
+          <DataGridTableSkeleton noOfRows={6} />
+        ) : (
+          <Box sx={{ height: 371, maxWidth: "calc(100vw - 36px)" }}>
+            <DataGrid
+              rows={empList}
+              columns={EmployeeSummaryColumnList}
+              getRowId={(row) => row.employeeId}
+              disableColumnMenu
+              pageSizeOptions={[5, 10, 25]}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: 5
+                  }
                 }
-              }
-            }}
-            pageSizeOptions={[5]}
-          />
-        </Box>
+              }}
+            />
+          </Box>
+        )}
       </Grid>
     </Grid>
   );

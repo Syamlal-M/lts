@@ -1,8 +1,7 @@
-import { Box, Button, CircularProgress, Grid } from "components/shared-ui";
-import { Input } from "@mui/material";
 import { useState } from "react";
-
+import { Input } from "@mui/material";
 import EmployeeService from "service/EmployeeInfoService";
+import { Box, Button, CircularProgress, Grid } from "components/shared-ui";
 
 const UploadEmployee = () => {
   const [file, setFile] = useState<File>();
@@ -58,7 +57,7 @@ const UploadEmployee = () => {
   };
 
   return (
-    <Box sx={{ height: 400, maxWidth: "calc(100vw - 36px)" }}>
+    <Box sx={{ maxWidth: "calc(100vw - 36px)" }}>
       <Grid container direction="column" alignItems="start" spacing={2}>
         <Grid item>
           <Grid container direction="row" alignItems={"center"} spacing={1}>
