@@ -1,33 +1,31 @@
-import { DataGrid } from "@mui/x-data-grid";
-import { PageContainer } from "components/layout";
 import {
   Box,
   Button,
   Card,
   CardContent,
+  DataGrid,
   Grid,
   MenuItem,
   TextField,
   Typography
 } from "components/shared-ui";
-import { KeyValueObject } from "types/KeyValueList";
-import LeaveForecastReportColumnList from "data/LeaveForecastReportColumnList";
-
-import MonthList from "data/MonthList";
-import * as React from "react";
 import ReportService from "service/ReportService";
+import { PageContainer } from "components/layout";
+import { KeyValueObject } from "types/KeyValueList";
+import { useCallback, useEffect, useState } from "react";
 import { LeaveForecastInfo } from "types/LeaveForecastInfo";
 import { useSelectListContext } from "context/SelectListContext";
+import LeaveForecastReportColumnList from "data/LeaveForecastReportColumnList";
 
 const ReportsPage = () => {
-  const { ORGANIZATIONS: orgList, TEAMS: teamList } = useSelectListContext();
-  const [leaveForecast, setLeaveForecast] = React.useState<any>();
-  const [processedLeaveForcastData, setProcessedLeaveForcastData] = React.useState<any>([]);
+  const { ORGANIZATIONS: orgList, TEAMS: teamList, MONTHS: MonthList } = useSelectListContext();
+  const [leaveForecast, setLeaveForecast] = useState<any>();
+  const [processedLeaveForcastData, setProcessedLeaveForcastData] = useState<any>([]);
 
-  const [org, setOrg] = React.useState("");
-  const [team, setTeam] = React.useState("");
-  const [year] = React.useState(new Date().getFullYear());
-  const [month, setMonth] = React.useState(MonthList[new Date().getMonth() + 1].value);
+  const [org, setOrg] = useState("");
+  const [team, setTeam] = useState("");
+  const [year] = useState("");
+  const [month, setMonth] = useState("");
 
   const getLeaveDates = (weekLeave: any) => {
     return weekLeave?.noOfDays === 1
@@ -35,7 +33,7 @@ const ReportsPage = () => {
       : weekLeave?.leaveDates[0].fromDate + " to " + weekLeave?.leaveDates[0].toDate;
   };
 
-  const processDataForTableView = React.useCallback((): any => {
+  const processDataForTableView = useCallback((): any => {
     const tempLeaveForcastData: Array<any> = [];
     if (leaveForecast?.length > 0) {
       for (const lf of leaveForecast) {
@@ -117,7 +115,7 @@ const ReportsPage = () => {
     fetchLeaveForcastReport();
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof leaveForecast?.length !== "undefined") {
       processDataForTableView();
     }

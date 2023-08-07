@@ -1,13 +1,13 @@
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
-import LandingPage from "./LandingPage";
 import SignInPage from "./SignInPage";
-import ReportsPage from "./ReportsPage";
+import LandingPage from "./LandingPage";
+import ReportsPage from "./reports/page";
 import PageNotFound from "./PageNotFound";
 import SettingsPage from "./settings/page";
 import PlanningPage from "./leave-forecast/page";
+import EmployeeInfoPage from "./employee-info/page";
 import { getRouteUrl } from "utils/AccessPointUtils";
 import { DashboardTemplate } from "components/layout";
-import EmployeeInfoPage from "./employee-info/page";
 import { SelectListProvider } from "context/SelectListContext";
 import PrivateRouteGuard from "components/hoc/PrivateRouteGuard";
 import ProtectedRouteGuard from "components/hoc/ProtectedRouteGuard";
